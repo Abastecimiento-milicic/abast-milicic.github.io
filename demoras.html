@@ -92,11 +92,15 @@
 <body class="page-demoras">
   <header class="topbar">
     <div class="topbar-left">
-      <div class="title">ABASTECIMIENTO</div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="title">ABASTECIMIENTO</div>
+        <div class="topbar-badge">Este reporte se actualiza los dias Lunes y Jueves despues de las 13 hs.</div>
+      </div>
       <div class="subtitle">Demoras</div>
     </div>
 
     <div class="topbar-right" style="display: flex; gap: 0.5rem; align-items: stretch;">
+      <div id="userGreeting" style="display: flex; align-items: center; font-weight: 600; font-size: 0.9rem; color: #1e293b; margin-right: 10px; padding: 0 10px; border-right: 1px solid #cbd5e1;"></div>
       <button class="btn-refresh-top" onclick="window.forceRefreshData()" title="Actualizar datos">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"></polyline>
@@ -385,6 +389,8 @@
   <script src="js/clasificacion_logic.js?v=20260907"></script>
   <script src="js/cache-utils.js?v=20260907"></script>
   <script src="js/demoras.js?v=20260907"></script>
+
+  <script src="js/auth-user.js?v=20260907"></script>
 </body>
 
 </html>

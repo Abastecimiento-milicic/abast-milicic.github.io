@@ -762,7 +762,7 @@
       animationDurationUpdate: 600,
       animationEasing: "cubicOut",
       animationEasingUpdate: "cubicOut",
-      grid: { left: 56, right: 70, top: 40, bottom: 62 },
+      grid: { left: 56, right: 70, top: 55, bottom: 62 },
       tooltip: {
         trigger: "axis",
         axisPointer: { type: "shadow" },
@@ -877,6 +877,7 @@
         {
           type: "value",
           name: "Días de demora",
+          nameTextStyle: { padding: [0, 0, 15, 0] },
           position: "right",
           axisLabel: { fontWeight: 700 },
           splitLine: { show: false },
@@ -1349,7 +1350,15 @@
     const rows = filteredRowsNoMes();
     const months = buildMesSelect(rows);
 
-    updateKPIsGeneral(rows);
+    // Filtrar para el acumulado: excluir el mes vigente y tomar los 12 meses anteriores
+    const uniqueMonths = [...new Set(rows.map(getMonthKeyFromRow).filter(Boolean))].sort();
+    if (uniqueMonths.length > 0) {
+        uniqueMonths.pop();
+    }
+    const allowedMonths = new Set(uniqueMonths.slice(-12));
+    const rowsAcumulado = rows.filter(r => allowedMonths.has(getMonthKeyFromRow(r)));
+
+    updateKPIsGeneral(rowsAcumulado);
     updateKPIsMonthly(rows, months);
 
     buildChartMes(rows);

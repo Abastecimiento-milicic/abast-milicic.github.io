@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 
 <head>
@@ -15,8 +15,8 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20260910_130223" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20260910_130223" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20260914_105210" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20260914_105210" />
   <link rel="stylesheet" href="css/demoras.css" />
   <link rel="stylesheet" href="css/ejemplo.css" />
   
@@ -125,6 +125,7 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body class="page-cumplimiento">
@@ -158,6 +159,7 @@
     <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
     <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
     <button class="tab" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button>
+    <!-- <button id="tab-envio" class="tab" data-tab="envio" onclick="window.switchTab('envio')" style="display: none; background-color: #0d9488; color: white;">📩 ENVIAR INFORME</button> -->
   </nav>
 
   <main class="container">
@@ -414,6 +416,65 @@
       </section>
     </section>
 
+
+    <!-- 
+    <section id="panel-envio" class="tab-panel" style="display: none;">
+      <section class="panel">
+        <div class="panel-title">CONFIGURACIÓN DE ENVÍO DE INFORME
+           <button class="help-btn" onclick="openHelp('Envío de Informe', 'Configura los filtros y presiona Previsualizar para revisar los datos. Si todo está correcto, presiona Generar y Enviar para crear un PDF y preparar el correo.')" title="Ayuda">ℹ</button>
+        </div>
+        <div class="panel-body">
+           <p style="margin-bottom: 15px; font-size: 0.9rem;">
+             1. Seleccioná los filtros que deseas aplicar al informe.<br>
+             2. Verificá visualmente cómo quedan los datos haciendo clic en <b>Previsualizar</b>.<br>
+             3. Si los datos son correctos, hacé clic en <b>Generar PDF y Enviar</b>. El sistema descargará el archivo PDF y abrirá tu cliente de correo (ej. Outlook) para que adjuntes el archivo generado.
+           </p>
+
+           <div class="filters filters-6" style="margin-bottom: 20px;">
+             <div class="filter">
+               <label>CLIENTE / OBRA</label>
+               <select id="envio_clienteSelect" multiple size="6" class="multi-select">
+                 <option value="">Todos</option>
+               </select>
+             </div>
+             <div class="filter">
+               <label>CLASIFICACIÓN</label>
+               <select id="envio_clasif2Select" multiple size="6" class="multi-select">
+                 <option value="">Todos</option>
+               </select>
+             </div>
+             <div class="filter">
+               <label>GC OC</label>
+               <select id="envio_gcocSelect" multiple size="6" class="multi-select">
+                 <option value="">Todos</option>
+               </select>
+             </div>
+             <div class="filter">
+               <label>MES DE ENTREGA</label>
+               <select id="envio_mesSelect" multiple size="6" class="multi-select"></select>
+             </div>
+             <div class="filter">
+               <label>CENTRO</label>
+               <select id="envio_centroSelect" multiple size="6" class="multi-select">
+                 <option value="">Todos</option>
+               </select>
+             </div>
+           </div>
+
+           <div style="display: flex; gap: 10px; align-items: center; border-top: 1px solid #cbd5e1; padding-top: 15px;">
+             <div style="flex: 1; max-width: 300px;">
+                <label style="font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 5px;">Destinatario (Email):</label>
+                <input type="text" id="envio_emailTo" value="ventas@milicic.com" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;" />
+             </div>
+             <div style="display: flex; gap: 10px; align-items: flex-end; height: 100%; margin-top: 25px;">
+                <button id="envio_btnPreview" class="btn btn-outline" style="padding: 10px 20px;">👁 Previsualizar en Cumplimiento</button>
+                <button id="envio_btnGenerate" class="btn" style="padding: 10px 20px; background-color: #0d9488; color: white;">📥 Generar PDF y Enviar</button>
+             </div>
+           </div>
+        </div>
+      </section>
+    </section>
+    -->
 
     <section id="panel-mm" class="tab-panel" style="display: none;">
       <div id="mm_msg"></div>
@@ -1269,16 +1330,16 @@
 
   </main>
 
-  <script src="js/last-update.js?v=20260910_130223"></script>
-  <script src="js/help.js?v=20260910_130223"></script>
-  <script src="js/cache-utils.js?v=20260910_130223"></script>
+  <script src="js/last-update.js?v=20260914_105210"></script>
+  <script src="js/help.js?v=20260914_105210"></script>
+  <script src="js/cache-utils.js?v=20260914_105210"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/cumplimiento.js?v=20260910_130223"></script>
-  <script src="js/analisis-mm.js?v=20260910_130223"></script>
-  <script src="js/evolucion.js?v=20260910_130223"></script>
-  <script src="js/demoras.js?v=20260910_130223"></script>
-  <script src="js/servicios.js?v=20260910_130223"></script>
+  <script src="js/cumplimiento.js?v=20260914_105210"></script>
+  <script src="js/analisis-mm.js?v=20260914_105210"></script>
+  <script src="js/evolucion.js?v=20260914_105210"></script>
+  <script src="js/demoras.js?v=20260914_105210"></script>
+  <script src="js/servicios.js?v=20260914_105210"></script>
 
   <script>
     // ═══════════════════════════════════════════════════════
@@ -1473,8 +1534,8 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20260910_130223"></script>
+  <script src="js/auth-user.js?v=20260914_105210"></script>
+  <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 
 </html>
-

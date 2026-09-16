@@ -71,63 +71,138 @@
         border-radius: 6px;
     }
 
-#btnDownloadSelection {
+#btnDownloadSelection, #serv_btnDownloadSelection {
     width: 100% !important;
     height: 32px !important; /* Más bajo */
     font-size: 0.75rem !important; /* Letra más chica */
     margin-top: 0 !important;
 }
 
-#btnDownloadSelection:hover {
+#btnDownloadSelection:hover, #serv_btnDownloadSelection:hover {
     background-color: #f8fafc;
 }
 
-    /* 4. Tabla: Líneas divisorias marcadas y columnas de cantidad compactas */
-    table { width: 100%; border-collapse: collapse; font-family: 'Source Sans 3', sans-serif; font-size: 0.8rem; min-width: 2200px; }
-    
-th { 
-    background: #f8fafc; 
-    color: #1e293b; 
-    font-weight: 700; 
-    padding: 10px 8px; 
-    text-align: left; 
-    border-bottom: 3px solid #3b82f6 !important; 
-    vertical-align: bottom;
-    /* Nuevas propiedades para títulos largos */
-    white-space: normal !important; 
-    line-height: 1.2;
-    min-width: 100px; /* Evita que se compriman demasiado */
-}
-
-    td { 
-        padding: 10px 8px; 
-        border-bottom: 1px solid #cbd5e1 !important; /* Línea entre registros marcada */
-        white-space: nowrap; 
+    .serv-resumen-table { 
+      width: 100%; 
+      max-width: 900px; 
+      margin: 0 auto; 
+      border-collapse: separate;
+      border-spacing: 0;
+      font-family: 'Source Sans 3', sans-serif; 
+      font-size: 0.88rem; 
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
-
-    tbody tr:hover { background-color: #f1f5f9 !important; }
-
-    /* Compactar columnas de cantidad */
-    th:nth-child(4), td:nth-child(4),
-    th:nth-child(5), td:nth-child(5),
-    th:nth-child(6), td:nth-child(6),
-    th:nth-child(7), td:nth-child(7) {
-        min-width: 85px !important;
-        max-width: 100px !important;
-        text-align: center;
-        white-space: normal;
+    .serv-resumen-table th { 
+      background: #f8fafc; 
+      color: #1e293b; 
+      font-weight: 700; 
+      padding: 12px 18px; 
+      text-align: left; 
+      border-bottom: 2px solid #3b82f6 !important; 
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      user-select: none;
     }
+    .serv-resumen-table th.sortable {
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+    }
+    .serv-resumen-table th.sortable:hover {
+      background: #f1f5f9;
+      color: #2563eb;
+    }
+    .serv-resumen-table th.sortable span {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 0.75rem;
+    }
+    .serv-resumen-table td { 
+      padding: 10px 18px; 
+      border-bottom: 1px solid #f1f5f9 !important;
+      color: #334155;
+      vertical-align: middle;
+    }
+    .serv-resumen-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .serv-resumen-table tbody tr:hover { 
+      background-color: #f8fafc !important; 
+    }
+    .serv-resumen-table tfoot tr {
+      background-color: #f1f5f9 !important;
+      font-weight: 700;
+      border-top: 2px solid #cbd5e1;
+    }
+    .serv-resumen-table tfoot td {
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+    .badge-item-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .badge-serv-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .badge-item-verde { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-item-rojo { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge-item-azul { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
 
-    /* Estilos de scroll */
-    .top-scroll-wrapper { width: 100%; overflow-x: auto; overflow-y: hidden; height: 18px; margin-top: 20px; background: #f1f5f9; border-radius: 8px 8px 0 0; }
-    .fake-content { height: 1px; }
-    .master-wrapper { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px; background: white; }
+    .badge-serv-verde { background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-serv-amarillo { background-color: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .badge-serv-naranja { background-color: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+    .badge-serv-rojo { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge-serv-morado { background-color: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+    .badge-serv-gris { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
-    /* Colores por estado */
-    .row-verde { background-color: #dcfce7 !important; color: #166534; }
-    .row-rojo { background-color: #fee2e2 !important; color: #991b1b; }
-    .cell-rojo { background-color: #fecaca !important; color: #991b1b; font-weight: 600; text-align: center; border-radius: 4px; }
-    .cell-verde { background-color: #bbf7d0 !important; color: #166534; font-weight: 600; text-align: center; border-radius: 4px; }
+    .btn-table-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #0284c7;
+      background-color: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn-table-download:hover {
+      background-color: #0284c7;
+      color: white;
+      border-color: #0284c7;
+      box-shadow: 0 2px 5px rgba(2, 132, 199, 0.25);
+    }
+    .btn-table-download-all {
+      color: #1e40af;
+      background-color: #eff6ff;
+      border-color: #93c5fd;
+      font-weight: 700;
+    }
+    .btn-table-download-all:hover {
+      background-color: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
@@ -166,73 +241,51 @@ th {
   <main class="container">
     <section class="panel">
       <div class="panel-title">FILTROS DE SERVICIOS</div>
-<div class="panel-body filters-6"> 
-    <div class="filter"><label>CLIENTE</label><select id="clienteSelect" multiple class="multi-select"></select></div>
-    
-    <div class="filter"><label>PERÍODO</label><select id="clasif2Select" multiple class="multi-select"></select></div>
-    
-    <div class="filter"><label>ESTADO</label><select id="gcocSelect" multiple class="multi-select"></select></div>  
-    
-    <div class="filter"><label>G. COMPRA</label><select id="grupoCompraSelect" multiple class="multi-select"></select></div> 
-    
-    <div class="filter"><label>ESTADO ITEM</label><select id="estadoItemSelect" multiple class="multi-select"></select></div>
-    
-    <div class="filter-kpi">
-        <label>TOTAL</label>
-        <div class="kpi-mini-box">
-            <span id="kpiTotal" class="kpi-mini-value">0</span>
-            <span class="kpi-mini-label">Servicios</span>
-        </div>
-        <button id="btnDownloadSelection" class="btn-small">⬇ Descargar</button>
-    </div>
-</div>
+      <div class="panel-body filters-6"> 
+        <div class="filter"><label>CLIENTE</label><select id="serv_clienteSelect" multiple class="multi-select"></select></div>
+        
+        <div class="filter"><label>PERÍODO</label><select id="serv_clasif2Select" multiple class="multi-select"></select></div>
+        
+        <div class="filter"><label>ESTADO</label><select id="serv_gcocSelect" multiple class="multi-select"></select></div>  
+        
+        <div class="filter"><label>G. COMPRA</label><select id="serv_grupoCompraSelect" multiple class="multi-select"></select></div> 
+        
+        <div class="filter"><label>ESTADO ITEM</label><select id="serv_estadoItemSelect" multiple class="multi-select"></select></div>
+        
+        <div class="filter-kpi">
+            <label>TOTAL</label>
+            <div class="kpi-mini-box">
+                <span id="serv_kpiTotal" class="kpi-mini-value">0</span>
+                <span class="kpi-mini-label">Servicios</span>
+            </div>
+            <button id="serv_btnDownloadSelection" class="btn-small">⬇ Descargar</button>
         </div>
       </div>
     </section>
 
     <section class="panel">
-      <div class="panel-title">ANÁLISIS GESTIÓN SERVICIOS</div>
-      <div class="top-scroll-wrapper" id="top-scroll"><div class="fake-content" id="fake-content"></div></div>
-      <div class="master-wrapper" id="bottom-scroll">
-        <table id="tablaServicios">
+      <div class="panel-title">RESUMEN DE PEDIDOS POR ESTADO</div>
+      <div class="panel-body" style="padding: 20px; overflow-x: auto;">
+        <table id="serv_tablaResumen" class="serv-resumen-table">
           <thead>
             <tr>
-              <th>NRO. VA01/VA21</th>
-              <th>CODIGO ITEM</th>
-              <th>DESCRIPCIÓN ITEM</th>
-              <th>SOLICITADO</th>
-              <th>RECEPCIONADO</th>
-              <th>PENDIENTE DE ADJUDICAR</th>
-              <th>PENDIENTE DE RECEPCIONAR</th>
-              <th>ESTADO ITEM</th>
-              <th>F.ENTREGA ESPERADA</th>
-              <th>NRO. RECEPCION</th>
-              <th>FECHA RECEPCION</th>
-              <th>NRO. OC</th>
-              <th>GRUPO DE COMPRA</th>
-              <th>Estado Servicio</th>
-              <th>Período de certificación</th>
+              <th class="sortable" data-sort="estadoItem" title="Ordenar por Estado Item">ESTADO ITEM <span id="serv_sort_estadoItem">↕</span></th>
+              <th class="sortable" data-sort="estadoServicio" title="Ordenar por Estado Servicio">Estado Servicio <span id="serv_sort_estadoServicio">↕</span></th>
+              <th class="sortable" data-sort="count" title="Ordenar por Cantidad" style="text-align: right;">CANTIDAD DE PEDIDOS <span id="serv_sort_count">▼</span></th>
+              <th style="text-align: center; width: 130px;">ACCIONES</th>
             </tr>
           </thead>
-          <tbody id="tablaBody"></tbody>
+          <tbody id="serv_resumenBody"></tbody>
         </table>
       </div>
     </section>
-<section class="panel">
-    <div class="panel-title">GRÁFICO RESUMEN</div>
-    <div class="panel-body" style="display: flex; justify-content: center; align-items: center; padding: 20px;">
-        <div style="width: 100%; max-width: 700px;"> 
-            <canvas id="chartEstados"></canvas>
-        </div>
-    </div>
-</section>
   </main>
 
   <script src="js/help.js"></script>
-  <script src="js/cache-utils.js?v=20260914_123919"></script>
-  <script src="js/servicios.js?v=20260914_123919"></script>
+  <script src="js/cache-utils.js?v=20260916_112200"></script>
+  <script src="js/servicios.js?v=20260916_112200"></script>
 
-  <script src="js/auth-user.js?v=20260914_123919"></script>
+  <script src="js/auth-user.js?v=20260916_112200"></script>
 </body>
 </html>
 

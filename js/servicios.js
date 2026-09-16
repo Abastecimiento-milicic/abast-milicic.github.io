@@ -5,43 +5,158 @@
   const CLIENT_COL_NAME = "CLIENTE";
   const PERIODO_COL_NAME = "Período de certificación";
   const ESTADO_COL_NAME = "Estado Servicio";
-  const ESTADO_CERT_COL = "Estado Certificación";
   const G_COMPRA_COL_NAME = "Grupo de Compra Definitivo";
   const ESTADO_ITEM_COL = "ESTADO ITEM";
 
   let data = [];
   let headers = [];
+  let currentSort = { col: 'count', dir: 'desc' };
 
   const clean = (v) => (v ?? "").toString().trim();
   function setText(id, txt) { const el = document.getElementById(id); if (el) el.textContent = txt ?? ""; }
   function fmtInt(n) { return Number(n || 0).toLocaleString("es-AR"); }
+  function safeFileName(str) {
+      return (str || "").toString().replace(/[^\w\-]+/g, "_").replace(/^_+|_+$/g, "") || "Item";
+  }
 
   function parseCSV(text) {
       const result = Papa.parse(text, { delimiter: DELIM, skipEmptyLines: true });
       return result.data;
   }
 
-  function syncScrolls() {
-      const top = document.getElementById('serv_top-scroll');
-      const bottom = document.getElementById('serv_bottom-scroll');
-      const fake = document.getElementById('serv_fake-content');
-      const table = document.getElementById('serv_tablaServicios');
-      if (top && bottom && fake && table) {
-          fake.style.width = table.offsetWidth + 'px';
-          top.onscroll = () => { bottom.scrollLeft = top.scrollLeft; };
-          bottom.onscroll = () => { top.scrollLeft = bottom.scrollLeft; };
-      }
-  }
-
   function getSelValues(id) {
-      const sel = document.getElementById(id);
+      const sel = document.getElementById(id) || document.getElementById(id.replace('serv_', ''));
       if (!sel) return [];
       return [...sel.selectedOptions].map(o => o.value).filter(v => v !== "__ALL__");
   }
 
-  async function downloadExcel(rows) {
-      if (!rows.length) return alert("No hay datos seleccionados para descargar.");
-      await window.saveAsExcel("Seleccion_Servicios.xlsx", "Servicios", headers, rows, headers);
+  async function downloadExcel(rows, filename = "Seleccion_Servicios.xlsx") {
+      if (!rows || !rows.length) return alert("No hay datos seleccionados para descargar.");
+      await window.saveAsExcel(filename, "Servicios", headers, rows, headers);
+  }
+
+  function getItemBadgeClass(estadoItem) {
+      const val = clean(estadoItem).toUpperCase();
+      const rojos = ["ADJUDICADO", "ADJUDICADO PARCIAL", "RESPONDIDO", "INCOMPLETO", "SIN TRATAMIENTO"];
+      const verdes = ["CUMPLIDO", "ALMACENADO", "CONSUMIDO PARCIAL"];
+      if (verdes.includes(val)) return "badge-item-verde";
+      if (rojos.includes(val)) return "badge-item-rojo";
+      return "badge-item-azul";
+  }
+
+  function getServicioBadgeClass(estadoServicio) {
+      const val = clean(estadoServicio);
+      if (val === "En curso") return "badge-serv-verde";
+      if (val === "En curso - Próximo a vencer") return "badge-serv-amarillo";
+      if (val === "En curso - Total recepcionado") return "badge-serv-naranja";
+      if (val === "Vencido con cant pendiente a recep") return "badge-serv-rojo";
+      if (val === "Pedido de Info") return "badge-serv-morado";
+      return "badge-serv-gris";
+  }
+
+  function renderResumenTable(filtered) {
+      const resumenTbody = document.getElementById("serv_resumenBody") || document.getElementById("resumenBody");
+
+      if (!resumenTbody) return;
+      resumenTbody.innerHTML = "";
+
+      if (!filtered || filtered.length === 0) {
+          resumenTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 25px; font-style: italic;">No hay pedidos para los filtros seleccionados</td></tr>`;
+          return;
+      }
+
+      // Agrupar por ESTADO ITEM y Estado Servicio guardando las filas asociadas
+      const summaryMap = new Map();
+      filtered.forEach(r => {
+          const estadoItem = clean(r[ESTADO_ITEM_COL]) || "(Sin Estado Item)";
+          const estadoServicio = clean(r[ESTADO_COL_NAME]) || "(Sin Estado Servicio)";
+          const key = `${estadoItem}___${estadoServicio}`;
+
+          if (!summaryMap.has(key)) {
+              summaryMap.set(key, { estadoItem, estadoServicio, count: 0, rows: [] });
+          }
+          const grp = summaryMap.get(key);
+          grp.count += 1;
+          grp.rows.push(r);
+      });
+
+      const summaryList = Array.from(summaryMap.values());
+
+      // Ordenamiento dinámico
+      summaryList.sort((a, b) => {
+          let res = 0;
+          if (currentSort.col === 'count') {
+              res = a.count - b.count;
+              if (res === 0) res = a.estadoItem.localeCompare(b.estadoItem);
+          } else if (currentSort.col === 'estadoItem') {
+              res = a.estadoItem.localeCompare(b.estadoItem);
+              if (res === 0) res = b.count - a.count;
+          } else if (currentSort.col === 'estadoServicio') {
+              res = a.estadoServicio.localeCompare(b.estadoServicio);
+              if (res === 0) res = b.count - a.count;
+          }
+          return currentSort.dir === 'desc' ? -res : res;
+      });
+
+      // Actualizar íconos indicadores de orden en encabezados
+      ['estadoItem', 'estadoServicio', 'count'].forEach(col => {
+          const icon = document.getElementById(`serv_sort_${col}`);
+          if (icon) {
+              if (currentSort.col === col) {
+                  icon.textContent = currentSort.dir === 'asc' ? '▲' : '▼';
+                  icon.style.color = '#2563eb';
+              } else {
+                  icon.textContent = '↕';
+                  icon.style.color = '#94a3b8';
+              }
+          }
+      });
+
+      // Renderizar filas de la tabla con botón de descarga individual
+      summaryList.forEach((item, index) => {
+          const tr = document.createElement("tr");
+          const itemBadge = getItemBadgeClass(item.estadoItem);
+          const servBadge = getServicioBadgeClass(item.estadoServicio);
+
+          tr.innerHTML = `
+              <td><span class="badge-item-status ${itemBadge}">${item.estadoItem}</span></td>
+              <td><span class="badge-serv-status ${servBadge}">${item.estadoServicio}</span></td>
+              <td style="text-align: right;"><span style="font-weight: 700; font-size: 0.95rem; color: #1e293b;">${fmtInt(item.count)}</span></td>
+              <td style="text-align: center;">
+                  <button class="btn-table-download" data-idx="${index}" title="Descargar ${item.count} items en Excel">⬇ Descargar</button>
+              </td>
+          `;
+          resumenTbody.appendChild(tr);
+      });
+
+      // Listener para cada botón de descarga por fila
+      resumenTbody.querySelectorAll(".btn-table-download").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const idx = parseInt(btn.getAttribute("data-idx"), 10);
+              const targetItem = summaryList[idx];
+              if (targetItem && targetItem.rows && targetItem.rows.length) {
+                  const fname = `Servicios_${safeFileName(targetItem.estadoItem)}_${safeFileName(targetItem.estadoServicio)}.xlsx`;
+                  downloadExcel(targetItem.rows, fname);
+              }
+          });
+      });
+  }
+
+  function setupSortListeners() {
+      document.querySelectorAll('#panel-servicios th.sortable, .serv-resumen-table th.sortable').forEach(th => {
+          th.addEventListener('click', () => {
+              const col = th.getAttribute('data-sort');
+              if (!col) return;
+              if (currentSort.col === col) {
+                  currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+              } else {
+                  currentSort.col = col;
+                  currentSort.dir = col === 'count' ? 'desc' : 'asc';
+              }
+              applyAll();
+          });
+      });
   }
 
   function applyAll() {
@@ -61,52 +176,16 @@
       });
 
       setText("serv_kpiTotal", fmtInt(filtered.length));
+      setText("kpiTotal", fmtInt(filtered.length));
 
-      const tbody = document.getElementById("serv_tablaBody");
-      if (tbody) {
-          tbody.innerHTML = "";
+      renderResumenTable(filtered);
 
-          filtered.forEach(r => {
-              const tr = document.createElement("tr");
-              const estCert = clean(r[ESTADO_CERT_COL]).toLowerCase();
-              if (estCert === "verde") tr.classList.add("row-verde");
-              else if (estCert === "rojo") tr.classList.add("row-rojo");
-
-              const valorItem = clean(r[ESTADO_ITEM_COL]).toUpperCase();
-              let claseCelda = "";
-              const rojos = ["ADJUDICADO", "ADJUDICADO PARCIAL", "RESPONDIDO", "INCOMPLETO","SIN TRATAMIENTO"];
-              const verdes = ["CUMPLIDO", "ALMACENADO", "CONSUMIDO PARCIAL"];
-
-              if (rojos.includes(valorItem)) claseCelda = "cell-rojo";
-              else if (verdes.includes(valorItem)) claseCelda = "cell-verde";
-
-              tr.innerHTML = `
-                  <td>${r["NRO. VA01/VA21"] || ""}</td>
-                  <td>${r["CODIGO ITEM"] || ""}</td>
-                  <td>${r["DESCRIPCION ITEM"] || ""}</td>
-                  <td>${r["CANTIDAD SOLICITADA"] || ""}</td>
-                  <td>${r["CANTIDAD TOTAL RECEPCIONADA"] || ""}</td>
-                  <td>${r["CANTIDAD PENDIENTE DE ADJUDICAR"] || ""}</td>
-                  <td>${r["CANTIDAD TOTAL PENDIENTE RECEP."] || ""}</td>
-                  <td class="${claseCelda}">${r["ESTADO ITEM"] || ""}</td>
-                  <td>${r["FECHA ENTREGA ESPERADA"] || ""}</td>
-                  <td>${r["NRO. RECEPCION"] || ""}</td>
-                  <td>${r["FECHA RECEPCION"] || ""}</td>
-                  <td>${r["NRO. OC"] || ""}</td>
-                  <td>${r["Grupo de Compra Definitivo"] || ""}</td>
-                  <td>${r["Estado Servicio"] || ""}</td>
-                  <td>${r["Período de certificación"] || ""}</td>
-              `;
-              tbody.appendChild(tr);
-          });
-      }
-      setTimeout(syncScrolls, 150);
       return filtered;
   }
 
   function fill(id, col) {
       const values = [...new Set(data.map(r => r[col]).filter(Boolean))].sort();
-      const sel = document.getElementById(id);
+      const sel = document.getElementById(id) || document.getElementById(id.replace('serv_', ''));
       if (!sel) return;
       sel.innerHTML = '<option value="__ALL__">Todos</option>';
       values.forEach(v => {
@@ -116,61 +195,12 @@
       });
   }
 
-  function actualizarGraficoConDatos() {
-      if (!window.miGrafico) return;
-
-      const actuales = applyAll(); 
-      const conteo = {};
-      actuales.forEach(r => {
-          const estado = r[ESTADO_COL_NAME] || "Sin Estado";
-          conteo[estado] = (conteo[estado] || 0) + 1;
-      });
-
-      const labels = Object.keys(conteo);
-      const valores = Object.values(conteo);
-
-      const mapaColores = {
-          'En curso - Próximo a vencer': '#fbbf24', 
-          'En curso': '#10b981',                  
-          'En curso - Total recepcionado': '#f97316', 
-          'Pedido de Info': '#a855f7',            
-          'Vencido con cant pendiente a recep': '#ef4444' 
-      };
-
-      const coloresAsignados = labels.map(label => {
-          return mapaColores[label] || '#64748b'; 
-      });
-      
-      window.miGrafico.data.labels = labels;
-      window.miGrafico.data.datasets[0].data = valores;
-      window.miGrafico.data.datasets[0].backgroundColor = coloresAsignados;
-
-      window.miGrafico.options.plugins.legend = {
-          display: true,
-          position: 'right',
-          align: 'center',
-          labels: {
-              boxWidth: 15,
-              padding: 20,
-              font: {
-                  size: 12
-              }
-          }
-      };
-
-      window.miGrafico.options.maintainAspectRatio = false;
-      window.miGrafico.update();
-  }
-
   /* ============================
      EXPOSE DEFERRED INITIALIZATION LIFE CYCLE HOOK
   =========================== */
   window.initServicios = function() {
       if (window.serviciosInitialized) return;
       window.serviciosInitialized = true;
-
-      // Register the plugin (restored from servicios.js)
-      Chart.register(ChartDataLabels);
 
       // fetch with cache optimized
       fetchWithCache(csvUrl + "?t=" + window.CACHE_BUSTER)
@@ -191,46 +221,33 @@
           fill("serv_estadoItemSelect", ESTADO_ITEM_COL);
 
           ["serv_clienteSelect", "serv_clasif2Select", "serv_gcocSelect", "serv_grupoCompraSelect", "serv_estadoItemSelect"].forEach(id => {
-              document.getElementById(id)?.addEventListener("change", () => {
+              const el = document.getElementById(id) || document.getElementById(id.replace('serv_', ''));
+              el?.addEventListener("change", () => {
                   applyAll();
-                  actualizarGraficoConDatos();
               });
           });
 
-          document.getElementById("serv_btnDownloadSelection")?.addEventListener("click", () => {
+          const btnDl = document.getElementById("serv_btnDownloadSelection") || document.getElementById("btnDownloadSelection");
+          btnDl?.addEventListener("click", () => {
               const currentFiltered = applyAll();
               downloadExcel(currentFiltered);
           });
 
+          setupSortListeners();
           applyAll();
-          
-          const ctx = document.getElementById('serv_chartEstados').getContext('2d');
-          window.miGrafico = new Chart(ctx, {
-              type: 'doughnut',
-              data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 2 }] },
-              options: {
-                  responsive: true,
-                  plugins: { 
-                      legend: { position: 'bottom' },
-                      datalabels: {
-                          color: '#fff',
-                          font: { weight: 'bold', size: 12 },
-                          formatter: (value, ctx) => {
-                              let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                              let percentage = (value * 100 / sum).toFixed(1) + "%";
-                              return value + "\n(" + percentage + ")";
-                          }
-                      }
-                  },
-                  cutout: '65%'
-              }
-          });
-          actualizarGraficoConDatos();
 
-          const loader = document.getElementById("serv_loader");
+          const loader = document.getElementById("serv_loader") || document.getElementById("loader");
           if (loader) loader.style.display = "none";
-          window.addEventListener('resize', syncScrolls);
       });
   };
+
+  // Auto-init if running on standalone servicios.html
+  if (document.getElementById('panel-servicios') === null && (document.getElementById('serv_clienteSelect') || document.getElementById('clienteSelect'))) {
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => window.initServicios());
+      } else {
+          window.initServicios();
+      }
+  }
 
 })();

@@ -1,5 +1,5 @@
 ﻿// Editá SOLO este archivo para cambiar la fecha mostrada en el header.
-window.LAST_UPDATE = "14/09/2026";
+window.LAST_UPDATE = "17/09/2026";
 // Cambia este valor para fijar el mes por defecto en los filtros (ej. "2026-08")
 window.MES_POR_DEFECTO = "2026-08";
 

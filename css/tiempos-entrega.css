@@ -1,0 +1,350 @@
+/* ===================================================
+   TIEMPOS Y PRIORIDAD DE ENTREGA - STYLES
+   =================================================== */
+
+.tiempos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Header & Controls Bar */
+.tiempos-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));
+}
+
+.tiempos-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tiempos-filter-group label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tiempos-select {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main, #0f172a);
+  background: #f8fafc;
+  border: 1.5px solid var(--border-light, #cbd5e1);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tiempos-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Banner Destacado Amarillo */
+.tiempos-banner-rule {
+  background-color: #fef08a;
+  color: #713f12;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  border: 1.5px solid #eab308;
+  letter-spacing: 0.03em;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Layout con Tablas y Slicer lateral */
+.tiempos-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .tiempos-main-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tiempos-tables-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+/* Slicer Lateral de Meses */
+.tiempos-slicer-card {
+  background: var(--bg-card, #ffffff);
+  border: 1.5px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));
+  position: sticky;
+  top: 1rem;
+}
+
+.tiempos-slicer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1.5px solid var(--border-light, #f1f5f9);
+}
+
+.tiempos-slicer-title {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--text-main, #1e293b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tiempos-slicer-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.tiempos-slicer-btn-mini {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.tiempos-slicer-btn-mini:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.tiempos-slicer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.tiempos-slicer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  transition: all 0.15s ease;
+  text-transform: capitalize;
+}
+
+.tiempos-slicer-item:hover {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+.tiempos-slicer-item.active {
+  background: #38bdf8;
+  color: #ffffff;
+  border-color: #0284c7;
+  font-weight: 800;
+  box-shadow: 0 1px 2px rgba(2, 132, 199, 0.25);
+}
+
+/* Tablas Card */
+.tiempos-card {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0,0,0,0.06));
+  overflow-x: auto;
+}
+
+.tiempos-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.tiempos-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tablas Estilizadas como Excel */
+.tiempos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: center;
+  border: 1px solid #cbd5e1;
+}
+
+.tiempos-table th,
+.tiempos-table td {
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+}
+
+/* Niveles de Encabezados */
+.th-top-critico {
+  background-color: #bfdbfe;
+  color: #1e3a8a;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+}
+
+.th-top-sinprio {
+  background-color: #e2e8f0;
+  color: #1e293b;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+}
+
+.th-sub-poco {
+  background-color: #fef08a;
+  color: #854d0e;
+  font-weight: 800;
+}
+
+.th-sub-normal {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 800;
+}
+
+.th-col-at {
+  background-color: #a7f3d0;
+  color: #065f46;
+  font-weight: 800;
+  min-width: 44px;
+}
+
+.th-col-ft {
+  background-color: #fde68a;
+  color: #92400e;
+  font-weight: 800;
+  min-width: 44px;
+}
+
+.th-col-ne {
+  background-color: #fca5a5;
+  color: #991b1b;
+  font-weight: 800;
+  min-width: 44px;
+}
+
+.th-col-tot {
+  background-color: #cbd5e1;
+  color: #1e293b;
+  font-weight: 800;
+  min-width: 48px;
+}
+
+.th-row-header {
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-weight: 800;
+  text-align: left;
+  padding-left: 12px;
+  width: 220px;
+}
+
+/* Celdas del Cuerpo */
+.td-row-name {
+  font-weight: 700;
+  text-align: left;
+  padding-left: 12px;
+  color: #334155;
+  background-color: #ffffff;
+}
+
+.td-val {
+  font-variant-numeric: tabular-nums;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.td-val-tot {
+  font-weight: 800;
+  background-color: #f8fafc;
+}
+
+/* Fila de Total General */
+.tr-total-general {
+  background-color: #e2e8f0;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.tr-total-general td {
+  border-top: 2px solid #64748b;
+  border-bottom: 2px solid #64748b;
+}
+
+/* Fila Especial: Promedio de Días */
+.tr-promedio-dias {
+  background-color: #ffffff;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.tr-promedio-dias td {
+  border-top: 2px solid #94a3b8;
+  border-bottom: 2px solid #94a3b8;
+  font-size: 0.85rem;
+}
+
+.td-prom-badge {
+  background: #f1f5f9;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-weight: 800;
+  color: #2563eb;
+  display: inline-block;
+}
+
+/* Hover effects */
+.tiempos-table tbody tr:hover td {
+  background-color: rgba(59, 130, 246, 0.05);
+}

@@ -15,10 +15,11 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20260917_103101" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20260917_103101" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20260921_164759" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20260921_164759" />
   <link rel="stylesheet" href="css/demoras.css" />
   <link rel="stylesheet" href="css/ejemplo.css" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20260921_164759" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -251,6 +252,7 @@
     <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
     <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
     <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
+    <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
     <button class="tab" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button>
     <!-- <button id="tab-envio" class="tab" data-tab="envio" onclick="window.switchTab('envio')" style="display: none; background-color: #0d9488; color: white;">📩 ENVIAR INFORME</button> -->
   </nav>
@@ -471,12 +473,40 @@
       </section>
 
       <section class="panel">
-        <div class="panel-title">CUMPLIMIENTO POR MES
-          <button class="help-btn" onclick="openHelp('Gráfico — Cumplimiento por Mes', `
-            <p>El gráfico de barras apiladas nos muestra el cumplimiento mes a mes. Cada barra suma 100% que equivale a la cantidad de items 
-            comprometidos a entregar y se divide en: Entregados a término (AT), Entregados fuera de término (FT) y No entregados (NE)</p>
-            <div class=&quot;hm-tip&quot;>💡 El cumplimiento AT establecido para el año 2026 es del 78%.</div>
-          `)" title="Ayuda sobre el gráfico por mes">ℹ</button>
+        <div class="panel-title">
+          <span>CUMPLIMIENTO POR MES</span>
+          <div class="panel-title-actions">
+            <!-- Filtro solo icono sin nombre para meses del gráfico -->
+            <div class="chart-filter-container">
+              <button id="cumpl_btnFilterMeses" class="chart-icon-btn" title="Filtrar meses del gráfico" aria-label="Filtrar meses del gráfico" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+                <span id="cumpl_filterMesesBadge" class="chart-filter-badge" style="display: none;"></span>
+              </button>
+              <div id="cumpl_filterMesesDropdown" class="chart-filter-dropdown" style="display: none;">
+                <div class="chart-filter-dropdown-header">
+                  <span class="chart-filter-dropdown-title">Meses en gráfico</span>
+                  <div class="chart-filter-dropdown-actions">
+                    <button type="button" id="cumpl_filterMesesSelectAll" class="chart-filter-link-btn">Todos</button>
+                    <span class="chart-filter-sep">·</span>
+                    <button type="button" id="cumpl_filterMesesInvert" class="chart-filter-link-btn">Invertir</button>
+                  </div>
+                </div>
+                <div id="cumpl_filterMesesList" class="chart-filter-dropdown-list"></div>
+                <div class="chart-filter-dropdown-footer">
+                  <span id="cumpl_filterMesesSummary" class="chart-filter-summary">-</span>
+                  <button type="button" id="cumpl_filterMesesReset" class="chart-filter-link-btn" style="color: #0d9488; display: none;">Restablecer</button>
+                </div>
+              </div>
+            </div>
+
+            <button class="help-btn" onclick="openHelp('Gráfico — Cumplimiento por Mes', `
+              <p>El gráfico de barras apiladas nos muestra el cumplimiento mes a mes. Cada barra suma 100% que equivale a la cantidad de items 
+              comprometidos a entregar y se divide en: Entregados a término (AT), Entregados fuera de término (FT) y No entregados (NE)</p>
+              <div class=&quot;hm-tip&quot;>💡 El cumplimiento AT establecido para el año 2026 es del 78%.</div>
+            `)" title="Ayuda sobre el gráfico por mes">ℹ</button>
+          </div>
         </div>
         <div class="panel-body">
           <div class="chart-card">
@@ -495,7 +525,7 @@
                                   🔹Entregados fuera de término (FT)<br>
                                   🔹No entregados (NE)<br>
                                   🔹Promedio mensual acumulado(AT)<br>
-                              <p>
+                               <p>
             <div class=&quot;hm-tip&quot;>💡 La línea de tendencia ayuda a ver si el desempeño mejora o empeora a lo largo del tiempo.</div>
           `)" title="Ayuda sobre la tendencia">ℹ</button>
         </div>
@@ -1380,7 +1410,7 @@
             </div>
             <div class="ej-step-body">
               <div class="ej-kpi-static-img" style="margin-top:1rem">
-                <img src="img/DEMORAS PROYECTO.JPG" alt="Demoras proyecto">
+                                <img src="img/DEMORAS PROYECTO.JPG" alt="Demoras proyecto">
               </div>
               <div class="ej-reading-item ej-ri-good">
                 <span class="ej-ri-icon">📌</span>
@@ -1396,34 +1426,176 @@
       </section>
 
       <div class="footnote" style="display:block !important; margin-top:2rem;">
-        Ejemplo de Dashboard de Abastecimiento — Valores ilustrativos.
+        Ejemplo de Dashboard de Abastecimiento – Valores ilustrativos.
+      </div>
+    </section>
+
+    <!-- PANEL TIEMPOS Y PRIORIDAD -->
+    <section id="panel-tiempos" class="tab-panel" style="display:none;">
+      <div class="tiempos-container">
+        
+        <!-- Top Bar: Selector de Obra, Banner de Regla y Botón Excel -->
+        <div class="tiempos-topbar">
+          <div class="tiempos-filter-group">
+            <label for="tiempos_obraSelect">Obra:</label>
+            <select id="tiempos_obraSelect" class="tiempos-select">
+              <!-- Opciones dinámicas de las 6 obras -->
+            </select>
+          </div>
+
+          <div id="tiempos_banner" class="tiempos-banner-rule">
+            PARA OBRA 372 POCO TIEMPO &lt; 16 DÍAS
+          </div>
+
+          <div>
+            <button id="tiempos_btn_export" class="btn" style="background:#10b981; color:white; display:flex; align-items:center; gap:6px; font-weight:700;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Descargar Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Layout: Tablas a la izquierda, Slicer de Mes a la derecha -->
+        <div class="tiempos-main-layout">
+          
+          <div class="tiempos-tables-column">
+            
+            <!-- Tabla 1: Cantidades -->
+            <div class="tiempos-card">
+              <div class="tiempos-card-header">
+                <div class="tiempos-card-title">
+                  <span>📦</span>
+                  <span>Cantidad de Pedidos por Nivel de Criticidad y Plazo</span>
+                </div>
+              </div>
+              <div class="tiempos-table-wrap">
+                <table class="tiempos-table">
+                  <thead>
+                    <tr>
+                      <th rowspan="3" class="th-row-header">Etiquetas de fila</th>
+                      <th colspan="4" class="th-top-critico">CRITICO</th>
+                      <th colspan="8" class="th-top-sinprio">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th colspan="4" class="th-top-critico" style="border-top: none;">&nbsp;</th>
+                      <th colspan="4" class="th-sub-poco">POCO TIEMPO</th>
+                      <th colspan="4" class="th-sub-normal">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th class="th-col-at">AT</th>
+                      <th class="th-col-ft">FT</th>
+                      <th class="th-col-ne">NE</th>
+                      <th class="th-col-tot">TOT</th>
+
+                      <th class="th-col-at">AT</th>
+                      <th class="th-col-ft">FT</th>
+                      <th class="th-col-ne">NE</th>
+                      <th class="th-col-tot">TOT</th>
+
+                      <th class="th-col-at">AT</th>
+                      <th class="th-col-ft">FT</th>
+                      <th class="th-col-ne">NE</th>
+                      <th class="th-col-tot">TOT</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tiempos_tbody_cants">
+                    <!-- Filas generadas dinámicamente -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tabla 2: Porcentajes y Promedios -->
+            <div class="tiempos-card">
+              <div class="tiempos-card-header">
+                <div class="tiempos-card-title">
+                  <span>📊</span>
+                  <span>Porcentajes de Cumplimiento y Promedio de Días</span>
+                </div>
+              </div>
+              <div class="tiempos-table-wrap">
+                <table class="tiempos-table">
+                  <thead>
+                    <tr>
+                      <th rowspan="3" class="th-row-header">Etiquetas de fila</th>
+                      <th colspan="4" class="th-top-critico">CRITICO</th>
+                      <th colspan="8" class="th-top-sinprio">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th colspan="4" class="th-top-critico" style="border-top: none;">&nbsp;</th>
+                      <th colspan="4" class="th-sub-poco">POCO TIEMPO</th>
+                      <th colspan="4" class="th-sub-normal">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tiempos_tbody_pcts">
+                    <!-- Filas generadas dinámicamente -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Slicer lateral de Mes de Entrega -->
+          <aside class="tiempos-slicer-card">
+            <div class="tiempos-slicer-header">
+              <div class="tiempos-slicer-title">
+                <span>🗓</span>
+                <span>MES ENTREGA</span>
+              </div>
+              <div class="tiempos-slicer-actions">
+                <button id="tiempos_btn_select_all" class="tiempos-slicer-btn-mini" title="Seleccionar todos">Todos</button>
+                <button id="tiempos_btn_clear_all" class="tiempos-slicer-btn-mini" title="Deseleccionar todos">Limpiar</button>
+              </div>
+            </div>
+            <div id="tiempos_slicer_list" class="tiempos-slicer-list">
+              <!-- Meses dinámicos -->
+            </div>
+          </aside>
+
+        </div>
+
       </div>
     </section>
 
   </main>
 
-  <script src="js/last-update.js?v=20260917_103101"></script>
-  <script src="js/help.js?v=20260917_103101"></script>
-  <script src="js/cache-utils.js?v=20260917_103101"></script>
+  <script src="js/last-update.js?v=20260921_164759"></script>
+  <script src="js/help.js?v=20260921_164759"></script>
+  <script src="js/cache-utils.js?v=20260921_164759"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/cumplimiento.js?v=20260917_103101"></script>
-  <script src="js/analisis-mm.js?v=20260917_103101"></script>
-  <script src="js/evolucion.js?v=20260917_103101"></script>
-  <script src="js/demoras.js?v=20260917_103101"></script>
-  <script src="js/servicios.js?v=20260917_103101"></script>
+  <script src="js/cumplimiento.js?v=20260921_164759"></script>
+  <script src="js/analisis-mm.js?v=20260921_164759"></script>
+  <script src="js/evolucion.js?v=20260921_164759"></script>
+  <script src="js/demoras.js?v=20260921_164759"></script>
+  <script src="js/servicios.js?v=20260921_164759"></script>
+  <script src="js/tiempos-entrega.js?v=20260921_164759"></script>
 
   <script>
-    // ═══════════════════════════════════════════════════════
-    // SPA ROUTER & LAZY-LOADING CONTROLLER
-    // ═══════════════════════════════════════════════════════
-    
     // Subtítulos para cada pestaña
     const TAB_SUBTITLES = {
       'cumplimiento': 'Análisis de Cumplimiento de Pedidos por Obra',
       'mm': 'Análisis de Disponibilidad de Materiales (MM)',
       'demoras': 'Análisis de Demoras y Desglose por Área',
       'servicios': 'Análisis de Servicios y Subcontratos de Obra',
+      'tiempos': 'Cumplimiento por Criticidad y Tiempos de Entrega',
       'ejemplo': 'Ejemplo de uso del dashboard'
     };
 
@@ -1455,6 +1627,7 @@
       else if (tabName === 'mm') body.className = 'page-mm';
       else if (tabName === 'demoras') body.className = 'page-demoras';
       else if (tabName === 'servicios') body.className = 'page-cumplimiento'; // comparte estilos con cumplimiento
+      else if (tabName === 'tiempos') body.className = 'page-cumplimiento';
       
       // 7. Inicializar de forma diferida (Lazy Load / On-Demand)
       setTimeout(() => {
@@ -1473,6 +1646,10 @@
         } else if (tabName === 'servicios') {
           if (typeof window.initServicios === 'function') {
             window.initServicios();
+          }
+        } else if (tabName === 'tiempos') {
+          if (typeof window.initTiemposEntrega === 'function') {
+            window.initTiemposEntrega();
           }
         }
       }, 50);
@@ -1606,7 +1783,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20260917_103101"></script>
+  <script src="js/auth-user.js?v=20260921_164759"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

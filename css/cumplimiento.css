@@ -117,3 +117,201 @@
   background: rgba(255, 255, 255, 0.2);
   border-color: #ffffff;
 }
+
+/* =======================================================
+   Filtro de meses en gráfico (solo icono sin nombre)
+========================================================== */
+.page-cumplimiento .panel-title-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-cumplimiento .panel-title-actions .help-btn {
+  margin-left: 0;
+}
+
+.page-cumplimiento .chart-filter-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.page-cumplimiento .chart-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.20);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.page-cumplimiento .chart-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.85);
+  transform: scale(1.08);
+}
+
+.page-cumplimiento .chart-icon-btn.is-filtered {
+  background: rgba(14, 165, 233, 0.30);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+.page-cumplimiento .chart-filter-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f59e0b;
+  border: 1.5px solid #1e293b;
+  pointer-events: none;
+}
+
+.page-cumplimiento .chart-filter-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  width: 220px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  color: #1e293b;
+  font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  animation: cumplFilterFade 0.15s ease-out;
+}
+
+@keyframes cumplFilterFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-cumplimiento .chart-filter-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.page-cumplimiento .chart-filter-dropdown-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.page-cumplimiento .chart-filter-dropdown-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.page-cumplimiento .chart-filter-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #0d9488;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.page-cumplimiento .chart-filter-link-btn:hover {
+  color: #0f766e;
+  text-decoration: underline;
+}
+
+.page-cumplimiento .chart-filter-sep {
+  font-size: 0.7rem;
+  color: #cbd5e1;
+}
+
+.page-cumplimiento .chart-filter-dropdown-list {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-right: 2px;
+}
+
+.page-cumplimiento .chart-filter-dropdown-list::-webkit-scrollbar {
+  width: 5px;
+}
+.page-cumplimiento .chart-filter-dropdown-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.page-cumplimiento .chart-filter-dropdown-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.page-cumplimiento .chart-filter-dropdown-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.page-cumplimiento .chart-month-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.page-cumplimiento .chart-month-item:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.page-cumplimiento .chart-month-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #0d9488;
+  border-radius: 3px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.page-cumplimiento .chart-filter-dropdown-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 500;
+}
+

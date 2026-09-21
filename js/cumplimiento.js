@@ -96,6 +96,10 @@
   let chartMes = null;
   let chartTendencia = null;
 
+  let hiddenChartMonths = new Set();
+  let currentChartRows = [];
+  let availableChartMonths = [];
+
   /* ============================
      HELPERS
   ============================ */
@@ -642,7 +646,7 @@
       if (!isNaN(dem)) { c.demSum += dem; c.demCnt += 1; }
     }
 
-    const months = [...monthsSet].sort();
+    const months = [...monthsSet].sort().filter(m => !hiddenChartMonths.has(m));
     const qAT = months.map(m => agg.get(m)?.at ?? 0);
     const qFT = months.map(m => agg.get(m)?.ft ?? 0);
     const qNO = months.map(m => agg.get(m)?.no ?? 0);
@@ -672,6 +676,21 @@
     if (!el || !window.echarts) return;
 
     if (!chartMes) chartMes = echarts.init(el, null, { renderer: "canvas" });
+
+    if (months.length === 0) {
+      chartMes.setOption({
+        title: {
+          show: true,
+          text: "No hay meses seleccionados para mostrar",
+          left: "center",
+          top: "middle",
+          textStyle: { color: "#64748b", fontSize: 13, fontWeight: "normal" }
+        },
+        xAxis: { data: [] },
+        series: []
+      }, true);
+      return;
+    }
 
     const lineSegments = [];
 
@@ -757,6 +776,7 @@
     }
 
     const option = {
+      title: { show: false },
       animation: true,
       animationDuration: 800,
       animationDurationUpdate: 600,
@@ -1161,7 +1181,7 @@
       c.no += rNo;
     }
 
-    const months = [...monthsSet].sort();
+    const months = [...monthsSet].sort().filter(m => !hiddenChartMonths.has(m));
 
     const pAT = months.map(m => {
       const c = agg.get(m); const t = (c?.at ?? 0) + (c?.ft ?? 0) + (c?.no ?? 0);
@@ -1180,7 +1200,23 @@
     if (!el || !window.echarts) return;
     if (!chartTendencia) chartTendencia = echarts.init(el, null, { renderer: "canvas" });
 
+    if (months.length === 0) {
+      chartTendencia.setOption({
+        title: {
+          show: true,
+          text: "No hay meses seleccionados para mostrar",
+          left: "center",
+          top: "middle",
+          textStyle: { color: "#64748b", fontSize: 13, fontWeight: "normal" }
+        },
+        xAxis: { data: [] },
+        series: []
+      }, true);
+      return;
+    }
+
     const option = {
+      title: { show: false },
       animation: true,
       animationDuration: 800,
       animationDurationUpdate: 600,
@@ -1329,6 +1365,8 @@
       enforceAllOption(sel);
     });
 
+    hiddenChartMonths.clear();
+
     useFinalColumns = false;
     AT_COL = "ENTREGADOS AT";
     FT_COL = "ENTREGADOS FT";
@@ -1341,6 +1379,153 @@
 
     updateMesTitleFromSelect();
     applyAll();
+  }
+
+  /* ============================
+     CHART MONTHS FILTER (Solo icono sin nombre)
+  ============================ */
+  function updateChartMonthsFilter(rows) {
+    const allMonths = [...new Set(rows.map(getMonthKeyFromRow).filter(Boolean))].sort();
+    availableChartMonths = allMonths;
+
+    const availSet = new Set(allMonths);
+    for (const hm of hiddenChartMonths) {
+      if (!availSet.has(hm)) {
+        hiddenChartMonths.delete(hm);
+      }
+    }
+
+    const listEl = document.getElementById("cumpl_filterMesesList");
+    if (!listEl) return;
+
+    listEl.innerHTML = "";
+
+    allMonths.forEach(m => {
+      const isVisible = !hiddenChartMonths.has(m);
+      const label = document.createElement("label");
+      label.className = "chart-month-item";
+
+      const chk = document.createElement("input");
+      chk.type = "checkbox";
+      chk.value = m;
+      chk.checked = isVisible;
+
+      chk.addEventListener("change", () => {
+        if (chk.checked) {
+          hiddenChartMonths.delete(m);
+        } else {
+          hiddenChartMonths.add(m);
+        }
+        onChartFilterChanged();
+      });
+
+      const span = document.createElement("span");
+      span.textContent = m;
+
+      label.appendChild(chk);
+      label.appendChild(span);
+      listEl.appendChild(label);
+    });
+
+    updateChartFilterUI();
+  }
+
+  function updateChartFilterUI() {
+    const total = availableChartMonths.length;
+    const hiddenCount = availableChartMonths.filter(m => hiddenChartMonths.has(m)).length;
+    const visibleCount = total - hiddenCount;
+
+    const summaryEl = document.getElementById("cumpl_filterMesesSummary");
+    if (summaryEl) {
+      summaryEl.textContent = hiddenCount > 0
+        ? `${visibleCount} de ${total} visibles (${hiddenCount} oculto${hiddenCount > 1 ? "s" : ""})`
+        : `Todos visibles (${total})`;
+    }
+
+    const badge = document.getElementById("cumpl_filterMesesBadge");
+    const btn = document.getElementById("cumpl_btnFilterMeses");
+    const btnReset = document.getElementById("cumpl_filterMesesReset");
+
+    if (hiddenCount > 0) {
+      if (badge) badge.style.display = "block";
+      if (btn) btn.classList.add("is-filtered");
+      if (btnReset) btnReset.style.display = "inline";
+    } else {
+      if (badge) badge.style.display = "none";
+      if (btn) btn.classList.remove("is-filtered");
+      if (btnReset) btnReset.style.display = "none";
+    }
+  }
+
+  function onChartFilterChanged() {
+    updateChartFilterUI();
+    if (currentChartRows && currentChartRows.length) {
+      buildChartMes(currentChartRows);
+      buildChartTendencia(currentChartRows);
+    }
+  }
+
+  function setupChartFilterEvents() {
+    const btn = document.getElementById("cumpl_btnFilterMeses");
+    const dropdown = document.getElementById("cumpl_filterMesesDropdown");
+    if (!btn || !dropdown) return;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isClosed = dropdown.style.display === "none" || !dropdown.style.display;
+      dropdown.style.display = isClosed ? "block" : "none";
+    });
+
+    dropdown.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = "none";
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        dropdown.style.display = "none";
+      }
+    });
+
+    document.getElementById("cumpl_filterMesesSelectAll")?.addEventListener("click", () => {
+      hiddenChartMonths.clear();
+      const listEl = document.getElementById("cumpl_filterMesesList");
+      if (listEl) {
+        listEl.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
+      }
+      onChartFilterChanged();
+    });
+
+    document.getElementById("cumpl_filterMesesInvert")?.addEventListener("click", () => {
+      availableChartMonths.forEach(m => {
+        if (hiddenChartMonths.has(m)) {
+          hiddenChartMonths.delete(m);
+        } else {
+          hiddenChartMonths.add(m);
+        }
+      });
+      const listEl = document.getElementById("cumpl_filterMesesList");
+      if (listEl) {
+        listEl.querySelectorAll('input[type="checkbox"]').forEach(c => {
+          c.checked = !hiddenChartMonths.has(c.value);
+        });
+      }
+      onChartFilterChanged();
+    });
+
+    document.getElementById("cumpl_filterMesesReset")?.addEventListener("click", () => {
+      hiddenChartMonths.clear();
+      const listEl = document.getElementById("cumpl_filterMesesList");
+      if (listEl) {
+        listEl.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
+      }
+      onChartFilterChanged();
+    });
   }
 
   /* ============================
@@ -1360,6 +1545,9 @@
 
     updateKPIsGeneral(rowsAcumulado);
     updateKPIsMonthly(rows, months);
+
+    currentChartRows = rows;
+    updateChartMonthsFilter(rows);
 
     buildChartMes(rows);
     buildChartTendencia(rows);
@@ -1458,6 +1646,7 @@
         renderGcoc(baseCliente);
         
         applyAll();
+        setupChartFilterEvents();
 
         const btnAlt = document.getElementById("cumpl_btnAlternativo");
         if (btnAlt) {

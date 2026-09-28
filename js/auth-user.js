@@ -8,14 +8,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         
+        if (isLocalhost) {
+            const tabEnvio = document.getElementById('tab-envio');
+            if (tabEnvio) tabEnvio.style.display = 'inline-block';
+            return;
+        }
+
         const response = await fetch('/.auth/me');
         if (!response.ok) {
-            // Si estamos en entorno local, mostrar la pestaña por defecto para poder probar
-            if (isLocalhost) {
-                console.log("Entorno local detectado. Mostrando pestaña de envío por defecto.");
-                const tabEnvio = document.getElementById('tab-envio');
-                if (tabEnvio) tabEnvio.style.display = 'inline-block';
-            }
             return;
         }
 

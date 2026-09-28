@@ -75,6 +75,7 @@
     green: "#10b981",
     amber: "#f59e0b",
     red: "#ef4444",
+    purple: "#7c3aed",
     grid: "rgba(15, 23, 42, 0.10)",
     text: "#0f172a",
     muted: "#64748b",
@@ -129,12 +130,12 @@
   }
 
   function deltaInfo(curr, prev) {
-    if (!isFinite(curr) || !isFinite(prev)) return { text: "Sin mes anterior", diff: NaN };
+    if (!isFinite(curr) || !isFinite(prev)) return { text: "", diff: NaN };
     const diff = curr - prev;
     const eps = 0.000001;
-    if (Math.abs(diff) < eps) return { text: "• 0,0% vs mes anterior", diff: 0 };
+    if (Math.abs(diff) < eps) return { text: "• 0,0%", diff: 0 };
     const arrow = diff > 0 ? "▲" : "▼";
-    const txt = `${arrow} ${(Math.abs(diff) * 100).toFixed(1).replace(".", ",")}% vs mes anterior`;
+    const txt = `${arrow} ${(Math.abs(diff) * 100).toFixed(1).replace(".", ",")}%`;
     return { text: txt, diff };
   }
 
@@ -274,24 +275,29 @@
 
   function updateMesTitleFromSelect() {
     const titleEl = document.getElementById("cumpl_panelMesTitle");
+    const colSub = document.getElementById("cumpl_colMesSub");
     if (!titleEl) return;
 
     const ms = getSelValues("cumpl_mesSelect");
 
     if (!ms.length) {
-      titleEl.textContent = "CUMPLIMIENTO - TODOS LOS MESES";
+      titleEl.textContent = "TODOS LOS MESES";
+      if (colSub) colSub.textContent = "Todos los meses";
       return;
     }
 
     if (ms.length > 1) {
-      titleEl.textContent = "CUMPLIMIENTO - MESES SELECCIONADOS";
+      titleEl.textContent = `${ms.length} MESES SELECCIONADOS`;
+      if (colSub) colSub.textContent = `${ms.length} meses`;
       return;
     }
 
     const [year, month] = String(ms[0]).split("-");
     const mesTxt = MONTH_NAMES[month] || month || ms[0];
 
-    titleEl.textContent = `CUMPLIMIENTO - MES DE ${mesTxt} ${year || ""}`.trim();
+    const label = `${mesTxt} ${year || ""}`.trim();
+    titleEl.textContent = label;
+    if (colSub) colSub.textContent = label;
   }
 
   function getSingleMes(months) {
@@ -500,7 +506,7 @@
     setText("cumpl_kpiTotal", fmtInt(t.total));
 
     setText("cumpl_kpiATpct", fmtPct01(pctAT));
-    setText("cumpl_kpiATqty", `Cantidad: ${fmtInt(t.at)}`);
+    setText("cumpl_kpiATqty", `Cant: ${fmtInt(t.at)}`);
     const elAT = document.getElementById("cumpl_kpiATpct");
     if (elAT) elAT.style.color = (isFinite(pctAT) && pctAT >= 0.78) ? "#16a34a" : "#ef4444";
 
@@ -510,10 +516,10 @@
     if (elDemG) elDemG.style.color = (!isNaN(avgG) && avgG > 7) ? "#ef4444" : "#16a34a";
 
     setText("cumpl_kpiFTpct", fmtPct01(pctFT));
-    setText("cumpl_kpiFTqty", `Cantidad: ${fmtInt(t.ft)}`);
+    setText("cumpl_kpiFTqty", `Cant: ${fmtInt(t.ft)}`);
 
     setText("cumpl_kpiNOpct", fmtPct01(pctNO));
-    setText("cumpl_kpiNOqty", `Cantidad: ${fmtInt(t.no)}`);
+    setText("cumpl_kpiNOqty", `Cant: ${fmtInt(t.no)}`);
   }
 
     function updateKPIsMonthly(rows, months) {
@@ -542,9 +548,9 @@
       const ftSub = document.getElementById("cumpl_kpiFTmesSub");
       const noSub = document.getElementById("cumpl_kpiNOmesSub");
 
-      if (atSub) setDelta(atSub, `Cant: ${fmtInt(t.at)} · Todos los meses`, "delta-neutral");
-      if (ftSub) setDelta(ftSub, `Cant: ${fmtInt(t.ft)} · Todos los meses`, "delta-neutral");
-      if (noSub) setDelta(noSub, `Cant: ${fmtInt(t.no)} · Todos los meses`, "delta-neutral");
+      if (atSub) setDelta(atSub, `Cant: ${fmtInt(t.at)}`, "delta-neutral");
+      if (ftSub) setDelta(ftSub, `Cant: ${fmtInt(t.ft)}`, "delta-neutral");
+      if (noSub) setDelta(noSub, `Cant: ${fmtInt(t.no)}`, "delta-neutral");
       return;
     }
 
@@ -597,18 +603,16 @@
         let clsFT = "delta-bad"; if (dFT.diff < 0) clsFT = "delta-good";
         let clsNO = "delta-good"; if (dNO.diff > 0) clsNO = "delta-bad";
 
-        setDelta(atSub, `Cant: ${fmtInt(at)} · ${dAT.text}`, clsAT);
-        setDelta(ftSub, `Cant: ${fmtInt(ft)} · ${dFT.text}`, clsFT);
-        setDelta(noSub, `Cant: ${fmtInt(no)} · ${dNO.text}`, clsNO);
+        setDelta(atSub, dAT.text ? `Cant: ${fmtInt(at)} · ${dAT.text}` : `Cant: ${fmtInt(at)}`, clsAT);
+        setDelta(ftSub, dFT.text ? `Cant: ${fmtInt(ft)} · ${dFT.text}` : `Cant: ${fmtInt(ft)}`, clsFT);
+        setDelta(noSub, dNO.text ? `Cant: ${fmtInt(no)} · ${dNO.text}` : `Cant: ${fmtInt(no)}`, clsNO);
         return;
       }
     }
 
-    // Para múltiples meses o si no hay mes anterior para comparar
-    const labelMeses = ms.length > 1 ? "Meses selec." : "Sin mes anterior";
-    setDelta(atSub, `Cant: ${fmtInt(at)} · ${labelMeses}`, "delta-neutral");
-    setDelta(ftSub, `Cant: ${fmtInt(ft)} · ${labelMeses}`, "delta-neutral");
-    setDelta(noSub, `Cant: ${fmtInt(no)} · ${labelMeses}`, "delta-neutral");
+    setDelta(atSub, `Cant: ${fmtInt(at)}`, "delta-neutral");
+    setDelta(ftSub, `Cant: ${fmtInt(ft)}`, "delta-neutral");
+    setDelta(noSub, `Cant: ${fmtInt(no)}`, "delta-neutral");
   }
   
   /* ============================
@@ -1169,7 +1173,7 @@
       const mk = monthKey(d);
       monthsSet.add(mk);
 
-      if (!agg.has(mk)) agg.set(mk, { at: 0, ft: 0, no: 0 });
+      if (!agg.has(mk)) agg.set(mk, { at: 0, ft: 0, no: 0, comp: 0 });
       const c = agg.get(mk);
 
       let rAt = toNumber(r[AT_COL]);
@@ -1179,6 +1183,7 @@
       c.at += rAt;
       c.ft += rFt;
       c.no += rNo;
+      c.comp += toNumber(r["COMPROMETIDOS"]) || (rAt + rFt + rNo);
     }
 
     const months = [...monthsSet].sort().filter(m => !hiddenChartMonths.has(m));
@@ -1191,10 +1196,18 @@
       const c = agg.get(m); const t = (c?.at ?? 0) + (c?.ft ?? 0) + (c?.no ?? 0);
       return t ? ((c.ft ?? 0) / t) * 100 : 0;
     });
-    const pNO = months.map(m => {
-      const c = agg.get(m); const t = (c?.at ?? 0) + (c?.ft ?? 0) + (c?.no ?? 0);
-      return t ? ((c.no ?? 0) / t) * 100 : 0;
-    });
+
+    const pAT_acum = [];
+    let sumaEntregadosATAcum = 0;
+    let sumaComprometidosAcum = 0;
+
+    for (let i = 0; i < months.length; i++) {
+      const c = agg.get(months[i]);
+      sumaEntregadosATAcum += (c?.at ?? 0);
+      sumaComprometidosAcum += (c?.comp ?? 0);
+      const pctAcum = sumaComprometidosAcum ? (sumaEntregadosATAcum / sumaComprometidosAcum) * 100 : 0;
+      pAT_acum.push(pctAcum);
+    }
 
     const el = document.getElementById("cumpl_chartTendencia");
     if (!el || !window.echarts) return;
@@ -1307,14 +1320,26 @@
           zlevel: 5, z: 5
         },
         {
-          name: "No Entregados %",
+          name: "%AT Acumulado",
           type: "line",
-          data: pNO.map(v => +(+v).toFixed(2)),
+          data: pAT_acum.map(v => +(+v).toFixed(2)),
           symbolSize: 7,
-          lineStyle: { width: 3, color: COLORS.red },
-          itemStyle: { color: COLORS.red, borderColor: "#fff", borderWidth: 2 },
-          label: { show: true, position: "top", fontWeight: 900, formatter: (p) => _fmtPct(p.data) },
-          zlevel: 5, z: 5
+          lineStyle: { width: 3.5, color: COLORS.purple },
+          itemStyle: { color: COLORS.purple, borderColor: "#fff", borderWidth: 2 },
+          label: {
+            show: true,
+            position: "bottom",
+            distance: 6,
+            formatter: (p) => _fmtPct(p.data),
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            padding: [2, 4],
+            borderRadius: 3,
+            borderColor: "rgba(124, 58, 237, 0.3)",
+            borderWidth: 1,
+            color: "#6d28d9",
+            fontWeight: 900
+          },
+          zlevel: 6, z: 6
         }
       ]
     };

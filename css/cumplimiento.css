@@ -315,3 +315,256 @@
   font-weight: 500;
 }
 
+/* =======================================================
+   Distribución Unificada: Box Único para Métricas y Gráfico
+========================================================== */
+.cumpl-unified-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (min-width: 1060px) {
+  .cumpl-unified-layout {
+    grid-template-columns: 310px 1fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+@media (min-width: 1400px) {
+  .cumpl-unified-layout {
+    grid-template-columns: 330px 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+}
+
+/* Tarjeta Resumen Unificada */
+.cumpl-summary-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 0.5rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.35rem;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.cumpl-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--col-brand-gradient);
+}
+
+.cumpl-card-header {
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.15rem;
+}
+
+.cumpl-card-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 0.25rem;
+}
+
+.cumpl-card-title {
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #334155;
+  letter-spacing: 0.04em;
+}
+
+.cumpl-month-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #0f766e;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cumpl-cols-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.cumpl-col-head {
+  padding: 3px 6px;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.cumpl-col-head.col-mes {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+}
+
+.cumpl-col-head.col-acum {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.cumpl-col-tag {
+  font-size: 0.60rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+}
+
+.col-mes .cumpl-col-tag {
+  color: #1e40af;
+}
+
+.col-acum .cumpl-col-tag {
+  color: #334155;
+}
+
+.cumpl-col-sub {
+  font-size: 0.60rem;
+  color: #64748b;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+/* Filas de Métricas */
+.cumpl-metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.cumpl-metric-row {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 0.32rem 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cumpl-metric-row:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: #cbd5e1;
+}
+
+.cumpl-row-blue {
+  border-left: 3px solid var(--col-blue);
+}
+
+.cumpl-row-green {
+  border-left: 3px solid var(--col-green);
+}
+
+.cumpl-row-amber {
+  border-left: 3px solid var(--col-amber);
+}
+
+.cumpl-row-red {
+  border-left: 3px solid var(--col-red);
+}
+
+.cumpl-row-slate {
+  border-left: 3px solid var(--col-slate);
+}
+
+.cumpl-metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+
+.cumpl-metric-label {
+  font-size: 0.63rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  line-height: 1.25;
+}
+
+.cumpl-metric-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.cumpl-val-box {
+  display: flex;
+  flex-direction: column;
+  padding-left: 2px;
+}
+
+.cumpl-kpi-num {
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.15;
+}
+
+.cumpl-kpi-sub {
+  font-size: 0.61rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+/* Contenedor del Gráfico */
+.cumpl-chart-container {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cumpl-chart-container .chart-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cumpl-chart-container .chart-wrap {
+  flex: 1;
+  min-height: 350px;
+  height: 100%;
+}
+
+

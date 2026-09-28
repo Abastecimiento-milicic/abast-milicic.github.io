@@ -104,8 +104,8 @@
 
 .tiempos-slicer-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
   border-bottom: 1.5px solid var(--border-light, #f1f5f9);
@@ -125,6 +125,7 @@
 .tiempos-slicer-actions {
   display: flex;
   gap: 4px;
+  width: 100%;
 }
 
 .tiempos-slicer-btn-mini {
@@ -133,14 +134,37 @@
   border-radius: 4px;
   font-size: 0.68rem;
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 3px 4px;
   cursor: pointer;
   color: #475569;
+  flex: 1;
+  text-align: center;
+  transition: all 0.15s ease;
 }
 
 .tiempos-slicer-btn-mini:hover {
   background: #e2e8f0;
   color: #0f172a;
+}
+
+.tiempos-slicer-year-divider {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  border-left: 3px solid #0284c7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.tiempos-slicer-year-divider:first-child {
+  margin-top: 0;
 }
 
 .tiempos-slicer-list {

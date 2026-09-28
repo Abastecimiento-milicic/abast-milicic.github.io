@@ -23,6 +23,18 @@
       displayName: "00377 - YPF 3° loop",
       limit: 19
     },
+    "376": {
+      code: "376",
+      fullName: "0376 VELADERO FASE 8B /SAN JUAN",
+      displayName: "0376 - VELADERO FASE 8B / SAN JUAN",
+      limit: 9
+    },
+    "379": {
+      code: "379",
+      fullName: "00379 – VELADERO FASE 8C",
+      displayName: "00379 - VELADERO FASE 8C",
+      limit: 9
+    },
     "374": {
       code: "374",
       fullName: "00374 TERMINAL PUNTA COLORADA",
@@ -62,10 +74,20 @@
     "ZPAS/ZPOE"
   ];
 
-  const MONTH_ORDER = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-  ];
+  const MONTH_NAMES = {
+    "01": "enero",
+    "02": "febrero",
+    "03": "marzo",
+    "04": "abril",
+    "05": "mayo",
+    "06": "junio",
+    "07": "julio",
+    "08": "agosto",
+    "09": "septiembre",
+    "10": "octubre",
+    "11": "noviembre",
+    "12": "diciembre"
+  };
 
   let rawData = [];
   let selectedObraKey = "372";
@@ -107,6 +129,28 @@
     return null;
   }
 
+  function getMonthKey(r) {
+    const d = parseDateAny(r["FECHA ENTREGA ESPERADA"]);
+    if (d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      return `${y}-${m}`;
+    }
+    const mes = clean(r["MES ENTREGA"]).toLowerCase();
+    const ano = clean(r["Año"] || r["A\xf1o"] || "2026");
+    return mes ? `${ano}-${mes}` : null;
+  }
+
+  function formatMonthDisplay(key) {
+    if (!key) return "";
+    const parts = key.split("-");
+    if (parts.length === 2 && MONTH_NAMES[parts[1]]) {
+      const mName = MONTH_NAMES[parts[1]];
+      return `${mName.charAt(0).toUpperCase() + mName.slice(1)} ${parts[0]}`;
+    }
+    return key;
+  }
+
   function getRowCategory(r) {
     const cd = (r["CLASE DE DOC"] || "").trim().toUpperCase();
     const c2 = (r["CLASIFICACION 2"] || "").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -139,8 +183,8 @@
     const obraRows = getRowsForCurrentObra();
     if (!selectedMonths.size) return obraRows;
     return obraRows.filter(r => {
-      const m = clean(r["MES ENTREGA"]).toLowerCase();
-      return selectedMonths.has(m);
+      const mk = getMonthKey(r);
+      return mk && selectedMonths.has(mk);
     });
   }
 
@@ -239,24 +283,41 @@
 
     // Detectar meses disponibles para la obra activa
     const obraRows = getRowsForCurrentObra();
-    const monthsFound = new Set(obraRows.map(r => clean(r["MES ENTREGA"]).toLowerCase()).filter(Boolean));
+    const monthsFound = new Set(obraRows.map(getMonthKey).filter(Boolean));
     
-    // Orden cronológico
-    availableMonths = MONTH_ORDER.filter(m => monthsFound.has(m));
-    if (!availableMonths.length) {
-      availableMonths = [...monthsFound].sort();
-    }
+    // Orden cronológico estricto
+    availableMonths = [...monthsFound].sort();
 
     listEl.innerHTML = "";
-    availableMonths.forEach(m => {
+    let currentYear = "";
+
+    availableMonths.forEach(mk => {
+      const parts = mk.split("-");
+      const year = parts[0];
+
+      // Insertar separador de año si cambia
+      if (year && year !== currentYear) {
+        currentYear = year;
+        const yearHeader = document.createElement("div");
+        yearHeader.className = "tiempos-slicer-year-divider";
+        yearHeader.innerHTML = `<span>Año ${year}</span><span style="font-size:0.65rem; color:#0284c7; cursor:pointer;" title="Seleccionar todo ${year}">Ver todo ${year}</span>`;
+        
+        yearHeader.addEventListener("click", () => {
+          const yearMonths = availableMonths.filter(m => m.startsWith(year + "-"));
+          selectedMonths = new Set(yearMonths);
+          renderAll();
+        });
+        listEl.appendChild(yearHeader);
+      }
+
       const item = document.createElement("div");
-      item.className = "tiempos-slicer-item" + (selectedMonths.has(m) ? " active" : "");
+      item.className = "tiempos-slicer-item" + (selectedMonths.has(mk) ? " active" : "");
       
       const spanName = document.createElement("span");
-      spanName.textContent = m;
+      spanName.textContent = formatMonthDisplay(mk);
 
       const spanCheck = document.createElement("span");
-      spanCheck.textContent = selectedMonths.has(m) ? "✓" : "";
+      spanCheck.textContent = selectedMonths.has(mk) ? "✓" : "";
       spanCheck.style.fontSize = "0.75rem";
 
       item.appendChild(spanName);
@@ -264,18 +325,18 @@
 
       item.addEventListener("click", (e) => {
         if (e.ctrlKey || e.metaKey) {
-          if (selectedMonths.has(m)) {
-            selectedMonths.delete(m);
+          if (selectedMonths.has(mk)) {
+            selectedMonths.delete(mk);
             if (selectedMonths.size === 0) selectedMonths = new Set(availableMonths);
           } else {
-            selectedMonths.add(m);
+            selectedMonths.add(mk);
           }
         } else {
-          if (selectedMonths.size === 1 && selectedMonths.has(m)) {
+          if (selectedMonths.size === 1 && selectedMonths.has(mk)) {
             selectedMonths = new Set(availableMonths);
           } else {
             selectedMonths.clear();
-            selectedMonths.add(m);
+            selectedMonths.add(mk);
           }
         }
         renderAll();
@@ -448,7 +509,9 @@
     const wb = new ExcelJS.Workbook();
     const ws = wb.addWorksheet("Tiempos y Prioridad");
 
+    const selMonthsStr = availableMonths.filter(m => selectedMonths.has(m)).map(formatMonthDisplay).join(", ");
     ws.addRow(["CLIENTE:", obraName, "", "REGLA:", `POCO TIEMPO < ${cfg ? cfg.limit : 15} DÍAS`]);
+    ws.addRow(["MESES SELECCIONADOS:", selMonthsStr || "Todos"]);
     ws.addRow([]);
 
     // Tabla 1
@@ -550,8 +613,8 @@
         selectedMonths.clear();
         const obraRows = getRowsForCurrentObra();
         obraRows.forEach(r => {
-          const m = clean(r["MES ENTREGA"]).toLowerCase();
-          if (m) selectedMonths.add(m);
+          const mk = getMonthKey(r);
+          if (mk) selectedMonths.add(mk);
         });
         renderAll();
       });
@@ -566,6 +629,22 @@
     document.getElementById("tiempos_btn_clear_all")?.addEventListener("click", () => {
       selectedMonths = new Set(availableMonths);
       renderAll();
+    });
+
+    document.getElementById("tiempos_btn_2025")?.addEventListener("click", () => {
+      const ms = availableMonths.filter(m => m.startsWith("2025-"));
+      if (ms.length) {
+        selectedMonths = new Set(ms);
+        renderAll();
+      }
+    });
+
+    document.getElementById("tiempos_btn_2026")?.addEventListener("click", () => {
+      const ms = availableMonths.filter(m => m.startsWith("2026-"));
+      if (ms.length) {
+        selectedMonths = new Set(ms);
+        renderAll();
+      }
     });
 
     // Botón exportar Excel
@@ -613,8 +692,8 @@
       const obraRows = getRowsForCurrentObra();
       selectedMonths.clear();
       obraRows.forEach(r => {
-        const m = clean(r["MES ENTREGA"]).toLowerCase();
-        if (m) selectedMonths.add(m);
+        const mk = getMonthKey(r);
+        if (mk) selectedMonths.add(mk);
       });
       renderAll();
     }

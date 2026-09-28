@@ -29,11 +29,23 @@
       displayName: "00374 - TERMINAL PUNTA COLORADA",
       limit: 18
     },
+    "365": {
+      code: "365",
+      fullName: "00365 RIO TINTO",
+      displayName: "00365 - RIO TINTO",
+      limit: 16
+    },
     "341": {
       code: "341",
       fullName: "00341 Mov. Suelos San Luis",
       displayName: "00341 - Mov. Suelos San Luis",
       limit: 17
+    },
+    "314": {
+      code: "314",
+      fullName: "00314 CASA Olavarría",
+      displayName: "00314 - CASA Olavarría",
+      limit: 12
     },
     "223": {
       code: "223",

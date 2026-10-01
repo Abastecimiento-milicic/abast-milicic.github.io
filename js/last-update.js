@@ -1,14 +1,14 @@
 ﻿// Editá SOLO este archivo para cambiar la fecha mostrada en el header.
-window.LAST_UPDATE = "28/09/2026";
+window.LAST_UPDATE = "01/09/2026";
 // Cambia este valor para fijar el mes por defecto en los filtros (ej. "2026-08")
-window.MES_POR_DEFECTO = "2026-08";
+window.MES_POR_DEFECTO = "2026-09";
 
 let cb = sessionStorage.getItem('mi_cache_buster');
 if (!cb) {
   cb = new Date().getTime();
   sessionStorage.setItem('mi_cache_buster', cb);
 }
-window.CACHE_BUSTER = cb + "_v31_periodo_corto";
+window.CACHE_BUSTER = cb + "_v29_periodo_corto";
 
 window.forceRefreshData = function() {
   sessionStorage.removeItem('mi_cache_buster');

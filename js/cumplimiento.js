@@ -1061,7 +1061,7 @@
               return `${fmtInt(q)} (${Math.round(pct)}%)`;
             }
           },
-          labelLayout: { hideOverlap: true },
+          labelLayout: { hideOverlap: false },
           emphasis: { disabled: true },
           z: 1,
           zlevel: 0
@@ -1072,14 +1072,14 @@
           data: pAT_acum.map(v => +(+v).toFixed(2)),
           showSymbol: true,         
           symbol: "circle",         
-          symbolSize: 1,            
+          symbolSize: 7,            
           showAllSymbol: true,      
           lineStyle: { 
             width: 3.5,         
             type: "solid",      
             color: "#7c3aed"    
           },
-          itemStyle: { color: "#7c3aed" },
+          itemStyle: { color: "#7c3aed", borderColor: "#fff", borderWidth: 2 },
           label: {
             show: true,             
             position: "bottom",   
@@ -1118,11 +1118,11 @@
           yAxisIndex: 1,
           data: avgDem,
           symbol: "circle",
-          symbolSize: 0,          
+          symbolSize: 7,          
           showSymbol: true,       
           connectNulls: true,
           lineStyle: { width: 3, color: COLORS.blue },
-          itemStyle: { color: COLORS.blue },
+          itemStyle: { color: COLORS.blue, borderColor: "#fff", borderWidth: 2 },
           label: {
             show: true,
             position: "top",      

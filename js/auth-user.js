@@ -14,8 +14,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        const response = await fetch('/.auth/me');
-        if (!response.ok) {
+        // Usamos redirect: 'manual' para evitar que si la sesión de Azure expiró, el navegador intente redirigir
+        // a login.windows.net provocando un error de CORS/Frame en la consola
+        const response = await fetch('/.auth/me', {
+            headers: { 'Accept': 'application/json' },
+            redirect: 'manual'
+        });
+
+        if (!response.ok || response.type === 'opaqueredirect' || response.status === 0) {
+            return;
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
             return;
         }
 
@@ -43,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     } catch (error) {
-        console.error('Error fetching user info:', error);
+        // Silencioso para prevenir errores en consola cuando no hay sesión activa
         // Fallback local
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             const tabEnvio = document.getElementById('tab-envio');

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 
 <head>
@@ -14,13 +14,13 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261007_134958" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261007_134958" />
-  <link rel="stylesheet" href="css/demoras.css" />
-  <link rel="stylesheet" href="css/ejemplo.css" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261007_134958" />
-  <link rel="stylesheet" href="css/control-emrf.css" />
+  <link rel="stylesheet" href="css/base.css?v=20261007_141000" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261007_141000" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261007_141000" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261007_141000" />
+  <link rel="stylesheet" href="css/ejemplo.css?v=20261007_141000" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261007_141000" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261007_141000" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -248,18 +248,14 @@
     </div>
   </header>
 
-  <nav class="tabs tabs-multiline">
-    <div class="tabs-row-primary">
-      <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
-      <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
-      <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
-      <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
-      <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
-      <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
-    </div>
-    <div class="tabs-row-secondary">
-      <button class="tab tab-secondary" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button>
-    </div>
+  <nav class="tabs">
+    <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
+    <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
+    <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
+    <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
+    <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
+    <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
+    <button class="tab" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button>
   </nav>
 
   <main class="container">
@@ -1756,7 +1752,7 @@
   <script src="js/demoras.js?v=20261007_134958"></script>
   <script src="js/servicios.js?v=20261007_134958"></script>
   <script src="js/tiempos-entrega.js?v=20261007_134958"></script>
-  <script src="js/control-emrf.js"></script>
+  <script src="js/control-emrf.js?v=20261007_141000"></script>
 
   <script>
     // Subtítulos para cada pestaña
@@ -1967,7 +1963,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261007_134958"></script>
+  <script src="js/auth-user.js?v=20261007_141000"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
 
 <head>
@@ -15,11 +15,12 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261005_112845" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261005_112845" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261007_134958" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261007_134958" />
   <link rel="stylesheet" href="css/demoras.css" />
   <link rel="stylesheet" href="css/ejemplo.css" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261005_112845" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261007_134958" />
+  <link rel="stylesheet" href="css/control-emrf.css" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -247,14 +248,18 @@
     </div>
   </header>
 
-  <nav class="tabs">
-    <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
-    <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
-    <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
-    <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
-    <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
-    <button class="tab" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button>
-    <!-- <button id="tab-envio" class="tab" data-tab="envio" onclick="window.switchTab('envio')" style="display: none; background-color: #0d9488; color: white;">📩 ENVIAR INFORME</button> -->
+  <nav class="tabs tabs-multiline">
+    <div class="tabs-row-primary">
+      <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
+      <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
+      <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
+      <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
+      <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
+      <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
+    </div>
+    <div class="tabs-row-secondary">
+      <button class="tab tab-secondary" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button>
+    </div>
   </nav>
 
   <main class="container">
@@ -1581,19 +1586,177 @@
       </div>
     </section>
 
+    <!-- ═══════════════════════════════════════════════════════
+         PANEL: CONTROL DE PARTIDAS ABIERTAS SAP (EM/RF 2101011001)
+         ═══════════════════════════════════════════════════════ -->
+    <section id="panel-emrf" class="tab-panel" style="display: none;">
+      <!-- Loader overlay -->
+      <div id="emrf_loader" class="loader-overlay" style="display: none;">
+        <div class="spinner-bars">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <div class="loading-text">Cargando partidas abiertas SAP EM/RF...</div>
+      </div>
+
+      <div id="emrf_msg"></div>
+
+      <!-- Encabezado con badge de sociedad, subtítulo y acciones (descarga y filas) -->
+      <div class="emrf-header">
+        <div class="emrf-header-left">
+          <div class="emrf-title-row">
+            <h2 class="emrf-main-title">Control de Partidas Abiertas SAP - Cuenta EM/RF</h2>
+            <span id="emrf_headerSocBadge" class="emrf-soc-badge">Todas (Consolidado)</span>
+          </div>
+          <p class="emrf-subtitle">Cuenta de Compensación <b>2101011001</b> | Fecha de Actualización: <b id="emrf_fechaActualizacion">05/10/2026</b> | Fuentes: <b>MLAR, MMAR, U003 y U365</b></p>
+        </div>
+        <div class="emrf-header-actions">
+          <button id="emrf_btnExcel" class="btn-emrf-excel" title="Descargar archivo Excel oficial formateado">
+            <span>📥 Descargar Reporte en Excel</span>
+          </button>
+          <div class="emrf-rows-selector">
+            <span>Filas en pantalla:</span>
+            <select id="emrf_rowsPerPage">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="250">250</option>
+              <option value="TODAS">Todas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de Filtros -->
+      <section class="panel">
+        <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span>FILTROS</span>
+            <button id="emrf_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar Filtros</button>
+            <button id="emrf_btnHelp" class="help-btn" title="Ayuda y Guía Operativa de la Cuenta EM/RF">ℹ</button>
+          </div>
+          <div class="hint" style="font-size: 0.75rem;">Filtros operativos para conciliación contable</div>
+        </div>
+        <div class="panel-body filters filters-6">
+          <!-- 1. Base / Sociedad -->
+          <div class="filter">
+            <label>BASE / SOCIEDAD</label>
+            <select id="emrf_sociedadSelect" size="6" class="multi-select">
+              <option value="TODAS">Todas (Consolidado)</option>
+              <option value="MLAR">MLAR</option>
+              <option value="MMAR">MMAR</option>
+              <option value="U003">U003</option>
+              <option value="U365">U365</option>
+            </select>
+            <div class="hint">Sociedad contable</div>
+          </div>
+
+          <!-- 2. Estado Contable EM/RF -->
+          <div class="filter">
+            <label>ESTADO CONTABLE EM/RF</label>
+            <select id="emrf_estadoSelect" multiple size="6" class="multi-select">
+              <option value="TIENE RECEPCIÓN - FALTA FACTURA" selected>TIENE RECEPCIÓN - FALTA FACTURA</option>
+              <option value="TIENE FACTURA - FALTA RECEPCIÓN">TIENE FACTURA - FALTA RECEPCIÓN</option>
+              <option value="COMPENSABLE (Saldo $0)">COMPENSABLE (Saldo $0)</option>
+            </select>
+            <div class="hint">Ctrl + clic para múltiple</div>
+          </div>
+
+          <!-- 3. Grupo de Compras OC -->
+          <div class="filter">
+            <label>GC OC</label>
+            <select id="emrf_gcSelect" multiple size="6" class="multi-select"></select>
+            <div class="hint">Por defecto: C01 y C07</div>
+          </div>
+
+          <!-- 4. Vencimiento de OC -->
+          <div class="filter">
+            <label>VENCIMIENTO DE OC</label>
+            <select id="emrf_vencSelect" multiple size="6" class="multi-select"></select>
+            <div class="hint">Vencida / Vigente</div>
+          </div>
+
+          <!-- 5. Operador OC -->
+          <div class="filter">
+            <label>OPERADOR OC</label>
+            <select id="emrf_operOcSelect" multiple size="6" class="multi-select"></select>
+            <div class="hint">Comprador responsable</div>
+          </div>
+
+          <!-- 6. Tarjeta Posiciones Seleccionadas -->
+          <div class="filter" style="align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end;">
+            <div class="card-incomplete" style="background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 12px 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 110px; border-top: 3px solid #2563eb; position: relative;">
+              <span style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">POSICIONES SELECCIONADAS</span>
+              <span id="emrf_kpiCount" style="font-size: 1.85rem; font-weight: 800; color: #2563eb; display: block; margin-bottom: 4px; line-height: 1;">0</span>
+              <span id="emrf_kpiPct" style="font-size: 0.75rem; color: #64748b; font-weight: 600; display: block;">0% del total</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Barra de herramientas de la tabla -->
+      <div class="emrf-table-toolbar">
+        <h3 class="emrf-table-title">
+          <span>📑 Todas las Posiciones</span>
+          <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">(<span id="emrf_tableCount">0</span>)</span>
+        </h3>
+      </div>
+
+      <!-- Tabla interactiva -->
+      <div class="emrf-table-container">
+        <div class="emrf-table-scroll">
+          <table class="emrf-data-table">
+            <thead>
+              <tr>
+                <th data-col="Sociedad" class="emrf-col-center">Sociedad <span class="sort-icon">⇅</span></th>
+                <th data-col="Pedido">Pedido <span class="sort-icon">⇅</span></th>
+                <th data-col="Posicion" class="emrf-col-center">POS <span class="sort-icon">⇅</span></th>
+                <th data-col="Proveedor">Proveedor <span class="sort-icon">⇅</span></th>
+                <th data-col="Grupo_Compras" class="emrf-col-center">GC <span class="sort-icon">⇅</span></th>
+                <th data-col="Operador_OC" class="emrf-col-center">Operador_OC <span class="sort-icon">⇅</span></th>
+                <th data-col="Fe_Contabilizacion" class="emrf-col-center">FE CONT. <span class="sort-icon">⇅</span></th>
+                <th data-col="Dias_Atraso" class="emrf-col-right">Días Atraso <span class="sort-icon">▲</span></th>
+                <th data-col="Total_Debe" class="emrf-col-right">Facturado (Debe) <span class="sort-icon">⇅</span></th>
+                <th data-col="Total_Haber" class="emrf-col-right">Recepcionado (Haber) <span class="sort-icon">⇅</span></th>
+                <th data-col="Saldo_Neto" class="emrf-col-right">Saldo_Neto <span class="sort-icon">⇅</span></th>
+                <th data-col="Fecha_Entrega_OC" class="emrf-col-center">FE OC <span class="sort-icon">⇅</span></th>
+                <th data-col="Estado_Vencimiento" class="emrf-col-center">ESTADO <span class="sort-icon">⇅</span></th>
+              </tr>
+            </thead>
+            <tbody id="emrf_tableBody">
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Paginación -->
+        <div class="emrf-pagination-bar">
+          <div id="emrf_pageRange">Mostrando 0 posiciones</div>
+          <div class="emrf-page-nav">
+            <button id="emrf_btnPrevPage" class="emrf-page-btn">◀ Anterior</button>
+            <span id="emrf_pageInfo" class="emrf-page-info">Página 1 de 1</span>
+            <button id="emrf_btnNextPage" class="emrf-page-btn">Siguiente ▶</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <script src="js/last-update.js?v=20261005_112845"></script>
-  <script src="js/help.js?v=20261005_112845"></script>
-  <script src="js/cache-utils.js?v=20261005_112845"></script>
+  <script src="js/last-update.js?v=20261007_134958"></script>
+  <script src="js/help.js?v=20261007_134958"></script>
+  <script src="js/cache-utils.js?v=20261007_134958"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/cumplimiento.js?v=20261005_120100"></script>
-  <script src="js/analisis-mm.js?v=20261005_112845"></script>
-  <script src="js/evolucion.js?v=20261005_112845"></script>
-  <script src="js/demoras.js?v=20261005_112845"></script>
-  <script src="js/servicios.js?v=20261005_112845"></script>
-  <script src="js/tiempos-entrega.js?v=20261005_112845"></script>
+  <script src="js/cumplimiento.js?v=20261007_134958"></script>
+  <script src="js/analisis-mm.js?v=20261007_134958"></script>
+  <script src="js/evolucion.js?v=20261007_134958"></script>
+  <script src="js/demoras.js?v=20261007_134958"></script>
+  <script src="js/servicios.js?v=20261007_134958"></script>
+  <script src="js/tiempos-entrega.js?v=20261007_134958"></script>
+  <script src="js/control-emrf.js"></script>
 
   <script>
     // Subtítulos para cada pestaña
@@ -1603,6 +1766,7 @@
       'demoras': 'Análisis de Demoras y Desglose por Área',
       'servicios': 'Análisis de Servicios y Subcontratos de Obra',
       'tiempos': 'Cumplimiento por Criticidad y Tiempos de Entrega',
+      'emrf': 'Control de Partidas Abiertas SAP - Cuenta EM/RF (2101011001)',
       'ejemplo': 'Ejemplo de uso del dashboard'
     };
 
@@ -1635,6 +1799,7 @@
       else if (tabName === 'demoras') body.className = 'page-demoras';
       else if (tabName === 'servicios') body.className = 'page-cumplimiento'; // comparte estilos con cumplimiento
       else if (tabName === 'tiempos') body.className = 'page-cumplimiento';
+      else if (tabName === 'emrf') body.className = 'page-emrf';
       
       // 7. Inicializar de forma diferida (Lazy Load / On-Demand)
       setTimeout(() => {
@@ -1657,6 +1822,10 @@
         } else if (tabName === 'tiempos') {
           if (typeof window.initTiemposEntrega === 'function') {
             window.initTiemposEntrega();
+          }
+        } else if (tabName === 'emrf') {
+          if (typeof window.initEMRF === 'function') {
+            window.initEMRF();
           }
         }
       }, 50);
@@ -1690,10 +1859,18 @@
       });
     }
 
-    // Inicializar la primera pestaña por defecto al cargar el DOM
+    // Inicializar la primera pestaña por defecto al cargar el DOM o según URL
     window.addEventListener('DOMContentLoaded', () => {
-      // Por defecto arranca en cumplimiento
-      window.switchTab('cumplimiento');
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabFromQuery = urlParams.get('tab');
+      const tabFromHash = window.location.hash ? window.location.hash.replace('#', '') : null;
+      const initialTab = tabFromQuery || tabFromHash || 'cumplimiento';
+
+      if (initialTab && document.querySelector(`.tabs .tab[data-tab="${initialTab}"]`)) {
+        window.switchTab(initialTab);
+      } else {
+        window.switchTab('cumplimiento');
+      }
     });
   </script>
 
@@ -1790,7 +1967,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261005_112845"></script>
+  <script src="js/auth-user.js?v=20261007_134958"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

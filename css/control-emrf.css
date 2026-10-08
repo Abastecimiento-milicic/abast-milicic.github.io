@@ -98,6 +98,37 @@
   padding: 4px;
 }
 
+#panel-emrf .multi-select option {
+  padding: 5px 8px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+#panel-emrf .multi-select option:checked,
+.page-emrf .multi-select option:checked,
+#panel-emrf select option:checked {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
+  background-color: #0d9488 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+#panel-emrf .multi-select:focus option:checked,
+.page-emrf .multi-select:focus option:checked {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
+  background-color: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+#panel-emrf .multi-select option:hover {
+  background-color: #f1f5f9;
+}
+
 #panel-emrf .filter label {
   display: inline-block;
   background-color: #0d9488;

@@ -75,26 +75,99 @@
     lastGcSelected = new Set(Array.from(sel.selectedOptions).map(o => o.value));
   }
 
+  function reorderSelect(selectId, hasAllOption = false) {
+    const el = document.getElementById(selectId);
+    if (!el) return;
+
+    const options = Array.from(el.options);
+    const selectedOpts = [];
+    const unselectedOpts = [];
+    let allOpt = null;
+
+    options.forEach(opt => {
+      if (hasAllOption && opt.value === "__ALL__") {
+        allOpt = opt;
+      } else if (opt.selected) {
+        selectedOpts.push(opt);
+      } else {
+        unselectedOpts.push(opt);
+      }
+    });
+
+    selectedOpts.sort((a, b) => a.textContent.localeCompare(b.textContent, "es", { numeric: true }));
+    unselectedOpts.sort((a, b) => a.textContent.localeCompare(b.textContent, "es", { numeric: true }));
+
+    el.innerHTML = "";
+
+    // 1. Si "Todos" está seleccionado, va al inicio
+    if (allOpt && allOpt.selected) {
+      el.appendChild(allOpt);
+    }
+
+    // 2. Las opciones seleccionadas van arriba
+    selectedOpts.forEach(opt => {
+      opt.selected = true;
+      el.appendChild(opt);
+    });
+
+    // 3. Si "Todos" no está seleccionado, va justo después de las seleccionadas
+    if (allOpt && !allOpt.selected) {
+      allOpt.selected = false;
+      el.appendChild(allOpt);
+    }
+
+    // 4. Opciones no seleccionadas a continuación
+    unselectedOpts.forEach(opt => {
+      opt.selected = false;
+      el.appendChild(opt);
+    });
+  }
+
   function populateSelect(selectId, items, defaultValues = [], hasAllOption = false) {
     const el = document.getElementById(selectId);
     if (!el) return;
 
     el.innerHTML = "";
+
+    const defaultSet = new Set(defaultValues || []);
+    const selectedItems = [];
+    const unselectedItems = [];
+
+    items.forEach(item => {
+      if (defaultSet.has(item)) {
+        selectedItems.push(item);
+      } else {
+        unselectedItems.push(item);
+      }
+    });
+
+    // 1. Las opciones seleccionadas van arriba
+    selectedItems.forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      opt.selected = true;
+      el.appendChild(opt);
+    });
+
+    // 2. Opción "Todos"
     if (hasAllOption) {
       const allOpt = document.createElement("option");
       allOpt.value = "__ALL__";
       allOpt.textContent = "Todos";
-      if (!defaultValues || defaultValues.length === 0) allOpt.selected = true;
-      el.appendChild(allOpt);
+      if (!defaultValues || defaultValues.length === 0) {
+        allOpt.selected = true;
+        el.insertBefore(allOpt, el.firstChild);
+      } else {
+        el.appendChild(allOpt);
+      }
     }
 
-    items.forEach(item => {
+    // 3. Opciones no seleccionadas a continuación
+    unselectedItems.forEach(item => {
       const opt = document.createElement("option");
       opt.value = item;
       opt.textContent = item;
-      if (defaultValues && defaultValues.includes(item)) {
-        opt.selected = true;
-      }
       el.appendChild(opt);
     });
   }
@@ -371,8 +444,13 @@
      EVENT HANDLERS Y DESCARGA EXCEL (CON EXCELJS - IDÉNTICO A STREAMLIT)
      ============================================================================== */
   function onFiltersChanged(e) {
-    if (e && e.target && e.target.id === "emrf_gcSelect") {
-      handleGcSelectChange();
+    if (e && e.target && e.target.id) {
+      if (e.target.id === "emrf_gcSelect") {
+        handleGcSelectChange();
+        reorderSelect("emrf_gcSelect", true);
+      } else if (["emrf_estadoSelect", "emrf_vencSelect", "emrf_operOcSelect", "emrf_sociedadSelect"].includes(e.target.id)) {
+        reorderSelect(e.target.id, false);
+      }
     }
     currentPage = 1;
     const filtered = getFilteredData();
@@ -382,7 +460,10 @@
 
   function clearFilters() {
     const socSelect = document.getElementById("emrf_sociedadSelect");
-    if (socSelect) socSelect.value = "TODAS";
+    if (socSelect) {
+      socSelect.value = "TODAS";
+      reorderSelect("emrf_sociedadSelect", false);
+    }
 
     populateSelect("emrf_estadoSelect", [
       "TIENE RECEPCIÓN - FALTA FACTURA",

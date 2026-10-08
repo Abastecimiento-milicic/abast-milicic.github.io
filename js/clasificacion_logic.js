@@ -245,6 +245,8 @@ window.calculateClassifications = function(o) {
                   else if (c === "00376" && dTra > 12) o["TRANSPORTEyALM"] = dTra - 12;
                   else if (c === "00368" && dTra > 7) o["TRANSPORTEyALM"] = dTra - 7;
                   else if (c === "00377" && dTra > 12) o["TRANSPORTEyALM"] = dTra - 12;
+                  else if (c === "00378" && dTra > 11) o["TRANSPORTEyALM"] = dTra - 11;
+                  else if (c === "00379" && dTra > 10) o["TRANSPORTEyALM"] = dTra - 10;
                   else o["TRANSPORTEyALM"] = null;
 
                   // LIBERACION SOLPED CS
@@ -277,29 +279,33 @@ window.calculateClassifications = function(o) {
                           else if (c === "00375" && dExpEmis < 14) muyCercana = 1;
                           else if (c === "00376" && dExpEmis < 13) muyCercana = 1;
                           else if (c === "00368" && dExpEmis < 13) muyCercana = 1;
-                          else if (c === "00377" && dExpEmis < 13) muyCercana = 1;
+                          else if (c === "00377" && dExpEmis < 23) muyCercana = 1;
+                          else if (c === "00378" && dExpEmis < 14) muyCercana = 1;
+                          else if (c === "00379" && dExpEmis < 13) muyCercana = 1;
                       } else if (["ZPAN","ZPAI"].includes(claseDoc)) {
                           if (c === "00038" && dExpEmis <= 8) muyCercana = 1;
-                          else if (c === "00223" && dExpEmis <= 12) muyCercana = 1;
+                          else if (c === "00223" && dExpEmis <= 13) muyCercana = 1;
                           else if (c === "00357" && dExpEmis <= 5) muyCercana = 1;
                           else if (c === "00359" && dExpEmis <= 5) muyCercana = 1;
-                          else if (c === "00341" && dExpEmis <= 17) muyCercana = 1;
-                          else if (c === "00314" && dExpEmis <= 12) muyCercana = 1;
+                          else if (c === "00341" && dExpEmis <= 21) muyCercana = 1;
+                          else if (c === "00314" && dExpEmis <= 13) muyCercana = 1;
                           else if (c === "UTE 363" && dExpEmis <= 14) muyCercana = 1;
                           else if (c === "00364" && dExpEmis <= 19) muyCercana = 1;
                           else if (c === "00029MM" && dExpEmis <= 5) muyCercana = 1;
                           else if (c === "00029MR" && dExpEmis <= 5) muyCercana = 1;
-                          else if (c === "00298" && dExpEmis <= 19) muyCercana = 1;
-                          else if (c === "00365" && dExpEmis <= 16) muyCercana = 1;
+                          else if (c === "00298" && dExpEmis <= 20) muyCercana = 1;
+                          else if (c === "00365" && dExpEmis <= 17) muyCercana = 1;
                           else if (c === "00367" && dExpEmis <= 21) muyCercana = 1;
                           else if (c === "00369" && dExpEmis <= 12) muyCercana = 1;
                           else if (c === "00371" && dExpEmis <= 8) muyCercana = 1;
-                          else if (c === "00372" && dExpEmis <= 16) muyCercana = 1;
-                          else if (c === "00374" && dExpEmis <= 18) muyCercana = 1;
-                          else if (c === "00375" && dExpEmis <= 10) muyCercana = 1;
-                          else if (c === "00376" && dExpEmis <= 8) muyCercana = 1;
-                          else if (c === "00368" && dExpEmis <= 8) muyCercana = 1;
-                          else if (c === "00377" && dExpEmis < 13) muyCercana = 1;
+                          else if (c === "00372" && dExpEmis <= 17) muyCercana = 1;
+                          else if (c === "00374" && dExpEmis <= 19) muyCercana = 1;
+                          else if (c === "00375" && dExpEmis <= 11) muyCercana = 1;
+                          else if (c === "00378" && dExpEmis <= 11) muyCercana = 1;
+                          else if (c === "00376" && dExpEmis <= 10) muyCercana = 1;
+                          else if (c === "00379" && dExpEmis <= 10) muyCercana = 1;
+                          else if (c === "00368" && dExpEmis <= 10) muyCercana = 1;
+                          else if (c === "00377" && dExpEmis < 20) muyCercana = 1;
                       }
                   }
                   o["FECHAENTREGAMUYCERCANA"] = muyCercana;
@@ -394,7 +400,9 @@ window.calculateClassifications = function(o) {
                       else if (c === "00375" && dTrans > 3) valTra = dTrans - 3;
                       else if (c === "00376" && dTrans > 2) valTra = dTrans - 2;
                       else if (c === "00368" && dTrans > 2) valTra = dTrans - 2;
-                      else if (c === "00377" && dTrans > 2) valTra = dTrans - 2;
+                      else if (c === "00377" && dTrans > 12) valTra = dTrans - 12;
+                      else if (c === "00378" && dTrans > 3) valTra = dTrans - 3;
+                      else if (c === "00379" && dTrans > 2) valTra = dTrans - 2;
                       
                       if (valTra !== null) {
                           trasladoCS = 1;

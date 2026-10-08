@@ -39,10 +39,25 @@ def process_data(data_dir=None, corte_str="05/10/2026"):
 
         print(f"Procesando {soc} desde {fpath}...")
         raw = pd.read_excel(fpath, sheet_name='Data')
+
+        # Si la primera fila vino sin encabezados o con columnas vacias/unnamed
+        unnamed_cols = [c for c in raw.columns if str(c).strip().lower().startswith('unnamed')]
+        if len(unnamed_cols) >= 3 and len(raw.columns) >= 20:
+            standard_sap_cols = [
+                'Icono part.abiertas/comp.', 'Asignación', 'Nº documento', 'División',
+                'Clase de documento', 'Fecha de documento', 'Clave contabiliz.',
+                'Importe en moneda local', 'Moneda local', 'Indicador impuestos',
+                'Doc.compensación', 'Nombre', 'Fe.contabilización',
+                'Documento compras', 'Posición', 'CONCATENA', 'Fecha de entrega',
+                'Grupo de compras', 'Proveedor/Centro suministrador', 'OPERADOR OC'
+            ]
+            raw.columns = standard_sap_cols + list(raw.columns[len(standard_sap_cols):])
+
         raw = raw.rename(columns={c: clean_col(c) for c in raw.columns})
 
-        key_cols = ['documento compras', 'posicion', 'clave contabiliz.']
-        raw = raw.dropna(subset=key_cols).copy()
+        key_cols = [k for k in ['documento compras', 'posicion', 'clave contabiliz.'] if k in raw.columns]
+        if key_cols:
+            raw = raw.dropna(subset=key_cols).copy()
 
         raw['Sociedad'] = soc
         raw['Pedido'] = raw['documento compras'].astype(np.int64).astype(str)

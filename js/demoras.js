@@ -1731,19 +1731,19 @@ PROYECTO = if List.Sum({[LIBERACION SOLPED CS], [COLOCACION OC CS], [LIBERACION 
 FECHAENTREGAMUYCERCANA = let d = Duration.Days([FECHA ENTREGA ESPERADA] - [FECHA DE EMISION NECESIDAD]), c = Text.Trim(Text.From([CLI])) in
   if d = null then null
   else if List.Contains({"ZPOE","ZPAS"}, [CLASE DE DOC]) then
-      if c="00038" and d<=12 then 1 else if c="00223" and d<16 then 1 else if c="00357" and d<5 then 1 else if c="00359" and d<5 then 1
-      else if c="00341" and d<21 then 1 else if c="00314" and d<16 then 1 else if c="UTE 363" and d<14 then 1 else if c="00364" and d<23 then 1
-      else if c="00029MM" and d<5 then 1 else if c="00029MR" and d<5 then 1 else if c="00298" and d<23 then 1 else if c="00365" and d<20 then 1
-      else if c="00367" and d<25 then 1 else if c="00369" and d<16 then 1 else if c="00371" and d<12 then 1 else if c="00372" and d<20 then 1
-      else if c="00374" and d<22 then 1 else if c="00375" and d<14 then 1 else if c="00376" and d<13 then 1 else if c="00368" and d<13 then 1
-      else if c="00377" and d<13 then 1 else null
+      if c="00038" and d<=12 then 1 else if c="00223" and d<=15 then 1 else if c="00357" and d<5 then 1 else if c="00359" and d<5 then 1
+      else if c="00341" and d<=20 then 1 else if c="00314" and d<=15 then 1 else if c="UTE 363" and d<14 then 1 else if c="00364" and d<23 then 1
+      else if c="00029MM" and d<5 then 1 else if c="00029MR" and d<5 then 1 else if c="00298" and d<23 then 1 else if c="00365" and d<=19 then 1
+      else if c="00367" and d<25 then 1 else if c="00369" and d<16 then 1 else if c="00371" and d<12 then 1 else if c="00372" and d<=19 then 1
+      else if c="00374" and d<=21 then 1 else if c="00375" and d<14 then 1 else if c="00376" and d<=12 then 1 else if c="00368" and d<13 then 1
+      else if c="00377" and d<=22 then 1 else if c="00378" and d<=13 then 1 else if c="00379" and d<=12 then 1 else null
   else if List.Contains({"ZPAN","ZPAI"}, [CLASE DE DOC]) then
       if c="00038" and d<=8 then 1 else if c="00223" and d<=12 then 1 else if c="00357" and d<=5 then 1 else if c="00359" and d<=5 then 1
       else if c="00341" and d<=17 then 1 else if c="00314" and d<=12 then 1 else if c="UTE 363" and d<=14 then 1 else if c="00364" and d<=19 then 1
-      else if c="00029MM" and d<=5 then 1 else if c="00029MR" and d<=5 then 1 else if c="00298" and d<=19 then 1 else if c="00365" and d<=16 then 1
+      else if c="00029MM" and d<=5 then 1 else if c="00029MR" and d<=5 then 1 else if c="00298" and d<=20 then 1 else if c="00365" and d<=16 then 1
       else if c="00367" and d<=21 then 1 else if c="00369" and d<=12 then 1 else if c="00371" and d<=8 then 1 else if c="00372" and d<=16 then 1
-      else if c="00374" and d<=18 then 1 else if c="00375" and d<=10 then 1 else if c="00376" and d<=8 then 1 else if c="00368" and d<=8 then 1
-      else if c="00377" and d<13 then 1 else null
+      else if c="00374" and d<=18 then 1 else if c="00375" and d<=11 then 1 else if c="00378" and d<=10 then 1 else if c="00376" and d<=9 then 1
+      else if c="00379" and d<=9 then 1 else if c="00368" and d<=10 then 1 else if c="00377" and d<=19 then 1 else null
   else null
 
 PERIODO CORTO = if [FECHAENTREGAMUYCERCANA] = 1 then 1 else null`
@@ -2323,52 +2323,52 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                       const c = cli.toUpperCase();
                       if (["ZPOE","ZPAS"].includes(cd)) {
                         if (c === "00038" && d <= 12) muyCercana = 1;
-                        else if (c === "00223" && d < 16) muyCercana = 1;
+                        else if (c === "00223" && d <= 15) muyCercana = 1;
                         else if (c === "00357" && d < 5) muyCercana = 1;
                         else if (c === "00359" && d < 5) muyCercana = 1;
-                        else if (c === "00341" && d < 21) muyCercana = 1;
-                        else if (c === "00314" && d < 16) muyCercana = 1;
+                        else if (c === "00341" && d <= 20) muyCercana = 1;
+                        else if (c === "00314" && d <= 15) muyCercana = 1;
                         else if (c === "UTE 363" && d < 14) muyCercana = 1;
                         else if (c === "00364" && d < 23) muyCercana = 1;
                         else if (c === "00029MM" && d < 5) muyCercana = 1;
                         else if (c === "00029MR" && d < 5) muyCercana = 1;
                         else if (c === "00298" && d < 23) muyCercana = 1;
-                        else if (c === "00365" && d < 20) muyCercana = 1;
+                        else if (c === "00365" && d <= 19) muyCercana = 1;
                         else if (c === "00367" && d < 25) muyCercana = 1;
                         else if (c === "00369" && d < 16) muyCercana = 1;
                         else if (c === "00371" && d < 12) muyCercana = 1;
-                        else if (c === "00372" && d < 20) muyCercana = 1;
-                        else if (c === "00374" && d < 22) muyCercana = 1;
+                        else if (c === "00372" && d <= 19) muyCercana = 1;
+                        else if (c === "00374" && d <= 21) muyCercana = 1;
                         else if (c === "00375" && d < 14) muyCercana = 1;
-                        else if (c === "00376" && d < 13) muyCercana = 1;
+                        else if (c === "00376" && d <= 12) muyCercana = 1;
                         else if (c === "00368" && d < 13) muyCercana = 1;
-                        else if (c === "00377" && d < 23) muyCercana = 1;
-                        else if (c === "00378" && d < 14) muyCercana = 1;
-                        else if (c === "00379" && d < 13) muyCercana = 1;
+                        else if (c === "00377" && d <= 22) muyCercana = 1;
+                        else if (c === "00378" && d <= 13) muyCercana = 1;
+                        else if (c === "00379" && d <= 12) muyCercana = 1;
                       } else if (["ZPAN","ZPAI"].includes(cd)) {
                         if (c === "00038" && d <= 8) muyCercana = 1;
-                        else if (c === "00223" && d <= 13) muyCercana = 1;
+                        else if (c === "00223" && d <= 12) muyCercana = 1;
                         else if (c === "00357" && d <= 5) muyCercana = 1;
                         else if (c === "00359" && d <= 5) muyCercana = 1;
-                        else if (c === "00341" && d <= 21) muyCercana = 1;
-                        else if (c === "00314" && d <= 13) muyCercana = 1;
+                        else if (c === "00341" && d <= 17) muyCercana = 1;
+                        else if (c === "00314" && d <= 12) muyCercana = 1;
                         else if (c === "UTE 363" && d <= 14) muyCercana = 1;
                         else if (c === "00364" && d <= 19) muyCercana = 1;
                         else if (c === "00029MM" && d <= 5) muyCercana = 1;
                         else if (c === "00029MR" && d <= 5) muyCercana = 1;
                         else if (c === "00298" && d <= 20) muyCercana = 1;
-                        else if (c === "00365" && d <= 17) muyCercana = 1;
+                        else if (c === "00365" && d <= 16) muyCercana = 1;
                         else if (c === "00367" && d <= 21) muyCercana = 1;
                         else if (c === "00369" && d <= 12) muyCercana = 1;
                         else if (c === "00371" && d <= 8) muyCercana = 1;
-                        else if (c === "00372" && d <= 17) muyCercana = 1;
-                        else if (c === "00374" && d <= 19) muyCercana = 1;
+                        else if (c === "00372" && d <= 16) muyCercana = 1;
+                        else if (c === "00374" && d <= 18) muyCercana = 1;
                         else if (c === "00375" && d <= 11) muyCercana = 1;
-                        else if (c === "00378" && d <= 11) muyCercana = 1;
-                        else if (c === "00376" && d <= 10) muyCercana = 1;
-                        else if (c === "00379" && d <= 10) muyCercana = 1;
+                        else if (c === "00378" && d <= 10) muyCercana = 1;
+                        else if (c === "00376" && d <= 9) muyCercana = 1;
+                        else if (c === "00379" && d <= 9) muyCercana = 1;
                         else if (c === "00368" && d <= 10) muyCercana = 1;
-                        else if (c === "00377" && d < 20) muyCercana = 1;
+                        else if (c === "00377" && d <= 19) muyCercana = 1;
                       }
                     }
                     r["FECHAENTREGAMUYCERCANA"] = muyCercana;

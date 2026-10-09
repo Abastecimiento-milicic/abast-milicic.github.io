@@ -258,26 +258,28 @@ window.calculateClassifications = function(o) {
                   if (dExpEmis !== null) {
                       if (["ZPOE","ZPAS"].includes(claseDoc)) {
                           if (c === "00038" && dExpEmis <= 12) muyCercana = 1;
-                          else if (c === "00223" && dExpEmis < 16) muyCercana = 1;
+                          else if (c === "00223" && dExpEmis <= 15) muyCercana = 1;
                           else if (c === "00357" && dExpEmis < 5) muyCercana = 1;
                           else if (c === "00359" && dExpEmis < 5) muyCercana = 1;
-                          else if (c === "00341" && dExpEmis < 21) muyCercana = 1;
-                          else if (c === "00314" && dExpEmis < 16) muyCercana = 1;
+                          else if (c === "00341" && dExpEmis <= 20) muyCercana = 1;
+                          else if (c === "00314" && dExpEmis <= 15) muyCercana = 1;
                           else if (c === "UTE 363" && dExpEmis < 14) muyCercana = 1;
                           else if (c === "00364" && dExpEmis < 23) muyCercana = 1;
                           else if (c === "00029MM" && dExpEmis < 5) muyCercana = 1;
                           else if (c === "00029MR" && dExpEmis < 5) muyCercana = 1;
                           else if (c === "00298" && dExpEmis < 23) muyCercana = 1;
-                          else if (c === "00365" && dExpEmis < 20) muyCercana = 1;
+                          else if (c === "00365" && dExpEmis <= 19) muyCercana = 1;
                           else if (c === "00367" && dExpEmis < 25) muyCercana = 1;
                           else if (c === "00369" && dExpEmis < 16) muyCercana = 1;
                           else if (c === "00371" && dExpEmis < 12) muyCercana = 1;
-                          else if (c === "00372" && dExpEmis < 20) muyCercana = 1;
-                          else if (c === "00374" && dExpEmis < 22) muyCercana = 1;
+                          else if (c === "00372" && dExpEmis <= 19) muyCercana = 1;
+                          else if (c === "00374" && dExpEmis <= 21) muyCercana = 1;
                           else if (c === "00375" && dExpEmis < 14) muyCercana = 1;
-                          else if (c === "00376" && dExpEmis < 13) muyCercana = 1;
+                          else if (c === "00376" && dExpEmis <= 12) muyCercana = 1;
                           else if (c === "00368" && dExpEmis < 13) muyCercana = 1;
-                          else if (c === "00377" && dExpEmis < 13) muyCercana = 1;
+                          else if (c === "00377" && dExpEmis <= 22) muyCercana = 1;
+                          else if (c === "00378" && dExpEmis <= 13) muyCercana = 1;
+                          else if (c === "00379" && dExpEmis <= 12) muyCercana = 1;
                       } else if (["ZPAN","ZPAI"].includes(claseDoc)) {
                           if (c === "00038" && dExpEmis <= 8) muyCercana = 1;
                           else if (c === "00223" && dExpEmis <= 12) muyCercana = 1;
@@ -289,17 +291,19 @@ window.calculateClassifications = function(o) {
                           else if (c === "00364" && dExpEmis <= 19) muyCercana = 1;
                           else if (c === "00029MM" && dExpEmis <= 5) muyCercana = 1;
                           else if (c === "00029MR" && dExpEmis <= 5) muyCercana = 1;
-                          else if (c === "00298" && dExpEmis <= 19) muyCercana = 1;
+                          else if (c === "00298" && dExpEmis <= 20) muyCercana = 1;
                           else if (c === "00365" && dExpEmis <= 16) muyCercana = 1;
                           else if (c === "00367" && dExpEmis <= 21) muyCercana = 1;
                           else if (c === "00369" && dExpEmis <= 12) muyCercana = 1;
                           else if (c === "00371" && dExpEmis <= 8) muyCercana = 1;
                           else if (c === "00372" && dExpEmis <= 16) muyCercana = 1;
                           else if (c === "00374" && dExpEmis <= 18) muyCercana = 1;
-                          else if (c === "00375" && dExpEmis <= 10) muyCercana = 1;
-                          else if (c === "00376" && dExpEmis <= 8) muyCercana = 1;
-                          else if (c === "00368" && dExpEmis <= 8) muyCercana = 1;
-                          else if (c === "00377" && dExpEmis < 13) muyCercana = 1;
+                          else if (c === "00375" && dExpEmis <= 11) muyCercana = 1;
+                          else if (c === "00378" && dExpEmis <= 10) muyCercana = 1;
+                          else if (c === "00376" && dExpEmis <= 9) muyCercana = 1;
+                          else if (c === "00379" && dExpEmis <= 9) muyCercana = 1;
+                          else if (c === "00368" && dExpEmis <= 10) muyCercana = 1;
+                          else if (c === "00377" && dExpEmis <= 19) muyCercana = 1;
                       }
                   }
                   o["FECHAENTREGAMUYCERCANA"] = muyCercana;

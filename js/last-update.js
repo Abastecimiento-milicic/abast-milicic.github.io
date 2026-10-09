@@ -8,7 +8,7 @@ if (!cb) {
   cb = new Date().getTime();
   sessionStorage.setItem('mi_cache_buster', cb);
 }
-window.CACHE_BUSTER = cb + "_v36_base_final_365_372";
+window.CACHE_BUSTER = cb + "_v37_arriba_sin_sep25";
 
 window.forceRefreshData = function() {
   sessionStorage.removeItem('mi_cache_buster');

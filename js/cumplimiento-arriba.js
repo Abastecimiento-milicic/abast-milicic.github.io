@@ -218,17 +218,22 @@
 
       arribaHeaders = fields;
 
-      // Normalización de filas
+      // Normalización de filas y exclusión de meses no deseados (septiembre 2025 y anteriores)
       const almacenNorm = "ALMACEN".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const equiposNorm = "EQUIPOS MENORES".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-      arribaRawRows = rawData.map(r => {
-        const c2 = clean(r["CLASIFICACION 2"]).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        if (c2 === almacenNorm || c2 === equiposNorm) {
-          r["CLASIFICACION 2"] = "ALMACÉN";
-        }
-        return r;
-      });
+      arribaRawRows = rawData
+        .filter(r => {
+          const mk = getMonthKeyFromRow(r);
+          return mk && mk !== "2025-09" && mk >= "2025-10";
+        })
+        .map(r => {
+          const c2 = clean(r["CLASIFICACION 2"]).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          if (c2 === almacenNorm || c2 === equiposNorm) {
+            r["CLASIFICACION 2"] = "ALMACÉN";
+          }
+          return r;
+        });
 
       return arribaRawRows;
     } finally {

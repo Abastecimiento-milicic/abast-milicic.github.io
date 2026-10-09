@@ -10,7 +10,8 @@
 (function () {
   "use strict";
 
-  const CSV_ARRIBA_URL = "data/CUMPLIMIENTO ARRIBA.csv";
+  const CSV_ARRIBA_URL = "data/Base_Final_365_372.csv";
+  const XLSX_ARRIBA_URL = "data/Base_Final_365_372.xlsx";
   const TARGET_OBRAS = ["00365", "00372", "365", "372"];
 
   let isArribaActive = false;
@@ -137,33 +138,91 @@
     if (btn) btn.innerHTML = "⏳ Cargando datos arriba...";
 
     try {
-      const url = CSV_ARRIBA_URL + "?t=" + (window.CACHE_BUSTER || Date.now());
-      let text = "";
-      if (typeof window.fetchWithCache === "function") {
-        text = await window.fetchWithCache(url);
-      } else {
-        const resp = await fetch(url);
-        text = await resp.text();
+      let rawData = null;
+      let fields = [];
+
+      // 1. Intentar cargar CSV (ultrarrápido con PapaParse)
+      try {
+        const urlCsv = CSV_ARRIBA_URL + "?t=" + (window.CACHE_BUSTER || Date.now());
+        let text = "";
+        if (typeof window.fetchWithCache === "function") {
+          text = await window.fetchWithCache(urlCsv);
+        } else {
+          const resp = await fetch(urlCsv);
+          if (resp.ok) text = await resp.text();
+        }
+
+        if (text && text.length > 50) {
+          const parsed = Papa.parse(text, {
+            header: true,
+            delimiter: ";",
+            skipEmptyLines: true,
+            transformHeader: (h) => (h || "").trim().replace(/^\ufeff/, "")
+          });
+          if (parsed.data && parsed.data.length) {
+            fields = parsed.meta.fields || [];
+            rawData = parsed.data;
+          }
+        }
+      } catch (eCsv) {
+        console.warn("[Cumplimiento Arriba] CSV no disponible, intentando XLSX...", eCsv);
       }
 
-      if (!text || text.length < 50) {
-        throw new Error("El archivo CUMPLIMIENTO ARRIBA.csv está vacío o no pudo cargarse.");
+      // 2. Si no se cargó el CSV, intentar cargar XLSX directamente con ExcelJS
+      if (!rawData && typeof ExcelJS !== "undefined") {
+        try {
+          const urlXlsx = XLSX_ARRIBA_URL + "?t=" + (window.CACHE_BUSTER || Date.now());
+          const resp = await fetch(urlXlsx);
+          if (resp.ok) {
+            const buffer = await resp.arrayBuffer();
+            const wb = new ExcelJS.Workbook();
+            await wb.xlsx.load(buffer);
+            const ws = wb.worksheets[0];
+            const headers = [];
+            const dataRows = [];
+            ws.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+              if (rowNumber === 1) {
+                row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                  headers[colNumber - 1] = clean(cell.value).replace(/^\ufeff/, "");
+                });
+              } else {
+                const obj = {};
+                row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                  const h = headers[colNumber - 1];
+                  if (h) {
+                    let v = cell.value;
+                    if (v instanceof Date) {
+                      v = `${String(v.getDate()).padStart(2, "0")}/${String(v.getMonth() + 1).padStart(2, "0")}/${v.getFullYear()}`;
+                    } else if (v && typeof v === "object" && v.text) {
+                      v = v.text;
+                    } else if (v && typeof v === "object" && v.result !== undefined) {
+                      v = v.result;
+                    }
+                    obj[h] = clean(v);
+                  }
+                });
+                dataRows.push(obj);
+              }
+            });
+            fields = headers;
+            rawData = dataRows;
+          }
+        } catch (eXlsx) {
+          console.error("[Cumplimiento Arriba] Error cargando XLSX:", eXlsx);
+        }
       }
 
-      const parsed = Papa.parse(text, {
-        header: true,
-        delimiter: ";",
-        skipEmptyLines: true,
-        transformHeader: (h) => (h || "").trim().replace(/^\ufeff/, "")
-      });
+      if (!rawData || !rawData.length) {
+        throw new Error("El archivo Base Final 365 372 no pudo cargarse o está vacío.");
+      }
 
-      arribaHeaders = parsed.meta.fields || [];
+      arribaHeaders = fields;
 
       // Normalización de filas
       const almacenNorm = "ALMACEN".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const equiposNorm = "EQUIPOS MENORES".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-      arribaRawRows = parsed.data.map(r => {
+      arribaRawRows = rawData.map(r => {
         const c2 = clean(r["CLASIFICACION 2"]).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         if (c2 === almacenNorm || c2 === equiposNorm) {
           r["CLASIFICACION 2"] = "ALMACÉN";

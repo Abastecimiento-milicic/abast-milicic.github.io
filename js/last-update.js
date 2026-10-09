@@ -8,7 +8,7 @@ if (!cb) {
   cb = new Date().getTime();
   sessionStorage.setItem('mi_cache_buster', cb);
 }
-window.CACHE_BUSTER = cb + "_v39_arriba_todas_obras_con_reemplazo";
+window.CACHE_BUSTER = cb + "_v40_revert_demoras";
 
 window.forceRefreshData = function() {
   sessionStorage.removeItem('mi_cache_buster');

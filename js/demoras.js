@@ -19,7 +19,6 @@
       "PROYECTO",
       "ALMACEN",
       "ALMACÉN",
-      "BLEND",
       "TRASLADO",
       "EXPEDICION",
       "EQUIPOS MENORES",
@@ -327,17 +326,10 @@
           if (expectedNorm.has(hn)) found.push(h);
       }
 
-      if (found.some(c => norm(c) === "BLEND")) {
-          AREA_COLS = found.filter(c => {
-              const nc = norm(c);
-              return nc !== "TOTAL" && nc !== "TRASLADO" && nc !== "EXPEDICION";
-          });
-      } else {
-          AREA_COLS = found.filter(c => norm(c) !== "TOTAL");
-      }
+      AREA_COLS = found.filter(c => norm(c) !== "TOTAL");
 
       if (!AREA_COLS.length) {
-          const keys = ["COMPRAS", "ALMACEN", "PROYECTO", "EQUIPOS", "BLEND", "TRASLADO", "EXPEDICION", "AGV"];
+          const keys = ["COMPRAS", "ALMACEN", "PROYECTO", "EQUIPOS", "TRASLADO", "EXPEDICION", "AGV"];
           AREA_COLS = headers.filter(h => keys.some(k => norm(h).includes(k)));
       }
 
@@ -1554,26 +1546,6 @@
         {bg: "#fce7f3", text: "#be185d", cell: "rgba(252, 231, 243, 0.4)", hex: "FFFCE7F3", cellHex: "FFFFF5F9"},
         {bg: "#fce7f3", text: "#be185d", cell: "rgba(252, 231, 243, 0.4)", hex: "FFFCE7F3", cellHex: "FFFFF5F9"}
       ];
-    } else if (areaName === "BLEND" || areaName.toUpperCase().includes("BLEND")) {
-      extraHeaders = ["F. DE CARGA", "F. CONTAB. VL", "F. ALM./SELLO", "DÍAS EXPED.", "DEMORA EXPED.", "DÍAS TRASL.", "DEMORA TRASL."];
-      extraFields = [
-        r => r["FECHA DE CARGA"],
-        r => r["FECHA CONTABILIZACION VL"],
-        r => r["FECHA DE ALMACENAMIENTO SELLO"] || r["FECHA ALMACENAMIENTO (LOGIN)"],
-        r => r["dEXPEDICION"],
-        r => r["EXCESO EXPEDICION CS"] !== undefined ? r["EXCESO EXPEDICION CS"] : r["EXPEDICION CS"],
-        r => r["dTRASLADO"],
-        r => r["demora TRASLADO ALMACEN OBRA"] !== undefined ? r["demora TRASLADO ALMACEN OBRA"] : r["TRASLADO CS"]
-      ];
-      extraColors = [
-        {bg: "#fce7f3", text: "#be185d", cell: "rgba(252, 231, 243, 0.4)", hex: "FFFCE7F3", cellHex: "FFFFF5F9"},
-        {bg: "#fce7f3", text: "#be185d", cell: "rgba(252, 231, 243, 0.4)", hex: "FFFCE7F3", cellHex: "FFFFF5F9"},
-        {bg: "#f3e8ff", text: "#6b21a8", cell: "rgba(243, 232, 255, 0.4)", hex: "FFF3E8FF", cellHex: "FFF9F5FF"},
-        {bg: "#fce7f3", text: "#be185d", cell: "rgba(252, 231, 243, 0.4)", hex: "FFFCE7F3", cellHex: "FFFFF5F9"},
-        {bg: "#fce7f3", text: "#be185d", cell: "rgba(252, 231, 243, 0.4)", hex: "FFFCE7F3", cellHex: "FFFFF5F9"},
-        {bg: "#f3e8ff", text: "#6b21a8", cell: "rgba(243, 232, 255, 0.4)", hex: "FFF3E8FF", cellHex: "FFF9F5FF"},
-        {bg: "#f3e8ff", text: "#6b21a8", cell: "rgba(243, 232, 255, 0.4)", hex: "FFF3E8FF", cellHex: "FFF9F5FF"}
-      ];
     }
     
     return { extraHeaders, extraFields, extraColors };
@@ -1585,10 +1557,6 @@
       const isAlmacen = (areaName === "ALMACÉN" || areaName === "ALMACEN" || areaName === "ALMACN" || areaName.toUpperCase().includes("ALMAC"));
       if (isAlmacen) {
         return isTruthyAreaValue(row["ALMACÉN"]) || isTruthyAreaValue(row["ALMACEN"]) || isTruthyAreaValue(row["ALMACN"]);
-      }
-      const isBlend = (areaName === "BLEND" || areaName.toUpperCase().includes("BLEND"));
-      if (isBlend) {
-        return isTruthyAreaValue(row["BLEND"]) || isTruthyAreaValue(row["TRASLADO"]) || isTruthyAreaValue(row["EXPEDICION"]);
       }
       return isTruthyAreaValue(row[areaName]);
     });
@@ -1603,7 +1571,7 @@
     if (areaName.startsWith("COMPRAS")) {
       explicacionArea = "Un pedido tiene demoras en COMPRAS cuando los tiempos de Colocación de OC, Aprobación de OC o la Entrega del Proveedor superan los plazos máximos tolerados (según la clase de documento).";
     } else if (areaName === "PERIODO CORTO") {
-      explicacionArea = "Un pedido tiene demoras en PERIODO CORTO cuando la Fecha de Entrega Esperada está demasiado cercana o ya fue excedida en relación a los plazos lógicos.";
+      explicacionArea = "Un pedido tiene demoras en PERIODO CORTO cuando la Fecha de Entrega Esperada estǭ demasiado cercana o ya fue excedida en relacin a los plazos lgicos.";
     } else if (areaName === "PROYECTO") {
       explicacionArea = "Un pedido tiene demoras en PROYECTO cuando la Liberación de Solped, Colocación/Liberación de OC o Entrega del Proveedor exceden los plazos para el Centro de Servicios.";
     } else if (areaName === "ALMACÉN") {
@@ -1614,8 +1582,6 @@
       explicacionArea = "Un pedido tiene demoras en TRASLADO cuando el tiempo de viaje a la obra supera los límites del cliente (ej. > 12 días para Añelo, > 10 días para San Luis).";
     } else if (areaName === "EXPEDICION" || areaName.toUpperCase().includes("EXPEDIC")) {
       explicacionArea = "Un pedido tiene demoras en EXPEDICIÓN cuando el tiempo de expedición (contabilización VL a carga) supera los 2 días.";
-    } else if (areaName === "BLEND" || areaName.toUpperCase().includes("BLEND")) {
-      explicacionArea = "Un pedido tiene demoras en BLEND cuando presenta exceso en los tiempos de Expedición central (> 2 días) o en los tiempos de Traslado a la obra según los límites fijados por destino.";
     }
 
     const config = window.getAreaConfig(areaName);
@@ -1858,10 +1824,6 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
       if (isAlmacen) {
         return isTruthyAreaValue(r["ALMACÉN"]) || isTruthyAreaValue(r["ALMACEN"]) || isTruthyAreaValue(r["ALMACN"]);
       }
-      const isBlend = (areaName === "BLEND" || areaName.toUpperCase().includes("BLEND"));
-      if (isBlend) {
-        return isTruthyAreaValue(r["BLEND"]) || isTruthyAreaValue(r["TRASLADO"]) || isTruthyAreaValue(r["EXPEDICION"]);
-      }
       return isTruthyAreaValue(r[areaName]);
     });
     if (areaOrders.length === 0) return;
@@ -2059,7 +2021,7 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     "dREGISTRO DE ALMACENAMIENTO", "OPERADOR PICKING ROSARIO", "OPERADOR PICKING SJ", "CARACTER DE GC",
                     "CARACTER ALMACEN RECEPCION 1", "LIBERACION SOLPED CS", "COLOCACION OC CS", "LIBERACION OC CS",
                     "ENTREGA DEL PROVEEDOR CS", "DIF_ENTREGA_SELLO", "dPLAZO DE ENTREGA", "PLAZO DE ENTREGA EXCEDIDO CS",
-                    "EXPEDICION CS", "EXCESO EXPEDICION CS", "COLOCACION OC SEDE", "LIBERACION OC SEDE", "ENTREGA DEL PROVEEDOR SEDE",
+                    "EXPEDICION CS", "COLOCACION OC SEDE", "LIBERACION OC SEDE", "ENTREGA DEL PROVEEDOR SEDE",
                     "PLAZO DE ENTREGA EXCEDIDO SEDE", "REGISTRO DE ALMACENAMIENTO OBRA", "demora TRASLADO ALMACEN OBRA",
                     "TRASLADO CS", "ALMACEN ROSARIO", "ALMACEN SAN JUAN", "REGISTRO DE RECEPCION ALMACEN ROSARIO",
                     "REGISTRO DE RECEPCION ALMACEN SAN JUAN", "PICKING ALMACEN ROSARIO", "PICKING ALMACEN SAN JUAN",
@@ -2068,7 +2030,7 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     "PLAZO DE ENTREGA EXCEDIDO EQUIPOS", "COLOCACION OC AGV", "LIBERACION OC AGV",
                     "ENTREGA DEL PROVEEDOR AGV", "PLAZO DE ENTREGA EXCEDIDO AGV", "dPREPARACION",
                     "FECHAENTREGAMUYCERCANA", "dTRANSPORTEyALM", "PREPARACION", "TRANSPORTEyALM",
-                    "EQUIPOS MENORES", "PERIODO CORTO", "PROYECTO", "ALMACÉN", "ALMACEN", "BLEND", "TRASLADO", "EXPEDICION", "COMPRAS", "COMPRAS EQUIPOS", "COMPRAS AGV"
+                    "EQUIPOS MENORES", "PERIODO CORTO", "PROYECTO", "ALMACÉN", "TRASLADO", "EXPEDICION", "COMPRAS", "COMPRAS EQUIPOS", "COMPRAS AGV"
                   ];
                   virtualCols.forEach(col => {
                     if (!headers.includes(col)) headers.push(col);
@@ -2188,8 +2150,7 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     const fOcEntrega = parseDateAny(r["FECHA ENTREGA OC"]);
 
                     // dTRASLADO
-                    const fAlm = fAlmSello || fAlmLogin;
-                    r["dTRASLADO"] = ["ZPAN", "ZPAI", "ZPAS"].includes(cd) ? daysBetween(fContabVL, fAlm) : null;
+                    r["dTRASLADO"] = ["ZPAN", "ZPAI", "ZPAS"].includes(cd) ? daysBetween(fContabVL, fAlmSello) : null;
                     
                     // DIF_ENTREGA_SELLO
                     r["DIF_ENTREGA_SELLO"] = ["ZPAN", "ZPAI"].includes(cd) ? daysBetween(fSello, fEntregaEsperada) : null;
@@ -2221,8 +2182,7 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     // dREGISTRO DE RECEPCION
                     r["dREGISTRO DE RECEPCION"] = ["ZPAN", "ZPAI"].includes(cd) ? daysBetween(fSello, fRecepcion) : null;
                     // dALMACEN
-                    const hasAnyAlm = (r["dREGISTRO DE RECEPCION"] !== null || r["dPICKING"] !== null || r["dEMBALAJE"] !== null);
-                    r["dALMACEN"] = hasAnyAlm ? ((r["dREGISTRO DE RECEPCION"] || 0) + (r["dPICKING"] || 0) + (r["dEMBALAJE"] || 0)) : null;
+                    r["dALMACEN"] = (r["dREGISTRO DE RECEPCION"] || 0) + (r["dPICKING"] || 0) + (r["dEMBALAJE"] || 0);
                     // dREGISTRO DE ALMACENAMIENTO
                     r["dREGISTRO DE ALMACENAMIENTO"] = ["ZPAN", "ZPAI", "ZPAS"].includes(cd) ? daysBetween(fAlmSello, fAlmLogin) : null;
 
@@ -2285,9 +2245,8 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     // PLAZO DE ENTREGA EXCEDIDO CS
                     r["PLAZO DE ENTREGA EXCEDIDO CS"] = (gc === "LOCAL CS" && dPlazo !== null && dPlazo < 0) ? Math.abs(dPlazo) : null;
 
-                    // EXPEDICION CS & EXCESO EXPEDICION CS
-                    r["EXPEDICION CS"] = (r["dEXPEDICION"] !== null && r["dEXPEDICION"] > 2) ? 1 : null;
-                    r["EXCESO EXPEDICION CS"] = (r["dEXPEDICION"] !== null && r["dEXPEDICION"] > 2) ? r["dEXPEDICION"] - 2 : null;
+                    // EXPEDICION CS
+                    r["EXPEDICION CS"] = (r["dEXPEDICION"] !== null && r["dEXPEDICION"] > 2) ? r["dEXPEDICION"] - 2 : null;
 
                     // COLOCACION OC SEDE
                     r["COLOCACION OC SEDE"] = (gc === "COMPRAS ABASTECIMIENTO" && ["ZPAN","ZPAI"].includes(cd) && !isNaN(tColococ) && tColococ > (cd === "ZPAN" ? 5 : 2)) ? tColococ - (cd === "ZPAN" ? 5 : 2) : null;
@@ -2297,9 +2256,6 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     r["ENTREGA DEL PROVEEDOR SEDE"] = (["ZPAN","ZPAI"].includes(cd) && gc === "COMPRAS ABASTECIMIENTO" && r["DIF_ENTREGA_SELLO"] !== null && r["DIF_ENTREGA_SELLO"] < 0) ? Math.abs(r["DIF_ENTREGA_SELLO"]) : null;
                     // PLAZO DE ENTREGA EXCEDIDO SEDE
                     r["PLAZO DE ENTREGA EXCEDIDO SEDE"] = (gc === "COMPRAS ABASTECIMIENTO" && dPlazo !== null && dPlazo < 0) ? Math.abs(dPlazo) : null;
-
-                    // REGISTRO DE ALMACENAMIENTO OBRA
-                    r["REGISTRO DE ALMACENAMIENTO OBRA"] = (["ZPAN", "ZPAI", "ZPAS"].includes(cd) && r["dREGISTRO DE ALMACENAMIENTO"] !== null && r["dREGISTRO DE ALMACENAMIENTO"] > 1) ? 1 : null;
 
                     // demora TRASLADO ALMACEN OBRA
                     let demoraTrasladoObra = null;
@@ -2337,18 +2293,6 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     const dAlmacenVal = r["dALMACEN"];
                     r["ALMACEN ROSARIO"] = (["ZPAN","ZPAI"].includes(cd) && carAlm === "TRANSITORIO ROSARIO" && dAlmacenVal !== null && dAlmacenVal > 6) ? dAlmacenVal - 6 : (cd === "ZPAS" && r["OPERADOR PICKING ROSARIO"] === 1 && dAlmacenVal !== null && dAlmacenVal > 10) ? dAlmacenVal - 10 : null;
                     r["ALMACEN SAN JUAN"] = (["ZPAN","ZPAI"].includes(cd) && carAlm === "TRANSITORIO SAN JUAN" && dAlmacenVal !== null && dAlmacenVal > 6) ? dAlmacenVal - 6 : (cd === "ZPAS" && r["OPERADOR PICKING SJ"] === 1 && dAlmacenVal !== null && dAlmacenVal > 10) ? dAlmacenVal - 10 : null;
-
-                    // SUB-COLUMNAS DETALLE ALMACEN ROSARIO Y SAN JUAN
-                    r["REGISTRO DE RECEPCION ALMACEN ROSARIO"] = (["ZPAN", "ZPAI"].includes(cd) && carAlm === "TRANSITORIO ROSARIO" && r["ALMACEN ROSARIO"] !== null && r["dREGISTRO DE RECEPCION"] !== null && r["dREGISTRO DE RECEPCION"] > 1) ? r["dREGISTRO DE RECEPCION"] - 1 : null;
-                    r["REGISTRO DE RECEPCION ALMACEN SAN JUAN"] = (["ZPAN", "ZPAI"].includes(cd) && carAlm === "TRANSITORIO SAN JUAN" && r["ALMACEN SAN JUAN"] !== null && r["dREGISTRO DE RECEPCION"] !== null && r["dREGISTRO DE RECEPCION"] > 1) ? r["dREGISTRO DE RECEPCION"] - 1 : null;
-
-                    r["PICKING ALMACEN ROSARIO"] = (["ZPAN", "ZPAI"].includes(cd) && carAlm === "TRANSITORIO ROSARIO" && r["ALMACEN ROSARIO"] !== null && r["dPICKING"] !== null && r["dPICKING"] > 2) ? r["dPICKING"] - 2 : (cd === "ZPAS" && r["OPERADOR PICKING ROSARIO"] === 1 && r["ALMACEN ROSARIO"] !== null && r["dPICKING"] !== null && r["dPICKING"] > 7) ? r["dPICKING"] - 7 : null;
-                    r["PICKING ALMACEN SAN JUAN"] = (["ZPAN", "ZPAI"].includes(cd) && carAlm === "TRANSITORIO SAN JUAN" && r["ALMACEN SAN JUAN"] !== null && r["dPICKING"] !== null && r["dPICKING"] > 2) ? r["dPICKING"] - 2 : (cd === "ZPAS" && r["OPERADOR PICKING SJ"] === 1 && r["ALMACEN SAN JUAN"] !== null && r["dPICKING"] !== null && r["dPICKING"] > 7) ? r["dPICKING"] - 7 : null;
-
-                    r["EMBALAJE ALMACEN ROSARIO"] = (["ZPAN", "ZPAI"].includes(cd) && carAlm === "TRANSITORIO ROSARIO" && r["ALMACEN ROSARIO"] !== null && r["dEMBALAJE"] !== null && r["dEMBALAJE"] > 1) ? r["dEMBALAJE"] - 1 : (cd === "ZPAS" && r["OPERADOR PICKING ROSARIO"] === 1 && r["ALMACEN ROSARIO"] !== null && r["dEMBALAJE"] !== null && r["dEMBALAJE"] > 1) ? r["dEMBALAJE"] - 1 : null;
-                    r["EMBALAJE ALMACEN SAN JUAN"] = (["ZPAN", "ZPAI"].includes(cd) && carAlm === "TRANSITORIO SAN JUAN" && r["ALMACEN SAN JUAN"] !== null && r["dEMBALAJE"] !== null && r["dEMBALAJE"] > 1) ? r["dEMBALAJE"] - 1 : (cd === "ZPAS" && r["OPERADOR PICKING SJ"] === 1 && r["ALMACEN SAN JUAN"] !== null && r["dEMBALAJE"] !== null && r["dEMBALAJE"] > 1) ? r["dEMBALAJE"] - 1 : null;
-
-                    r["EXPEDICION ALMACEN OBRA"] = ((r["ALMACEN ROSARIO"] !== null || r["ALMACEN SAN JUAN"] !== null) && r["EXPEDICION CS"] === 1) ? (r["EXCESO EXPEDICION CS"] || 1) : null;
 
                     // COLOCACION OC EQUIPOS
                     r["COLOCACION OC EQUIPOS"] = (["ZPAN","ZPAI"].includes(cd) && gc === "EQUIPOS" && !isNaN(tColococ) && tColococ > (cd === "ZPAN" ? 5 : 2)) ? tColococ - (cd === "ZPAN" ? 5 : 2) : null;
@@ -2457,8 +2401,6 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                       else if (c === "00376" && d > 12) transporteAlm = d - 12;
                       else if (c === "00368" && d > 7) transporteAlm = d - 7;
                       else if (c === "00377" && d > 12) transporteAlm = d - 12;
-                      else if (c === "00378" && d > 11) transporteAlm = d - 11;
-                      else if (c === "00379" && d > 10) transporteAlm = d - 10;
                     }
                     r["TRANSPORTEyALM"] = transporteAlm;
 
@@ -2474,16 +2416,12 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     
                     // ALMACÉN
                     r["ALMACÉN"] = ((r["ALMACEN ROSARIO"] || 0) + (r["ALMACEN SAN JUAN"] || 0) > 0) ? 1 : null;
-                    r["ALMACEN"] = r["ALMACÉN"];
                     
                     // TRASLADO
                     r["TRASLADO"] = (r["TRASLADO CS"] === 1) ? 1 : null;
                     
                     // EXPEDICION
-                    r["EXPEDICION"] = (r["EXPEDICION CS"] === 1) ? 1 : null;
-
-                    // BLEND (combinación de Traslado y Expedición sin duplicar)
-                    r["BLEND"] = (r["TRASLADO"] === 1 || r["EXPEDICION"] === 1) ? 1 : null;
+                    r["EXPEDICION"] = (r["EXPEDICION CS"] !== null && r["EXPEDICION CS"] > 0) ? 1 : null;
                     
                     // COMPRAS
                     r["COMPRAS"] = ((r["COLOCACION OC SEDE"] || 0) + (r["LIBERACION OC SEDE"] || 0) + (r["ENTREGA DEL PROVEEDOR SEDE"] || 0) + (r["PLAZO DE ENTREGA EXCEDIDO SEDE"] || 0) > 0) ? 1 : null;
@@ -2495,7 +2433,7 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     r["COMPRAS AGV"] = ((r["COLOCACION OC AGV"] || 0) + (r["LIBERACION OC AGV"] || 0) + (r["ENTREGA DEL PROVEEDOR AGV"] || 0) + (r["PLAZO DE ENTREGA EXCEDIDO AGV"] || 0) > 0) ? 1 : null;
 
                     // Calculamos la suma de áreas y siempre agregamos la fila para coincidir con los FT
-                    const sumAreas = (r["PERIODO CORTO"] || 0) + (r["EQUIPOS MENORES"] || 0) + (r["PROYECTO"] || 0) + (r["ALMACÉN"] || 0) + (r["BLEND"] || 0) + (r["COMPRAS"] || 0) + (r["COMPRAS EQUIPOS"] || 0) + (r["COMPRAS AGV"] || 0);
+                    const sumAreas = (r["PERIODO CORTO"] || 0) + (r["EQUIPOS MENORES"] || 0) + (r["PROYECTO"] || 0) + (r["ALMACÉN"] || 0) + (r["TRASLADO"] || 0) + (r["EXPEDICION"] || 0) + (r["COMPRAS"] || 0) + (r["COMPRAS EQUIPOS"] || 0) + (r["COMPRAS AGV"] || 0);
                     r["_sumAreas"] = sumAreas;
                     processed.push(r);
                   }

@@ -249,7 +249,7 @@
     lastGcSelected = new Set(defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"]);
 
     // 4. Estado de Vencimiento OC
-    const vencOptions = ["VENCIDA", "VIGENTE"];
+    const vencOptions = ["VENCIDA", "VIGENTE", "SIN FECHA OC"];
     populateSelect("emrf_vencSelect", vencOptions, []);
 
     // 5. Operador OC
@@ -476,7 +476,7 @@
     populateSelect("emrf_gcSelect", gcs, defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"], true);
     lastGcSelected = new Set(defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"]);
 
-    populateSelect("emrf_vencSelect", ["VENCIDA", "VIGENTE"], []);
+    populateSelect("emrf_vencSelect", ["VENCIDA", "VIGENTE", "SIN FECHA OC"], []);
     populateSelect("emrf_operOcSelect", [...new Set(allPositions.map(p => p.Operador_OC))].filter(o => o && o !== "SIN ASIGNAR").sort(), []);
 
     onFiltersChanged();
@@ -625,6 +625,7 @@
         <ul>
           <li><strong>VENCIDA:</strong> La fecha prometida de entrega expiró respecto a la fecha de corte.</li>
           <li><strong>VIGENTE:</strong> El pedido aún se encuentra en plazo para su entrega.</li>
+          <li><strong>SIN FECHA OC:</strong> El pedido no posee fecha de entrega registrada en SAP.</li>
         </ul>
 
         <h4>⚙️ Filtros Iniciales por Defecto</h4>

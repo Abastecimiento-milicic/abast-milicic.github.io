@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
 
 <head>
@@ -14,13 +14,13 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261008_142349" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261008_142349" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261008_142349" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261008_142349" />
-  <link rel="stylesheet" href="css/ejemplo.css?v=20261008_142349" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261008_142349" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261008_142349" />
+  <link rel="stylesheet" href="css/base.css?v=20261009_100032" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261009_100032" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261009_100032" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261009_100032" />
+  <link rel="stylesheet" href="css/ejemplo.css?v=20261009_100032" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261009_100032" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261009_100032" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -330,6 +330,16 @@
           </div>
 
           <div class="filter" style="align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px;">
+            <!-- Botón Medir Cumplimiento Arriba -->
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
+              <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="width: 100%; font-weight: 700; height: 32px; font-size: 0.75rem; padding: 0 4px;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
+                🏔️ Medir cumplimiento arriba
+              </button>
+              <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
+                Obras 365 y 372 (año 2026)
+              </div>
+            </div>
+
             <!-- Tarjeta Pedidos Incompletos -->
             <div class="card-incomplete" style="background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 3px solid var(--col-amber, #f59e0b); position: relative;">
               <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 2px;">Pedidos INCOMPLETOS</span>
@@ -1741,18 +1751,19 @@
 
   </main>
 
-  <script src="js/last-update.js?v=20261008_144700"></script>
-  <script src="js/help.js?v=20261008_144700"></script>
-  <script src="js/cache-utils.js?v=20261008_144700"></script>
+  <script src="js/last-update.js?v=20261009_100032"></script>
+  <script src="js/help.js?v=20261009_100032"></script>
+  <script src="js/cache-utils.js?v=20261009_100032"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/cumplimiento.js?v=20261008_144700"></script>
-  <script src="js/analisis-mm.js?v=20261008_144700"></script>
-  <script src="js/evolucion.js?v=20261008_144700"></script>
-  <script src="js/demoras.js?v=20261008_144700"></script>
-  <script src="js/servicios.js?v=20261008_144700"></script>
-  <script src="js/tiempos-entrega.js?v=20261008_144700"></script>
-  <script src="js/control-emrf.js?v=20261008_144700"></script>
+  <script src="js/cumplimiento.js?v=20261009_100032"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261009_100032"></script>
+  <script src="js/analisis-mm.js?v=20261009_100032"></script>
+  <script src="js/evolucion.js?v=20261009_100032"></script>
+  <script src="js/demoras.js?v=20261009_100032"></script>
+  <script src="js/servicios.js?v=20261009_100032"></script>
+  <script src="js/tiempos-entrega.js?v=20261009_100032"></script>
+  <script src="js/control-emrf.js?v=20261009_100032"></script>
 
   <script>
     // Subtítulos para cada pestaña
@@ -1963,7 +1974,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261008_142349"></script>
+  <script src="js/auth-user.js?v=20261009_100032"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

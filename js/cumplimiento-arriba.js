@@ -218,22 +218,48 @@
 
       arribaHeaders = fields;
 
-      // Normalización de filas y exclusión de meses no deseados (septiembre 2025 y anteriores)
       const almacenNorm = "ALMACEN".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const equiposNorm = "EQUIPOS MENORES".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-      arribaRawRows = rawData
+      // 1. Filas de Mina Arriba para las obras 365 y 372
+      const targetArribaRows = rawData
         .filter(r => {
           const mk = getMonthKeyFromRow(r);
           return mk && mk !== "2025-09" && mk >= "2025-10";
         })
         .map(r => {
           const c2 = clean(r["CLASIFICACION 2"]).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          if (c2 === almacenNorm || c2 === equiposNorm) {
-            r["CLASIFICACION 2"] = "ALMACÉN";
-          }
-          return r;
+          const c2Norm = (c2 === almacenNorm || c2 === equiposNorm) ? "ALMACÉN" : r["CLASIFICACION 2"];
+          return {
+            ...r,
+            "CLASIFICACION 2": c2Norm
+          };
         });
+
+      // 2. Filas de todas las demás obras desde la base estándar
+      const stdData = (window.getCumplimientoData ? window.getCumplimientoData() : []);
+      const otherStandardRows = stdData
+        .filter(r => {
+          const cli = clean(r["CLIENTE"] || r["CLIENTE / OBRA"]);
+          return !TARGET_OBRAS.some(t => cli.includes(t));
+        })
+        .map(r => {
+          const c2 = clean(r["CLASIFICACION 2"]).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const c2Norm = (c2 === almacenNorm || c2 === equiposNorm) ? "ALMACÉN" : r["CLASIFICACION 2"];
+          return {
+            ...r,
+            "CLIENTE": clean(r["CLIENTE"] || r["CLIENTE / OBRA"]),
+            "CLASIFICACION 2": c2Norm,
+            "ENTREGADOS AT FINAL": r["ENTREGADOS AT"],
+            "ENTREGADOS FT FINAL": r["ENTREGADOS FT"],
+            "NO ENTREGADOS FINAL": r["NO ENTREGADOS"],
+            "DEMORA FINAL": r["DIAS DE DEMORA"] || r["DEMORA FINAL"],
+            "COMPROMETIDOS": r["COMPROMETIDOS"]
+          };
+        });
+
+      // 3. Dataset unificado: todas las obras juntas, con 365 y 372 evaluadas con sus datos arriba
+      arribaRawRows = [...otherStandardRows, ...targetArribaRows];
 
       return arribaRawRows;
     } finally {
@@ -318,6 +344,11 @@
     const pctNO = t.total ? t.no / t.total : NaN;
 
     // Tarjeta ACUMULADO (12 meses)
+    const colAcumTag = document.querySelector(".col-acum .cumpl-col-tag");
+    if (colAcumTag) colAcumTag.textContent = "ACUMULADO (MINA ARRIBA)";
+    const colAcumSub = document.querySelector(".col-acum .cumpl-col-sub");
+    if (colAcumSub) colAcumSub.textContent = "Últimos 12 meses (365 y 372 en Mina)";
+
     setText("cumpl_kpiTotal", fmtInt(t.total));
 
     setText("cumpl_kpiATpct", fmtPct01(pctAT));
@@ -1082,37 +1113,6 @@
   }
 
   /* ============================
-     MANEJO DE SELECCIÓN DE CLIENTE
-  ============================ */
-  function ensureTargetObraSelected() {
-    const selCliente = document.getElementById("cumpl_clienteSelect");
-    if (!selCliente) return;
-
-    const currentVals = [...selCliente.selectedOptions].map(o => o.value);
-    const hasTarget = currentVals.some(v => TARGET_OBRAS.some(t => v.includes(t)));
-
-    if (!hasTarget) {
-      let found = false;
-      [...selCliente.options].forEach(opt => {
-        const val = opt.value;
-        if (val.includes("00365") || val.includes("365")) {
-          opt.selected = true;
-          found = true;
-        } else {
-          opt.selected = false;
-        }
-      });
-      if (!found) {
-        [...selCliente.options].forEach(opt => {
-          if (opt.value.includes("00372") || opt.value.includes("372")) {
-            opt.selected = true;
-          }
-        });
-      }
-    }
-  }
-
-  /* ============================
      TOGGLE ARRIBA MODE
   ============================ */
   async function toggleArribaMode() {
@@ -1121,8 +1121,6 @@
     if (!isArribaActive) {
       await loadArribaData();
       isArribaActive = true;
-
-      ensureTargetObraSelected();
 
       if (btn) {
         btn.classList.add("btn-active");
@@ -1137,6 +1135,11 @@
         btn.classList.remove("btn-active");
         btn.innerHTML = "🏔️ Medir cumplimiento arriba";
       }
+
+      const colAcumTag = document.querySelector(".col-acum .cumpl-col-tag");
+      if (colAcumTag) colAcumTag.textContent = "ACUMULADO";
+      const colAcumSub = document.querySelector(".col-acum .cumpl-col-sub");
+      if (colAcumSub) colAcumSub.textContent = "Últimos 12 meses";
 
       const selCliente = document.getElementById("cumpl_clienteSelect");
       if (selCliente) {

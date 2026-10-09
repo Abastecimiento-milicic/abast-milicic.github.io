@@ -1648,6 +1648,8 @@
     function initializeUIWithData(processedHeaders, processedData) {
         headers = processedHeaders;
         data = processedData;
+        window.getCumplimientoData = () => data;
+        window.getCumplimientoHeaders = () => headers;
 
         CLIENT_COL = CLIENT_CANDIDATES.find(c => headers.includes(c));
         if (!CLIENT_COL) {

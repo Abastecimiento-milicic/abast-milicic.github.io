@@ -238,7 +238,16 @@
 
   function updateKPIsArriba() {
     const rowsBase = getFilteredRows(true); // Sin filtro de mes para acumulados
-    const t = calcTotalsArriba(rowsBase);
+
+    // Filtrar para el acumulado: excluir el mes vigente y tomar los 12 meses anteriores
+    const uniqueMonths = [...new Set(rowsBase.map(getMonthKeyFromRow).filter(Boolean))].sort();
+    if (uniqueMonths.length > 0) {
+      uniqueMonths.pop();
+    }
+    const allowedMonths = new Set(uniqueMonths.slice(-12));
+    const rowsAcumulado = rowsBase.filter(r => allowedMonths.has(getMonthKeyFromRow(r)));
+
+    const t = calcTotalsArriba(rowsAcumulado);
 
     const pctAT = t.total ? t.at / t.total : NaN;
     const pctFT = t.total ? t.ft / t.total : NaN;
@@ -258,7 +267,7 @@
     setText("cumpl_kpiNOpct", fmtPct01(pctNO));
     setText("cumpl_kpiNOqty", `Cant: ${fmtInt(t.no)}`);
 
-    const avgG = avgDelay(rowsBase);
+    const avgG = avgDelay(rowsAcumulado);
     setText("cumpl_kpiDemoraAvg", isNaN(avgG) ? "-" : (Math.round(avgG) + " d"));
     const elDemG = document.getElementById("cumpl_kpiDemoraAvg");
     if (elDemG) elDemG.style.color = (!isNaN(avgG) && avgG > 7) ? "#ef4444" : "#16a34a";

@@ -10,7 +10,22 @@ def clean_col(c):
     nfkd = unicodedata.normalize('NFKD', str(c))
     return ''.join([ch for ch in nfkd if not unicodedata.combining(ch)]).lower().strip()
 
-def process_data(data_dir=None, corte_str="05/10/2026"):
+def get_default_corte():
+    try:
+        last_update_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "js", "last-update.js")
+        if os.path.exists(last_update_path):
+            with open(last_update_path, "r", encoding="utf-8") as f:
+                import re
+                m = re.search(r'LAST_UPDATE\s*=\s*["\']([^"\']+)["\']', f.read())
+                if m:
+                    return m.group(1).strip()
+    except Exception:
+        pass
+    return datetime.datetime.now().strftime("%d/%m/%Y")
+
+def process_data(data_dir=None, corte_str=None):
+    if corte_str is None:
+        corte_str = get_default_corte()
     if data_dir is None:
         data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
@@ -273,4 +288,5 @@ def process_data(data_dir=None, corte_str="05/10/2026"):
     return out_file
 
 if __name__ == '__main__':
-    process_data()
+    arg_corte = sys.argv[1] if len(sys.argv) > 1 else None
+    process_data(corte_str=arg_corte)

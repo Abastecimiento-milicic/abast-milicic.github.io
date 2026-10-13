@@ -8,7 +8,7 @@ if (!cb) {
   cb = new Date().getTime();
   sessionStorage.setItem('mi_cache_buster', cb);
 }
-window.CACHE_BUSTER = cb + "_v44_periodo_corto_pq_sync";
+window.CACHE_BUSTER = cb + "_v46_periodo_corto_pq_sync";
 
 window.forceRefreshData = function() {
   sessionStorage.removeItem('mi_cache_buster');

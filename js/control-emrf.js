@@ -14,6 +14,7 @@
   let currentPage = 1;
   let pageSize = 50; // default 50 por página para óptimo rendimiento
   let lastGcSelected = new Set(["C01", "C07"]);
+  let lastOperOcSelected = new Set(["__ALL__"]);
 
   // Formateadores
   function fmtCurrency(val) {
@@ -48,12 +49,12 @@
       .filter(v => v !== "__ALL__" && v !== "");
   }
 
-  function handleGcSelectChange() {
-    const sel = document.getElementById("emrf_gcSelect");
-    if (!sel) return;
+  function handleSelectWithAll(selectId, lastSelectedSet) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return lastSelectedSet;
 
     const currentSelected = Array.from(sel.selectedOptions).map(o => o.value);
-    const hadAll = lastGcSelected.has("__ALL__");
+    const hadAll = lastSelectedSet.has("__ALL__");
     const hasAll = currentSelected.includes("__ALL__");
 
     if (!hadAll && hasAll) {
@@ -72,7 +73,15 @@
       if (allOpt) allOpt.selected = true;
     }
 
-    lastGcSelected = new Set(Array.from(sel.selectedOptions).map(o => o.value));
+    return new Set(Array.from(sel.selectedOptions).map(o => o.value));
+  }
+
+  function handleGcSelectChange() {
+    lastGcSelected = handleSelectWithAll("emrf_gcSelect", lastGcSelected);
+  }
+
+  function handleOperOcSelectChange() {
+    lastOperOcSelected = handleSelectWithAll("emrf_operOcSelect", lastOperOcSelected);
   }
 
   function reorderSelect(selectId, hasAllOption = false) {
@@ -256,7 +265,8 @@
     const opOCs = [...new Set(allPositions.map(p => p.Operador_OC))]
       .filter(o => o && o !== "SIN ASIGNAR")
       .sort();
-    populateSelect("emrf_operOcSelect", opOCs, []);
+    populateSelect("emrf_operOcSelect", opOCs, [], true);
+    lastOperOcSelected = new Set(["__ALL__"]);
 
     // 6. Selector de filas
     const rowsSelect = document.getElementById("emrf_rowsPerPage");
@@ -448,7 +458,10 @@
       if (e.target.id === "emrf_gcSelect") {
         handleGcSelectChange();
         reorderSelect("emrf_gcSelect", true);
-      } else if (["emrf_estadoSelect", "emrf_vencSelect", "emrf_operOcSelect", "emrf_sociedadSelect"].includes(e.target.id)) {
+      } else if (e.target.id === "emrf_operOcSelect") {
+        handleOperOcSelectChange();
+        reorderSelect("emrf_operOcSelect", true);
+      } else if (["emrf_estadoSelect", "emrf_vencSelect", "emrf_sociedadSelect"].includes(e.target.id)) {
         reorderSelect(e.target.id, false);
       }
     }
@@ -477,7 +490,8 @@
     lastGcSelected = new Set(defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"]);
 
     populateSelect("emrf_vencSelect", ["VENCIDA", "VIGENTE", "SIN FECHA OC"], []);
-    populateSelect("emrf_operOcSelect", [...new Set(allPositions.map(p => p.Operador_OC))].filter(o => o && o !== "SIN ASIGNAR").sort(), []);
+    populateSelect("emrf_operOcSelect", [...new Set(allPositions.map(p => p.Operador_OC))].filter(o => o && o !== "SIN ASIGNAR").sort(), [], true);
+    lastOperOcSelected = new Set(["__ALL__"]);
 
     onFiltersChanged();
   }

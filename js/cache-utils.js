@@ -138,10 +138,23 @@
       const safeSheetName = sheetName.replace(/[^a-zA-Z0-9 ]/g, '').substring(0, 31) || "Datos";
       const worksheet = workbook.addWorksheet(safeSheetName);
 
-      const headerFill = {
+      const caractIdx = headers.findIndex(h => /Caract\.planif\.nec/i.test(h || ''));
+      const planifIdx = headers.findIndex(h => /^Planificado$/i.test(h || ''));
+
+      const defaultHeaderFill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FF1E293B' }
+        fgColor: { argb: 'FF1B365D' } // Navy corporativo
+      };
+      const caractHeaderFill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF0284C7' } // Azul cielo destacado
+      };
+      const planifHeaderFill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF047857' } // Verde esmeralda
       };
       const headerFont = {
         name: 'Segoe UI',
@@ -155,12 +168,24 @@
       
       for (let colIdx = 1; colIdx <= headers.length; colIdx++) {
         const cell = headerRowObj.getCell(colIdx);
-        cell.fill = headerFill;
+        if (colIdx - 1 === caractIdx) {
+          cell.fill = caractHeaderFill;
+        } else if (colIdx - 1 === planifIdx) {
+          cell.fill = planifHeaderFill;
+        } else {
+          cell.fill = defaultHeaderFill;
+        }
         cell.font = headerFont;
         cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        cell.border = {
+          left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          top: { style: 'medium', color: { argb: 'FF0F172A' } },
+          bottom: { style: 'medium', color: { argb: 'FF0F172A' } }
+        };
       }
 
-      rows.forEach(r => {
+      rows.forEach((r, rowIdx) => {
         let rowData;
         if (colKeys && Array.isArray(colKeys)) {
           rowData = colKeys.map(k => {
@@ -178,11 +203,24 @@
         
         const rowObj = worksheet.addRow(rowData);
         rowObj.height = 20;
+        const isOdd = rowIdx % 2 === 1;
+        const baseRowBg = isOdd ? 'FFF8FAFC' : 'FFFFFFFF';
         
         for (let colIdx = 1; colIdx <= headers.length; colIdx++) {
           const cell = rowObj.getCell(colIdx);
-          cell.font = { name: 'Segoe UI', size: 10 };
+          cell.font = { name: 'Segoe UI', size: 10, color: { argb: 'FF1F2937' } };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: baseRowBg } };
+          cell.border = {
+            left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+          };
           cell.alignment = { vertical: 'middle', horizontal: 'left' };
+          const hName = headers[colIdx - 1] || "";
+          if (/^(Centro|Almacén|Planificado|Caract\.planif\.nec|Unidad medida base|Moneda|Tipo material)$/i.test(hName.trim())) {
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+          }
           
           const rawVal = rowData[colIdx - 1];
           if (rawVal !== "" && !isNaN(rawVal) && typeof rawVal !== 'boolean') {
@@ -190,13 +228,43 @@
             cell.value = num;
             cell.alignment = { vertical: 'middle', horizontal: 'right' };
             if (Number.isInteger(num)) {
-              cell.numFmt = '0';
+              cell.numFmt = '#,##0';
             } else {
-              cell.numFmt = '0.00';
+              cell.numFmt = '#,##0.00';
             }
+          }
+
+          // Resaltado de color en Caract.planif.nec.
+          if (colIdx - 1 === caractIdx) {
+            const vStr = String(rawVal || '').trim().toUpperCase();
+            if (vStr && !['NO PLANIFICADO', 'ND', '-', 'SIN PLANIFICAR'].includes(vStr)) {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
+              cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF166534' } };
+            } else {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+              cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF991B1B' } };
+            }
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+          }
+          // Resaltado de color en Planificado
+          else if (colIdx - 1 === planifIdx) {
+            const vStr = String(rawVal || '').trim().toUpperCase();
+            if (['SÍ', 'SI', 'YES', '1'].includes(vStr)) {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
+              cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF166534' } };
+            } else {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+              cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF991B1B' } };
+            }
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
           }
         }
       });
+
+      worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+      if (rows.length > 0) {
+        worksheet.autoFilter = { from: { row: 1, column: 1 }, to: { row: rows.length + 1, column: headers.length } };
+      }
 
       worksheet.columns.forEach(col => {
         let maxLen = 10;

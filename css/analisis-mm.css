@@ -537,16 +537,33 @@
   overflow: auto !important;
 }
 
-/* Compactar tabla para que entre más contenido */
+/* Compactar tabla para que entre más contenido y darle estilo profesional con colores */
 .page-mm .mm-table {
   border-collapse: collapse !important;
   font-size: 12px !important;
+  width: 100% !important;
+}
+
+.page-mm .mm-table thead th {
+  background: #1b365d !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #0f2444 !important;
+  letter-spacing: 0.5px;
 }
 
 .page-mm .mm-table th,
 .page-mm .mm-table td {
   padding: 8px 10px !important;
   border: 1px solid #cbd5e1 !important;
+}
+
+.page-mm .mm-table tbody tr:nth-child(even) {
+  background: #f8fafc !important;
+}
+
+.page-mm .mm-table tbody tr:hover {
+  background: #f1f5f9 !important;
 }
 
 

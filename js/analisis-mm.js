@@ -134,7 +134,7 @@
   }
 
   function getSelectedClientes() {
-    const sel = document.getElementById("mm_clienteSelect");
+    const sel = document.getElementById("mm_clienteSelect") || document.getElementById("clienteSelect");
     if (!sel) return [];
     enforceAllOption(sel);
     const vals = [...sel.selectedOptions].map(o => o.value);
@@ -154,7 +154,7 @@
      UI: CLIENTES
   ============================ */
   function renderClientes() {
-    const sel = document.getElementById("mm_clienteSelect");
+    const sel = document.getElementById("mm_clienteSelect") || document.getElementById("clienteSelect");
     if (!sel) return;
 
     const prev = new Set([...sel.selectedOptions].map(o => o.value));
@@ -634,6 +634,175 @@
     await window.saveAsExcel(excelFilename, estadoExacto.substring(0, 31), headers, out, headers);
   }
 
+  const ALMACEN_OBRA_CONFIG = {
+    "223": {
+      url: "data/Almacen MB52/Combinados/Base MB52 223 - Combinado.xlsx",
+      name: "Base MB52 223 - Combinado.xlsx"
+    },
+    "26": {
+      url: "data/Almacen MB52/Combinados/Base MB52 314 - Combinado.xlsx",
+      name: "Base MB52 314 - Combinado.xlsx"
+    },
+    "314": {
+      url: "data/Almacen MB52/Combinados/Base MB52 314 - Combinado.xlsx",
+      name: "Base MB52 314 - Combinado.xlsx"
+    },
+    "35": {
+      url: "data/Almacen MB52/Combinados/Base MB52 341 - Combinado.xlsx",
+      name: "Base MB52 341 - Combinado.xlsx"
+    },
+    "341": {
+      url: "data/Almacen MB52/Combinados/Base MB52 341 - Combinado.xlsx",
+      name: "Base MB52 341 - Combinado.xlsx"
+    },
+    "365": {
+      url: "data/Almacen MB52/Combinados/Base MB52 365 - Combinado.xlsx",
+      name: "Base MB52 365 - Combinado.xlsx"
+    },
+    "372": {
+      url: "data/Almacen MB52/Combinados/Base MB52 372 - Combinado.xlsx",
+      name: "Base MB52 372 - Combinado.xlsx"
+    },
+    "374": {
+      url: "data/Almacen MB52/Combinados/Base MB52 374 - Combinado.xlsx",
+      name: "Base MB52 374 - Combinado.xlsx"
+    },
+    "377": {
+      url: "data/Almacen MB52/Combinados/Base MB52 377 - Combinado.xlsx",
+      name: "Base MB52 377 - Combinado.xlsx"
+    },
+    "378": {
+      url: "data/Almacen MB52/Combinados/Base MB52 378-B - Combinado.xlsx",
+      name: "Base MB52 378-B - Combinado.xlsx"
+    },
+    "378B": {
+      url: "data/Almacen MB52/Combinados/Base MB52 378-B - Combinado.xlsx",
+      name: "Base MB52 378-B - Combinado.xlsx"
+    },
+    "379": {
+      url: "data/Almacen MB52/Combinados/Base MB52 379 - Combinado.xlsx",
+      name: "Base MB52 379 - Combinado.xlsx"
+    }
+  };
+
+  function normalizeAlmacenKey(v) {
+    if (!v) return "";
+    let s = String(v).trim().toUpperCase();
+    s = s.replace(/\.0$/, "");
+    const no0 = s.replace(/^0+/, "");
+    return no0 || s;
+  }
+
+  async function triggerDirectDownload(url, filename) {
+    const fname = filename || decodeURIComponent(url.split("/").pop());
+    try {
+      const resp = await fetch(encodeURI(url));
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const blob = await resp.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = fname;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+    } catch (e) {
+      console.warn("[triggerDirectDownload] Fallback to direct link:", e);
+      const a = document.createElement("a");
+      a.href = encodeURI(url);
+      a.download = fname;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  }
+
+  async function downloadMB52Combinado() {
+    const rawSel = getSelectedClientes();
+
+    // 1. Si no hay ninguno seleccionado o está "Todos" -> Descargar Consolidado Maestro
+    if (!rawSel || rawSel.length === 0) {
+      await triggerDirectDownload(
+        "data/Almacen MB52/Combinados/MB52_CONSOLIDADO_COMBINADO.xlsx",
+        "MB52_CONSOLIDADO_COMBINADO.xlsx"
+      );
+      return;
+    }
+
+    // 2. Normalizar cada almacén seleccionado quitando ceros iniciales (0223 -> 223, 0026 -> 26, 0314 -> 314, etc.)
+    const normSel = [...new Set(rawSel.map(normalizeAlmacenKey).filter(Boolean))];
+
+    // Obtener los archivos individuales destino únicos
+    const targetConfigs = [];
+    const seenUrls = new Set();
+    for (const code of normSel) {
+      const cfg = ALMACEN_OBRA_CONFIG[code];
+      if (cfg && !seenUrls.has(cfg.url)) {
+        seenUrls.add(cfg.url);
+        targetConfigs.push(cfg);
+      }
+    }
+
+    // Caso A: Todos los almacenes seleccionados pertenecen a un único archivo MB52
+    // Ejemplos:
+    // - Seleccionó "0223" -> Base MB52 223 - Combinado.xlsx
+    // - Seleccionó "0026", "0314" o ambos -> Base MB52 314 - Combinado.xlsx
+    // - Seleccionó "0035", "0341" o ambos -> Base MB52 341 - Combinado.xlsx
+    // - Seleccionó "0365" -> Base MB52 365 - Combinado.xlsx
+    // - Seleccionó "0372" -> Base MB52 372 - Combinado.xlsx
+    // - Seleccionó "0374" -> Base MB52 374 - Combinado.xlsx
+    // - Seleccionó "0377" -> Base MB52 377 - Combinado.xlsx
+    // - Seleccionó "0378" -> Base MB52 378-B - Combinado.xlsx
+    // - Seleccionó "0379" -> Base MB52 379 - Combinado.xlsx
+    if (targetConfigs.length === 1) {
+      await triggerDirectDownload(targetConfigs[0].url, targetConfigs[0].name);
+      return;
+    }
+
+    // Caso B: Seleccionó almacenes de MÚLTIPLES obras distintas (ej: 0223 y 0374)
+    // Se filtra el consolidado CSV por los almacenes elegidos y se genera el Excel
+    try {
+      const csvUrl = "data/Almacen MB52/Combinados/MB52_CONSOLIDADO_COMBINADO.csv";
+      let text = null;
+      if (typeof window.fetchWithCache === "function") {
+        text = await window.fetchWithCache(csvUrl + "?t=" + (window.CACHE_BUSTER || ""));
+      } else {
+        const resp = await fetch(csvUrl);
+        text = await resp.text();
+      }
+
+      const parsed = Papa.parse(text, { delimiter: ";", skipEmptyLines: true });
+      if (!parsed.data || parsed.data.length < 2) {
+        showError("No se pudo cargar el archivo consolidado de MB52.");
+        return;
+      }
+
+      const fileHeaders = parsed.data[0].map(h => String(h || "").trim());
+      const almIdx = fileHeaders.indexOf("Almacén");
+      const normSelSet = new Set(normSel);
+
+      const filteredRows = parsed.data.slice(1).filter(row => {
+        if (almIdx === -1) return true;
+        const rowAlm = normalizeAlmacenKey(row[almIdx]);
+        return normSelSet.has(rowAlm);
+      });
+
+      if (!filteredRows.length) {
+        showError("No se encontraron registros de stock para los almacenes seleccionados.");
+        await triggerDirectDownload("data/Almacen MB52/Combinados/MB52_CONSOLIDADO_COMBINADO.xlsx", "MB52_CONSOLIDADO_COMBINADO.xlsx");
+        return;
+      }
+
+      const label = normSel.length > 3 ? "VARIOS" : normSel.join("_");
+      const excelName = `STOCK_MB52_PLANIF_${label}.xlsx`;
+      await window.saveAsExcel(excelName, "Stock_Planificacion", fileHeaders, filteredRows);
+    } catch (err) {
+      console.error("[downloadMB52Combinado]", err);
+      await triggerDirectDownload("data/Almacen MB52/Combinados/MB52_CONSOLIDADO_COMBINADO.xlsx", "MB52_CONSOLIDADO_COMBINADO.xlsx");
+    }
+  }
+
   /* ============================
      EXPOSE DEFERRED INITIALIZATION LIFE CYCLE HOOK
   =========================== */
@@ -643,6 +812,9 @@
 
     document.getElementById("mm_btnDLBaseMM")?.addEventListener("click", () => downloadFilteredBaseMM());
     document.getElementById("btnDLBaseMM")?.addEventListener("click", () => downloadFilteredBaseMM());
+
+    document.getElementById("mm_btnDLMB52Planif")?.addEventListener("click", () => downloadMB52Combinado());
+    document.getElementById("btnDLMB52Planif")?.addEventListener("click", () => downloadMB52Combinado());
 
     document.getElementById("mm_btnDLStoNuloPP")?.addEventListener("click", () => downloadSinRubro());
     document.getElementById("btnDLStoNuloPP")?.addEventListener("click", () => downloadSinRubro());
@@ -743,7 +915,7 @@
           window.initEvolucion();
         }
 
-        const sel = document.getElementById("mm_clienteSelect");
+        const sel = document.getElementById("mm_clienteSelect") || document.getElementById("clienteSelect");
         if (sel) {
           sel.addEventListener("change", (e) => {
             enforceAllOption(e.target);

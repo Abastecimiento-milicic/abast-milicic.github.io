@@ -1411,7 +1411,7 @@
 
     useFinalColumns = false;
     syncMetricColsFromHeaders(headers);
-    const btnAlt = document.getElementById("cumpl_btnAlternativo") || document.getElementById("cumpl_btnArriba");
+    const btnAlt = document.getElementById("cumpl_btnAlternativo");
     if (btnAlt) {
       btnAlt.textContent = "Medir cumplimiento arriba";
       btnAlt.classList.remove("btn-active");
@@ -1730,7 +1730,7 @@
 
       setupChartFilterEvents();
 
-        const btnAlt = document.getElementById("cumpl_btnAlternativo") || document.getElementById("cumpl_btnArriba");
+        const btnAlt = document.getElementById("cumpl_btnAlternativo");
         if (btnAlt) {
           btnAlt.addEventListener("click", () => {
             useFinalColumns = !useFinalColumns;

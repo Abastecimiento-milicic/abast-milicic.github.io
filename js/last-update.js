@@ -1,4 +1,4 @@
-﻿// Inicialización global de fechas por sector (OBRAS, SEDE, COMPRAS, ALMACEN)
+// Inicialización global de fechas por sector (OBRAS, SEDE, COMPRAS, ALMACEN)
 window.LAST_UPDATE = window.LAST_UPDATE_OBRAS || "19/10/2026";
 window.MES_POR_DEFECTO = window.MES_POR_DEFECTO_OBRAS || "2026-09";
 
@@ -27,7 +27,7 @@ if (!cb) {
   cb = new Date().getTime();
   sessionStorage.setItem('mi_cache_buster', cb);
 }
-window.CACHE_BUSTER = cb + "_v64_multi_sector_20261020";
+window.CACHE_BUSTER = cb + "_v64_periodo_corto";
 
 window.forceRefreshData = function() {
   sessionStorage.removeItem('mi_cache_buster');

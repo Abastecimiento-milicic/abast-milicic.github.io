@@ -15,7 +15,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261020_142900" />
+  <link rel="stylesheet" href="css/base.css?v=20261020_154600" />
   <link rel="stylesheet" href="css/cumplimiento.css?v=20261020_102000" />
   <link rel="stylesheet" href="css/analisis-mm.css?v=20261020_102000" />
   <link rel="stylesheet" href="css/demoras.css?v=20261020_102000" />
@@ -317,7 +317,7 @@
             <select id="cumpl_clienteSelect" multiple size="6" class="multi-select">
               <option value="">Todos</option>
             </select>
-            <div id="cumpl_clienteHint" class="hint">Columna: -</div>
+            <div id="cumpl_clienteHint" class="hint">Columna: -</div><div class="filter compras-only-filter" style="display: none; margin-top: 10px;"><label>Comprador (Operador OC):</label><select id="cumpl_operadorSelect" multiple size="6" class="multi-select"><option value="">Todos</option></select><div id="cumpl_operadorHint" class="hint">Columna: -</div></div>
           </div>
 
           <div class="filter">
@@ -347,7 +347,7 @@
             <select id="centroSelect" multiple size="6" class="multi-select">
               <option value="">Todos</option>
             </select>
-            <div id="centroHint" class="hint">Columna: -</div>
+            <div id="centroHint" class="hint">Columna: -</div><div class="filter compras-only-filter" style="display: none; margin-top: 10px;"><label>Proveedor:</label><select id="cumpl_proveedorSelect" multiple size="6" class="multi-select"><option value="">Todos</option></select><div id="cumpl_proveedorHint" class="hint">Columna: -</div></div><div class="filter compras-only-filter" style="display: none; margin-top: 10px;"><label>Solo Compras Abastecimiento:</label><select id="cumpl_soloAbastSelect" multiple size="4" class="multi-select"><option value="">Todos</option></select><div id="cumpl_soloAbastHint" class="hint">Columna: -</div></div>
           </div>
 
           <hr class="st-divider" />
@@ -363,7 +363,7 @@
           </div>
 
           <!-- Tarjeta Pedidos Incompletos -->
-          <div id="cumpl_incompletosCard" class="card-incomplete" style="order: 10; background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 10px 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 3px solid var(--col-amber, #f59e0b); position: relative;">
+          <div class="compras-only-filter" style="display: none; order: 5; width: 100%;"><button id="cumpl_btnDownloadFT" class="btn" type="button" style="width: 100%;">⬇ Descargar FUERA de término</button></div><div id="cumpl_incompletosCard" class="card-incomplete" style="order: 10; background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 10px 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 3px solid var(--col-amber, #f59e0b); position: relative;">
             <span style="font-size: 0.78rem; font-weight: 800 !important; color: #dc2626 !important; text-transform: uppercase; letter-spacing: 0.03em; display: block; margin-bottom: 6px;">PEDIDOS INCOMPLETOS: <span id="cumpl_countIncompletos" style="font-size: 0.88rem; font-weight: 800 !important; color: #dc2626 !important;">0</span></span>
             <!-- inline count moved above -->
             <button id="cumpl_btnDownloadIncompletos" class="btn" style="width: 100%;">
@@ -373,7 +373,7 @@
 
           <!-- Botón Descargar NO entregados -->
           <div style="width: 100%;">
-            <button id="cumpl_btnDownloadNO" class="btn" style="width: 100%;">
+            <button id="cumpl_btnDownloadBase" class="btn compras-only-filter" type="button" style="display: none; width: 100%; margin-bottom: 8px;">⬇ Descargar Base Completa</button><button id="cumpl_btnDownloadNO" class="btn" style="width: 100%;">
               ⬇ Descargar NO entregados
             </button>
             <div class="hint" style="text-align: center;">Exporta Excel / CSV</div>
@@ -385,7 +385,7 @@
       <section class="panel">
         <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <span>CUMPLIMIENTO POR MES</span>
+            <span>CUMPLIMIENTO POR MES</span><span id="cumpl_activeFiltersSummary" class="st-active-filters-summary">FILTROS: - - - - -</span>
           </div>
           <div class="panel-title-actions">
             <!-- Filtro solo icono sin nombre para meses del gráfico -->
@@ -1849,7 +1849,7 @@
   <script src="js/cache-utils.js?v=20261020_102000"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/cumplimiento.js?v=20261020_150000"></script>
+  <script src="js/cumplimiento.js?v=20261020_154000"></script>
   <script src="js/cumplimiento-arriba.js?v=20261020_102000"></script>
   <script src="js/analisis-mm.js?v=20261020_123300"></script>
   <script src="js/evolucion.js?v=20261020_102000"></script>
@@ -1889,7 +1889,7 @@
 
       // Mostrar/ocultar botón de "Medir cumplimiento arriba" (exclusivo de Abastecimiento)
       const arribaWrap = document.getElementById('cumpl_arribaWrap');
-      const btnArriba = document.getElementById('cumpl_btnArriba'); const incompletosCard = document.getElementById('cumpl_incompletosCard');
+      const btnArriba = document.getElementById('cumpl_btnArriba'); const incompletosCard = document.getElementById('cumpl_incompletosCard'); document.querySelectorAll('.compras-only-filter').forEach(el => { el.style.display = (sec === 'compras') ? '' : 'none'; });
       if (sec !== 'abastecimiento') {
         if (btnArriba && btnArriba.classList.contains('btn-active')) {
           btnArriba.click();
@@ -2090,7 +2090,7 @@
           sel.dispatchEvent(new Event('change', { bubbles: true }));
           setTimeout(() => {
             isUpdating = false;
-            render();
+            render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
           }, 0);
         }
 
@@ -2229,7 +2229,7 @@
           container.classList.toggle('is-open', !wasOpen);
           if (!wasOpen) {
             searchInput.value = '';
-            render();
+            render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
             if (searchWrap.style.display !== 'none') {
               setTimeout(() => searchInput.focus(), 20);
             }
@@ -2249,17 +2249,17 @@
           setTimeout(() => render(), 10);
         });
 
-        render();
+        render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
 
         const inst = { render, container, sel };
         instances.set(sel, inst);
         return inst;
       }
 
-      window.syncAllStMultiSelects = function() {
+      window.updateCumplFiltersSummary = function() { const el = document.getElementById('cumpl_activeFiltersSummary'); if (!el) return; const isCompras = window.currentAppSector === 'compras'; const defs = isCompras ? [{ id: 'cumpl_clienteSelect', lbl: 'Cliente' }, { id: 'cumpl_operadorSelect', lbl: 'Comprador' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }, { id: 'cumpl_proveedorSelect', lbl: 'Proveedor' }, { id: 'cumpl_soloAbastSelect', lbl: 'Solo Abast.' }] : [{ id: 'cumpl_clienteSelect', lbl: 'Obra' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }]; el.innerHTML = '<span class="st-af-title">FILTROS:</span>' + defs.map(d => { const s = document.getElementById(d.id); const selOpts = s ? [...s.options].filter(o => o.selected && !isAllOption(o)) : []; const active = selOpts.length > 0; const valTxt = active ? selOpts.map(o => (o.textContent || o.value || '').trim()).join(', ') : 'Todos'; return `<span class="st-af-chip ${active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${valTxt}</span></span>`; }).join(''); }; window.syncAllStMultiSelects = function() {
         document.querySelectorAll('.st-sidebar select.multi-select').forEach(sel => {
           const inst = createStMultiSelect(sel);
-          inst.render();
+          inst.render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
         });
       };
 

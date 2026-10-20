@@ -107,7 +107,7 @@
   let CLIENT_COL = null;
   let CLASIF2_COL = null;
   let GCOC_COL = null;
-  let CENTRO_COL = null;
+  let CENTRO_COL = null; let OPERADOR_COL = null; let PROVEEDOR_COL = null; let SOLO_ABAST_COL = null;
 
   let useFinalColumns = false;
 
@@ -360,7 +360,7 @@
     if (gcs.length && GCOC_COL) rows = rows.filter(r => gcs.includes(clean(r[GCOC_COL])));
     
     const cents = getSelValues("centroSelect");
-    if (cents.length && CENTRO_COL) rows = rows.filter(r => cents.includes(clean(r[CENTRO_COL])));
+    if (cents.length && CENTRO_COL) rows = rows.filter(r => cents.includes(clean(r[CENTRO_COL]))); if (currentSector === "compras") { const ops = getSelValues("cumpl_operadorSelect"); if (ops.length && OPERADOR_COL) rows = rows.filter(r => ops.includes(clean(r[OPERADOR_COL]))); const provs = getSelValues("cumpl_proveedorSelect"); if (provs.length && PROVEEDOR_COL) rows = rows.filter(r => provs.includes(clean(r[PROVEEDOR_COL]))); const sa = getSelValues("cumpl_soloAbastSelect"); if (sa.length && SOLO_ABAST_COL) rows = rows.filter(r => { const raw = clean(r[SOLO_ABAST_COL]).toUpperCase(); const mapped = (raw === "1" || raw === "SI" || raw === "SÍ") ? "SI" : "NO"; return sa.includes(mapped); }); }
     
     return rows;
   }
@@ -394,6 +394,8 @@
     const sel = document.getElementById("centroSelect"); 
     if (sel) sel.disabled = false;
     fillSelect("centroSelect", vals, "Todos");
+  }
+  function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["SI", "NO"], "Todos"); }
   }
 
   function renderClasif2(rowsBase) {
@@ -1397,7 +1399,7 @@
   }
 
   function clearAllFilters() {
-    const selects = ["cumpl_clienteSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect"];
+    const selects = ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect"];
     selects.forEach(id => {
       const sel = document.getElementById(id);
       if (!sel) return;
@@ -1611,7 +1613,7 @@
   }
 
   function resetSelectSelectionsForSectorSwitch() {
-    ["cumpl_clienteSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect"].forEach(id => {
+    ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect"].forEach(id => {
       const sel = document.getElementById(id);
       if (sel) sel.innerHTML = '<option value="__ALL__" selected>Todos</option>';
     });
@@ -1706,7 +1708,7 @@
 
       CLASIF2_COL = CLASIF2_CANDIDATES.find(c => headers.includes(c)) || null;
       GCOC_COL = GCOC_CANDIDATES.find(c => headers.includes(c) && data.some(r => clean(r[c]) !== "")) || (headers.includes("GRUPO DE COMPRA") ? "GRUPO DE COMPRA" : null) || GCOC_CANDIDATES.find(c => headers.includes(c)) || null;
-      CENTRO_COL = CENTRO_CANDIDATES.find(c => headers.includes(c)) || null;
+      CENTRO_COL = CENTRO_CANDIDATES.find(c => headers.includes(c)) || null; OPERADOR_COL = headers.includes("OPERADOR OC") ? "OPERADOR OC" : null; PROVEEDOR_COL = headers.includes("PROVEEDOR") ? "PROVEEDOR" : null; SOLO_ABAST_COL = headers.find(c => c === "SOLO COMPRAS ABASTECIMIENTO" || c === "SOLO COMPRAS ABAST") || null;
 
       setText("cumpl_clienteHint", `Columna cliente: ${CLIENT_COL}`);
       setText("cumpl_clasif2Hint", CLASIF2_COL ? `Columna: ${CLASIF2_COL}` : "Columna: (no encontrada)");
@@ -1714,7 +1716,7 @@
       setText("centroHint", CENTRO_COL ? `Columna: ${CENTRO_COL}` : "Columna: (no encontrada)");
 
       renderClientes();
-      renderCentros();
+      renderCentros(); renderComprasExtraFilters();
       const baseCliente = rowsByClienteBase();
       renderClasif2(baseCliente);
       renderGcoc(baseCliente);
@@ -1773,7 +1775,7 @@
           applyAll();
         });
 
-        document.getElementById("centroSelect")?.addEventListener("change", (e) => {
+        ["cumpl_operadorSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect"].forEach(id => { document.getElementById(id)?.addEventListener("change", (e) => { enforceAllOption(e.target); applyAll(); }); }); document.getElementById("centroSelect")?.addEventListener("change", (e) => {
           enforceAllOption(e.target);
           applyAll();
         });
@@ -1787,7 +1789,7 @@
           updateIncompletosCount();
         });
 
-        document.getElementById("cumpl_btnDownloadNO")?.addEventListener("click", () => { const rowsFilt = filteredRowsByAll();
+        document.getElementById("cumpl_btnDownloadBase")?.addEventListener("click", () => { const rowsFilt = filteredRowsByAll(); if (!rowsFilt.length) { alert("No hay datos para el filtro actual."); return; } const cols = headers.slice(); const cliente = safeFilePart(selLabel("cumpl_clienteSelect")); const mes = safeFilePart(selLabel("cumpl_mesSelect")); downloadExcel(`BASE_COMPLETA_${cliente}_${mes}.csv`, rowsFilt, cols, "Base Completa"); }); document.getElementById("cumpl_btnDownloadFT")?.addEventListener("click", () => { const rowsFilt = filteredRowsByAll(); const ftRows = rowsFilt.filter(r => toNumber(r[FT_COL]) > 0); if (!ftRows.length) { alert("No hay entregas FUERA DE TÉRMINO para el filtro actual."); return; } const cols = headers.slice(); const cliente = safeFilePart(selLabel("cumpl_clienteSelect")); const mes = safeFilePart(selLabel("cumpl_mesSelect")); downloadExcel(`FUERA_DE_TERMINO_${cliente}_${mes}.csv`, ftRows, cols, "Fuera de Termino"); }); document.getElementById("cumpl_btnDownloadNO")?.addEventListener("click", () => { const rowsFilt = filteredRowsByAll();
           // rowsFilt calculated without month filter above
           const noRows = getNoEntregadosRows(rowsFilt);
 

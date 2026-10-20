@@ -2567,3 +2567,151 @@ body.page-mm .mm-block-title {
   animation: none !important;
   transform: none !important;
 }
+
+/* Bajar el botón flotante de "Panel de Control" para que no tape el título de la barra superior */
+.st-expand-btn {
+  top: 66px !important;
+  left: 14px !important;
+}
+
+/* Resumen de filtros activos al lado del título CUMPLIMIENTO POR MES */
+.st-active-filters-summary {
+  font-family: var(--font-body) !important;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  color: #475569 !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  padding: 2px 10px !important;
+  margin-left: 6px !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+}
+
+/* Chips con borde para el resumen de filtros activos */
+.st-active-filters-summary {
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin-left: 10px !important;
+}
+
+.st-af-title {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  letter-spacing: 0.04em !important;
+  margin-right: 2px !important;
+}
+
+.st-af-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2px 9px !important;
+  border-radius: 6px !important;
+  font-size: 0.75rem !important;
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #64748b !important;
+  line-height: 1.35 !important;
+}
+
+.st-af-chip .st-af-k {
+  font-weight: 600 !important;
+  color: #475569 !important;
+}
+
+.st-af-chip .st-af-v {
+  font-weight: 500 !important;
+  max-width: 180px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.st-af-chip.is-active {
+  background: var(--sector-soft-bg, #ecfdf5) !important;
+  border: 1.5px solid var(--sector-primary, #059669) !important;
+  color: var(--sector-dark, #064e3b) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+.st-af-chip.is-active .st-af-k,
+.st-af-chip.is-active .st-af-v {
+  color: var(--sector-dark, #064e3b) !important;
+  font-weight: 700 !important;
+}
+
+
+/* Compactación de filtros y botones laterales en COMPRAS para que entren los 3 botones en pantalla */
+body[data-sector="compras"] #panel-cumplimiento .st-sidebar {
+  padding: 0.75rem 0.9rem !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-ctrl-title {
+  margin-bottom: 0.35rem !important;
+  font-size: 0.95rem !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-field-group {
+  margin-bottom: 0.35rem !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-date-box {
+  padding: 3px 8px !important;
+  min-height: 33px !important;
+  font-size: 0.8rem !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-divider {
+  margin: 0.55rem 0 !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-filters-header {
+  margin-bottom: 0.3rem !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-filters-stack {
+  gap: 8px !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-filters-stack .filter {
+  margin: 0 !important;
+  gap: 1px !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-filters-stack .filter.compras-only-filter {
+  margin-top: 8px !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-sidebar .filter label {
+  margin-bottom: 3px !important;
+  font-size: 0.78rem !important;
+  line-height: 1.15 !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-ms-control {
+  min-height: 33px !important;
+  padding: 2px 7px !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-ms-placeholder {
+  font-size: 0.78rem !important;
+  padding: 0 2px !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento .st-filters-stack .btn {
+  min-height: 35px !important;
+  padding: 4px 8px !important;
+  font-size: 0.78rem !important;
+}
+
+body[data-sector="compras"] #panel-cumplimiento #cumpl_btnDownloadBase {
+  margin-bottom: 8px !important;
+}

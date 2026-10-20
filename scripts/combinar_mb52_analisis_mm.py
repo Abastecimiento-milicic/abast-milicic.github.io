@@ -59,29 +59,32 @@ def apply_excel_table_styling(ws):
     red_fill = PatternFill(start_color="FEE2E2", end_color="FEE2E2", fill_type="solid")
     red_font = Font(name="Segoe UI", size=10, bold=True, color="991B1B")
 
+    amber_fill = PatternFill(start_color="FEF3C7", end_color="FEF3C7", fill_type="solid")
+    amber_font = Font(name="Segoe UI", size=10, bold=True, color="B45309")
+
     default_font = Font(name="Segoe UI", size=10, color="1F2937")
 
     headers = [str(ws.cell(row=1, column=c).value or '').strip() for c in range(1, max_col + 1)]
 
     caract_col = None
     planif_col = None
+    stock_esp_col = None
     for c_idx, h in enumerate(headers, 1):
         if h == 'Caract.planif.nec.':
             caract_col = c_idx
         elif h == 'Planificado':
             planif_col = c_idx
+        elif h in ('Stock especial', 'Stock Especial', 'E'):
+            stock_esp_col = c_idx
 
     currency_cols = {
-        'Valor libre util.', 'Val.trans.c/cond.', 'Valor en insp.cal.',
-        'Valor no libre', 'Valor stock bloq.', 'Val.stock bl.dev.'
+        'Valor libre util.'
     }
     qty_cols = {
-        'Punto de pedido', 'Stock alm.máx.', 'Libre utilización',
-        'Trans./Trasl.', 'Inspecc.de calidad', 'Stock no libre',
-        'Bloqueado', 'Devoluciones'
+        'Punto de pedido', 'Stock alm.máx.', 'Libre utilización'
     }
     center_cols = {
-        'Centro', 'Almacén', 'Planificado', 'Caract.planif.nec.',
+        'Centro', 'Almacén', 'E', 'Planificado', 'Caract.planif.nec.',
         'Unidad medida base', 'Moneda', 'Tipo material'
     }
 
@@ -148,6 +151,14 @@ def apply_excel_table_styling(ws):
                 else:
                     cell.fill = red_fill
                     cell.font = red_font
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+
+            # Destacado con color en Stock especial (E)
+            elif c == stock_esp_col:
+                val_str = str(val or '').strip().upper()
+                if val_str == 'E':
+                    cell.fill = amber_fill
+                    cell.font = amber_font
                 cell.alignment = Alignment(horizontal="center", vertical="center")
 
     # 3. Congelar encabezado
@@ -374,6 +385,8 @@ def run_combination(base_dir=None):
             tipo_mat = ''
             if row_mm is not None:
                 caract = str(row_mm.get('Caract.planif.nec.', '') or '').strip() or 'PLANIFICADO'
+                if caract.upper() == 'NO PLANIFICADO':
+                    caract = '-'
                 planif = 'SI'
                 estado_mm = str(row_mm.get('Estado', '') or '').strip() or 'PLANIFICADO'
                 pp = row_mm.get('Punto de pedido', 0)
@@ -384,7 +397,7 @@ def run_combination(base_dir=None):
                 grp_comp = str(row_mm.get('Grupo de compras', '') or '').strip()
                 tipo_mat = str(row_mm.get('Tipo material', '') or '').strip()
             else:
-                caract = 'NO PLANIFICADO'
+                caract = '-'
                 planif = 'NO'
                 estado_mm = 'NO PLANIFICADO'
                 pp = 0
@@ -413,6 +426,15 @@ def run_combination(base_dir=None):
             if not desc and mat_clean in aux_descs:
                 desc = aux_descs[mat_clean]
 
+            # Extraer Stock especial ('E' o vacío)
+            stock_esp = ''
+            for c_esp in ['Stock especial', 'Stock Especial', 'STOCK ESPECIAL', 'E', 'Stock esp.']:
+                if c_esp in r and pd.notna(r[c_esp]):
+                    val_esp = str(r[c_esp]).strip()
+                    if val_esp and val_esp.lower() != 'nan':
+                        stock_esp = val_esp.upper()
+                        break
+
             # Armar registro enriquecido
             rec = {
                 'Material': int(float(mat_clean)) if mat_clean.isdigit() else mat_clean,
@@ -420,6 +442,7 @@ def run_combination(base_dir=None):
                 'Tipo material': tipo_mat or '',
                 'Centro': str(r.get('Centro', '') or '').strip(),
                 'Almacén': norm_alm(r.get('Almacén', '')) or str(r.get('Almacén', '') or '').strip(),
+                'E': stock_esp,
                 'Planificado': planif,
                 'Caract.planif.nec.': caract,
                 'Estado MM': estado_mm,
@@ -431,17 +454,7 @@ def run_combination(base_dir=None):
                 'Moneda': r.get('Moneda', 'ARS'),
                 'Rubro': rubro or 'SIN RUBRO',
                 'SubRubro': subrubro or '',
-                'Grupo de compras': grp_comp or '',
-                'Trans./Trasl.': r.get('Trans./Trasl.', 0),
-                'Val.trans.c/cond.': r.get('Val.trans.c/cond.', 0.0),
-                'Inspecc.de calidad': r.get('Inspecc.de calidad', 0),
-                'Valor en insp.cal.': r.get('Valor en insp.cal.', 0.0),
-                'Stock no libre': r.get('Stock no libre', 0),
-                'Valor no libre': r.get('Valor no libre', 0.0),
-                'Bloqueado': r.get('Bloqueado', 0),
-                'Valor stock bloq.': r.get('Valor stock bloq.', 0.0),
-                'Devoluciones': r.get('Devoluciones', 0),
-                'Val.stock bl.dev.': r.get('Val.stock bl.dev.', 0.0)
+                'Grupo de compras': grp_comp or ''
             }
             enriched_rows.append(rec)
 
@@ -464,6 +477,7 @@ def run_combination(base_dir=None):
 
         # Métricas de resumen
         tot = len(df_out)
+        esp_c = (df_out['E'] == 'E').sum()
         plan_c = (df_out['Planificado'] == 'SI').sum()
         no_plan_c = tot - plan_c
         pct_p = (plan_c / tot * 100) if tot else 0
@@ -473,6 +487,7 @@ def run_combination(base_dir=None):
         summary_list.append({
             'Archivo': fname,
             'Total_Items': tot,
+            'Especiales_E': esp_c,
             'Planificados': plan_c,
             '%_Planif': round(pct_p, 1),
             'No_Planificados': no_plan_c,
@@ -505,13 +520,14 @@ def run_combination(base_dir=None):
     # Imprimir tabla de resumen
     if summary_list:
         df_resumen = pd.DataFrame(summary_list)
-        print("\n" + "=" * 95)
-        print(f"{'RESUMEN FINAL DE COMBINACIÓN':^95}")
-        print("=" * 95)
-        print(f"{'Archivo':<22} | {'Items':>6} | {'Planif':>7} | {'% Plan':>7} | {'No Plan':>7} | {'Valor Planif (ARS)':>18} | {'Valor No Plan (ARS)':>18}")
-        print("-" * 95)
+        print("\n" + "=" * 105)
+        print(f"{'RESUMEN FINAL DE COMBINACIÓN':^105}")
+        print("=" * 105)
+        print(f"{'Archivo':<22} | {'Items':>6} | {'Esp (E)':>7} | {'Planif':>7} | {'% Plan':>7} | {'No Plan':>7} | {'Valor Planif (ARS)':>18} | {'Valor No Plan (ARS)':>18}")
+        print("-" * 105)
         
         tot_items = df_resumen['Total_Items'].sum()
+        tot_esp = df_resumen['Especiales_E'].sum()
         tot_plan = df_resumen['Planificados'].sum()
         tot_no_plan = df_resumen['No_Planificados'].sum()
         tot_val_p = df_resumen['Valor_Planificado'].sum()
@@ -519,10 +535,10 @@ def run_combination(base_dir=None):
         tot_pct = (tot_plan / tot_items * 100) if tot_items else 0
 
         for _, r in df_resumen.iterrows():
-            print(f"{r['Archivo']:<22} | {r['Total_Items']:6,d} | {r['Planificados']:7,d} | {r['%_Planif']:6.1f}% | {r['No_Planificados']:7,d} | ${r['Valor_Planificado']:17,.2f} | ${r['Valor_No_Planificado']:17,.2f}")
-        print("-" * 95)
-        print(f"{'TOTAL GENERAL':<22} | {tot_items:6,d} | {tot_plan:7,d} | {tot_pct:6.1f}% | {tot_no_plan:7,d} | ${tot_val_p:17,.2f} | ${tot_val_np:17,.2f}")
-        print("=" * 95)
+            print(f"{r['Archivo']:<22} | {r['Total_Items']:6,d} | {r['Especiales_E']:7,d} | {r['Planificados']:7,d} | {r['%_Planif']:6.1f}% | {r['No_Planificados']:7,d} | ${r['Valor_Planificado']:17,.2f} | ${r['Valor_No_Planificado']:17,.2f}")
+        print("-" * 105)
+        print(f"{'TOTAL GENERAL':<22} | {tot_items:6,d} | {tot_esp:7,d} | {tot_plan:7,d} | {tot_pct:6.1f}% | {tot_no_plan:7,d} | ${tot_val_p:17,.2f} | ${tot_val_np:17,.2f}")
+        print("=" * 105)
 
 if __name__ == '__main__':
     run_combination()

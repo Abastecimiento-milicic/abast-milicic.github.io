@@ -1,5 +1,5 @@
 (function() {
-  const csvUrl = "data/SERVICIOS OBRA.csv";
+  const SERV_SECTOR_URLS = { abastecimiento: "data/SERVICIOS OBRA.csv", sede: "data - sede/REPORTE CUMPLIMIENTO SS Y SUB - SEDE.csv" }; let currentServSector = "abastecimiento"; let csvUrl = SERV_SECTOR_URLS.abastecimiento; const servCache = {}; let servEventsBound = false;
   const DELIM = ";";
 
   const CLIENT_COL_NAME = "CLIENTE";
@@ -154,7 +154,7 @@
                   currentSort.col = col;
                   currentSort.dir = col === 'count' ? 'desc' : 'asc';
               }
-              applyAll();
+                  applyAll();
           });
       });
   }
@@ -198,12 +198,12 @@
   /* ============================
      EXPOSE DEFERRED INITIALIZATION LIFE CYCLE HOOK
   =========================== */
-  window.initServicios = function() {
-      if (window.serviciosInitialized) return;
+  window.loadServiciosSector = function(sector) { const sec = (sector === "sede") ? "sede" : "abastecimiento"; if (window.serviciosInitialized && currentServSector === sec && data.length) return; currentServSector = sec; csvUrl = SERV_SECTOR_URLS[sec]; const loader = document.getElementById("serv_loader") || document.getElementById("loader"); if (loader) loader.style.display = "flex";
+      // multi-sector check handled above
       window.serviciosInitialized = true;
 
       // fetch with cache optimized
-      fetchWithCache(csvUrl + "?t=" + window.CACHE_BUSTER)
+      fetchWithCache(encodeURI(csvUrl) + "?t=" + window.CACHE_BUSTER)
       .then(text => {
           const rows = parseCSV(text);
           if (rows.length < 2) return;
@@ -220,10 +220,10 @@
           fill("serv_grupoCompraSelect", G_COMPRA_COL_NAME);
           fill("serv_estadoItemSelect", ESTADO_ITEM_COL);
 
-          ["serv_clienteSelect", "serv_clasif2Select", "serv_gcocSelect", "serv_grupoCompraSelect", "serv_estadoItemSelect"].forEach(id => {
+          if (!servEventsBound) { servEventsBound = true; ["serv_clienteSelect", "serv_clasif2Select", "serv_gcocSelect", "serv_grupoCompraSelect", "serv_estadoItemSelect"].forEach(id => {
               const el = document.getElementById(id) || document.getElementById(id.replace('serv_', ''));
               el?.addEventListener("change", () => {
-                  applyAll();
+                      applyAll();
               });
           });
 
@@ -233,13 +233,13 @@
               downloadExcel(currentFiltered);
           });
 
-          setupSortListeners();
-          applyAll();
+          setupSortListeners(); } if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
+              applyAll();
 
           const loader = document.getElementById("serv_loader") || document.getElementById("loader");
           if (loader) loader.style.display = "none";
       });
-  };
+  }; window.initServicios = function() { window.loadServiciosSector(window.currentAppSector === "sede" ? "sede" : "abastecimiento"); };
 
   // Auto-init if running on standalone servicios.html
   if (document.getElementById('panel-servicios') === null && (document.getElementById('serv_clienteSelect') || document.getElementById('clienteSelect'))) {

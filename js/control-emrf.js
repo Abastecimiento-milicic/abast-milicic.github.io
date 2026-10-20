@@ -283,6 +283,7 @@
     if (!allPositions || allPositions.length === 0) return [];
 
     const socVal = document.getElementById("emrf_sociedadSelect")?.value || "TODAS";
+    const searchVal = (document.getElementById("emrf_searchInput")?.value || "").trim().toLowerCase();
     const selEmrf = getMultiSelectValues("emrf_estadoSelect");
     const selGC = getMultiSelectValues("emrf_gcSelect");
     const selVenc = getMultiSelectValues("emrf_vencSelect");
@@ -291,6 +292,13 @@
     return allPositions.filter(p => {
       // 1. Sociedad
       if (socVal !== "TODAS" && p.Sociedad !== socVal) return false;
+
+      // 1b. Búsqueda rápida por Pedido o Proveedor
+      if (searchVal) {
+        const ped = String(p.Pedido || "").toLowerCase();
+        const prov = String(p.Proveedor || "").toLowerCase();
+        if (!ped.includes(searchVal) && !prov.includes(searchVal)) return false;
+      }
 
       // 2. Estado Contable EM/RF
       if (selEmrf.length > 0 && !selEmrf.includes(p.Grupo_EMRF)) return false;
@@ -472,6 +480,9 @@
   }
 
   function clearFilters() {
+    const searchEl = document.getElementById("emrf_searchInput");
+    if (searchEl) searchEl.value = "";
+
     const socSelect = document.getElementById("emrf_sociedadSelect");
     if (socSelect) {
       socSelect.value = "TODAS";
@@ -663,10 +674,11 @@
     }
 
     await loadData();
-    setupFilters();
+    setupFilters(); if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
 
     // Listeners de filtros
     document.getElementById("emrf_sociedadSelect")?.addEventListener("change", onFiltersChanged);
+    document.getElementById("emrf_searchInput")?.addEventListener("input", onFiltersChanged);
     document.getElementById("emrf_estadoSelect")?.addEventListener("change", onFiltersChanged);
     document.getElementById("emrf_gcSelect")?.addEventListener("change", onFiltersChanged);
     document.getElementById("emrf_vencSelect")?.addEventListener("change", onFiltersChanged);

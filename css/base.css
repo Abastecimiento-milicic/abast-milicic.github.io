@@ -54,7 +54,7 @@
   --radius-sm: 6px;
 
   /* Fuentes */
-  --font-main: 'Montserrat', sans-serif;
+  --font-main: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Source Sans 3', sans-serif;
 
   /* Transiciones */
@@ -974,3 +974,1596 @@ input:focus {
   color: #0b5d46 !important;
 }
 
+
+/* ==========================================================================
+   ESTILO STREAMLIT — BARRA LATERAL IZQUIERDA (SIDEBAR)
+   ========================================================================== */
+:root {
+  --st-sidebar-width: 310px;
+}
+
+body {
+  transition: padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 993px) {
+  body.has-st-sidebar:not(.sidebar-collapsed) {
+    padding-left: var(--st-sidebar-width);
+  }
+}
+
+.st-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--st-sidebar-width);
+  background: #f1f5f9;
+  border-right: 3px solid var(--col-brand, #0d9488);
+  box-shadow: 4px 0 18px rgba(15, 23, 42, 0.07);
+  z-index: 250;
+  display: flex;
+  flex-direction: column;
+  padding: 0.9rem 1.1rem 1.75rem 1.1rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--col-brand, #0d9488) #e2e8f0;
+}
+
+.st-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.st-sidebar::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+.st-sidebar::-webkit-scrollbar-thumb {
+  background: var(--col-brand, #0d9488);
+  border-radius: 3px;
+}
+
+body.sidebar-collapsed .st-sidebar {
+  transform: translateX(-100%);
+}
+
+/* Botón superior « dentro del sidebar para colapsar */
+.st-sidebar-toprow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 0.25rem;
+}
+
+.st-collapse-btn {
+  background: transparent;
+  border: none;
+  color: #475569;
+  font-size: 1.15rem;
+  font-weight: 800;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.st-collapse-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Botón flotante » para abrir cuando está colapsado */
+.st-expand-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 260;
+  background: #ffffff;
+  color: var(--col-brand-dk, #0f766e);
+  border: 2px solid var(--col-brand, #0d9488);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  display: none;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.st-expand-btn:hover {
+  background: var(--col-brand, #0d9488);
+  color: #ffffff;
+}
+
+body.has-st-sidebar.sidebar-collapsed .st-expand-btn {
+  display: inline-flex;
+}
+
+@media (max-width: 992px) {
+  .st-sidebar {
+    transform: translateX(-100%);
+  }
+  body.sidebar-mobile-open .st-sidebar {
+    transform: translateX(0);
+  }
+  body.has-st-sidebar .st-expand-btn {
+    display: inline-flex;
+  }
+  body.sidebar-mobile-open .st-expand-btn {
+    display: none;
+  }
+}
+
+/* Encabezado "Panel de Control" estilo Streamlit */
+.st-ctrl-title {
+  font-family: var(--font-main);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.01em;
+}
+
+.st-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 0.65rem;
+}
+
+.st-field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.st-date-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.st-refresh-mini {
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  color: #0f766e;
+  border-radius: 5px;
+  padding: 3px 7px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.st-refresh-mini:hover {
+  background: #0d9488;
+  color: #ffffff;
+  border-color: #0d9488;
+}
+
+.st-divider {
+  border: none;
+  border-top: 1px solid #cbd5e1;
+  margin: 0.65rem 0 0.85rem 0;
+  width: 100%;
+}
+
+/* Cabecera "Filtros de Búsqueda" */
+.st-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 0.75rem;
+}
+
+.st-filters-title {
+  font-family: var(--font-main);
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.st-filters-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.st-sidebar .btn-clear {
+  margin-left: 0 !important;
+  background: #ffffff !important;
+  color: #0f766e !important;
+  border: 1px solid #99f6e4 !important;
+  padding: 3px 8px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.st-sidebar .btn-clear:hover {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border-color: #0d9488 !important;
+}
+
+.st-sidebar .help-btn {
+  margin-left: 0 !important;
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 0.78rem !important;
+}
+
+.st-sidebar .help-btn:hover {
+  background: #0f766e !important;
+}
+
+/* Lista vertical de filtros dentro del sidebar */
+.st-filters-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.st-sidebar .filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.st-sidebar .filter label {
+  display: inline-block;
+  background-color: var(--col-brand, #0d9488);
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  align-self: flex-start;
+}
+
+.st-sidebar .multi-select,
+.st-sidebar select.st-select,
+.st-sidebar .tiempos-select {
+  width: 100% !important;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 5px;
+  font-size: 0.84rem !important;
+  color: #1e293b;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.st-sidebar .multi-select {
+  height: 112px !important;
+}
+
+.st-sidebar .multi-select option {
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.st-sidebar .multi-select option:checked,
+.st-sidebar select option:checked {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
+  background-color: #0d9488 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.st-sidebar .st-search-input {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 0.84rem;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.st-sidebar .st-search-input:focus {
+  border-color: var(--col-brand, #0d9488);
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
+}
+
+/* Ajuste de contenedor principal y pestañas con sidebar */
+.tabs {
+  max-width: 1500px;
+  width: calc(100% - 2.5rem);
+  margin: 1rem auto;
+}
+
+.container {
+  max-width: 1500px;
+  margin: 1rem auto 2rem auto;
+  padding: 0 1.25rem;
+}
+
+
+/* ==========================================================================
+   REFINAMIENTO VISUAL ESTILO STREAMLIT (Tipografía Limpia y Bordes Delicados)
+   ========================================================================== */
+:root {
+  --font-main: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --st-border-color: rgba(49, 51, 63, 0.16);
+  --st-border-subtle: #e6eaf1;
+  --st-text-color: #31333F;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--st-text-color);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* 1. Barra Lateral (stSidebar) más limpia y refinada */
+.st-sidebar {
+  background: #f8f9fb !important;
+  border-right: 2px solid var(--col-brand, #0d9488) !important;
+  box-shadow: none !important;
+  padding: 1rem 1.15rem 1.75rem 1.15rem !important;
+}
+
+.st-ctrl-title {
+  font-family: var(--font-body) !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: #31333F !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 0 0.75rem 0 !important;
+}
+
+.st-filters-title {
+  font-family: var(--font-body) !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  color: #31333F !important;
+  letter-spacing: 0 !important;
+}
+
+.st-field-label-row {
+  font-size: 0.86rem !important;
+  font-weight: 400 !important;
+  color: #31333F !important;
+}
+
+/* Etiquetas de filtro limpias como Streamlit (sin bloques gruesos ni mayúsculas pesadas) */
+.st-sidebar .filter label,
+#panel-emrf .st-sidebar .filter label,
+#panel-servicios .st-sidebar .filter label {
+  display: block !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #31333F !important;
+  padding: 0 !important;
+  margin-bottom: 4px !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.86rem !important;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Inputs, Selects y Multi-selects con bordes delicados de 1px */
+.st-date-box,
+.st-sidebar .multi-select,
+.st-sidebar select.st-select,
+.st-sidebar .tiempos-select,
+.st-sidebar .st-search-input,
+#panel-emrf .multi-select,
+#panel-servicios .multi-select,
+.page-cumplimiento .multi-select,
+.page-mm .multi-select {
+  background: #ffffff !important;
+  border: 1px solid rgba(49, 51, 63, 0.2) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: none !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.86rem !important;
+  font-weight: 400 !important;
+  color: #31333F !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.st-sidebar .multi-select:focus,
+.st-sidebar select.st-select:focus,
+.st-sidebar .tiempos-select:focus,
+.st-sidebar .st-search-input:focus {
+  border-color: var(--col-brand, #0d9488) !important;
+  box-shadow: 0 0 0 1px var(--col-brand, #0d9488) !important;
+  transform: none !important;
+}
+
+/* Opciones dentro de los selectores: letra ligera y limpia */
+.st-sidebar .multi-select option,
+#panel-emrf .multi-select option,
+#panel-servicios .multi-select option,
+.page-cumplimiento .multi-select option,
+.page-mm .multi-select option {
+  font-family: var(--font-body) !important;
+  font-size: 0.84rem !important;
+  font-weight: 400 !important;
+  padding: 5px 8px !important;
+  border-radius: 5px !important;
+  margin-bottom: 2px !important;
+  color: #31333F;
+}
+
+.st-sidebar .multi-select option:checked,
+.st-sidebar select option:checked,
+#panel-emrf .multi-select option:checked,
+.page-cumplimiento .multi-select option:checked {
+  background: var(--col-brand, #0d9488) !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.st-divider {
+  border-top: 1px solid rgba(49, 51, 63, 0.14) !important;
+  margin: 0.75rem 0 !important;
+}
+
+/* 2. Topbar y Pestañas de Navegación más refinadas */
+.topbar {
+  padding: 0.9rem 1.5rem !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+}
+
+.topbar-left .title {
+  font-family: var(--font-body) !important;
+  font-size: 1.35rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+.topbar-left .subtitle {
+  font-weight: 400 !important;
+  font-size: 0.86rem !important;
+}
+
+.topbar-badge {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  font-size: 0.8rem !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.update-label {
+  font-weight: 500 !important;
+}
+
+.update-date {
+  font-weight: 600 !important;
+}
+
+.tabs {
+  background: #f8f9fb !important;
+  border: 1px solid var(--st-border-subtle) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  padding: 4px !important;
+}
+
+.tab {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  font-size: 0.84rem !important;
+  color: #555867 !important;
+  border-radius: 6px !important;
+  padding: 0.5rem 0.65rem !important;
+}
+
+.tab.active {
+  background: #ffffff !important;
+  color: var(--col-brand-dk, #0f766e) !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(49, 51, 63, 0.12) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* 3. Paneles, Tarjetas KPI y Contenedores con bordes finos de 1px */
+.panel,
+.kpi,
+.cumpl-summary-card,
+.cumpl-metric-row,
+.emrf-table-container,
+.tiempos-card,
+.page-mm .mm-card,
+.page-mm .callout,
+.card-incomplete,
+#panel-servicios .kpi-mini-box {
+  border: 1px solid var(--st-border-subtle) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+}
+
+.panel:hover,
+.kpi:hover {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Mantener el acento de color izquierdo/superior de forma sutil y elegante */
+.cumpl-row-blue { border-left: 3px solid var(--col-blue) !important; }
+.cumpl-row-green { border-left: 3px solid var(--col-green) !important; }
+.cumpl-row-amber { border-left: 3px solid var(--col-amber) !important; }
+.cumpl-row-red { border-left: 3px solid var(--col-red) !important; }
+.cumpl-row-slate { border-left: 3px solid var(--col-slate) !important; }
+
+.panel-title,
+.page-mm .mm-block-title {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 0.92rem !important;
+  letter-spacing: 0.01em !important;
+  padding: 0.65rem 1.15rem !important;
+}
+
+/* 4. Tipografía de KPIs, Títulos y Métricas (sin grosores excesivos 800/900) */
+.emrf-main-title {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 1.6rem !important;
+  letter-spacing: -0.01em !important;
+}
+
+.emrf-soc-badge {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 0.76rem !important;
+}
+
+.emrf-table-title {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 1.2rem !important;
+}
+
+.kpi-title,
+.cumpl-card-title,
+.cumpl-metric-label,
+.cumpl-col-tag,
+.page-mm .callout-title,
+.page-mm .mm-card-title {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.kpi-value,
+.cumpl-kpi-num,
+.page-mm .callout-pct,
+#emrf_kpiCount,
+#cumpl_countIncompletos,
+#panel-servicios .kpi-mini-value {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.kpi-sub,
+.kpi-sub-strong,
+.cumpl-kpi-sub {
+  font-weight: 400 !important;
+}
+
+/* 5. Botones refinados estilo Streamlit */
+.btn,
+.btn-outline,
+.emrf-page-btn,
+.page-mm .mm-legend-btn,
+.btn-table-download {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  font-size: 0.84rem !important;
+  border: 1px solid rgba(49, 51, 63, 0.2) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.btn-emrf-excel {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 0.88rem !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.22) !important;
+}
+
+/* 6. Tablas de datos estilo Streamlit (bordes finos de 1px y encabezados limpios) */
+.emrf-data-table thead th,
+#panel-servicios .serv-resumen-table th,
+.serv-resumen-table th,
+.data-table thead th,
+.mm-table thead th,
+.table thead th {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 0.78rem !important;
+  color: #555867 !important;
+  background: #f8f9fb !important;
+  border-bottom: 1px solid #dfe3eb !important;
+  letter-spacing: 0.01em !important;
+}
+
+.emrf-data-table tbody td,
+#panel-servicios .serv-resumen-table td,
+.serv-resumen-table td,
+.data-table tbody td,
+.mm-table tbody td,
+.table tbody td {
+  font-family: var(--font-body) !important;
+  font-weight: 400 !important;
+  font-size: 0.84rem !important;
+  color: #31333F !important;
+  border-bottom: 1px solid #f0f2f6 !important;
+}
+
+.badge-soc,
+.badge-venc,
+.badge-item-status,
+.badge-serv-status {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+}
+
+.saldo-positivo,
+.saldo-negativo,
+.saldo-cero,
+.dias-alerta {
+  font-weight: 600 !important;
+}
+
+
+/* ==========================================================================
+   STREAMLIT PILL MULTISELECT (st.multiselect)
+   ========================================================================== */
+.st-sidebar select.multi-select.st-ms-hidden {
+  display: none !important;
+}
+
+.st-ms-container {
+  position: relative;
+  width: 100%;
+  font-family: var(--font-body);
+}
+
+.st-ms-control {
+  background: #ffffff;
+  border: 1px solid rgba(49, 51, 63, 0.2);
+  border-radius: 0.5rem;
+  min-height: 38px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.st-ms-control:hover {
+  border-color: rgba(49, 51, 63, 0.38);
+}
+
+.st-ms-container.is-open .st-ms-control {
+  border-color: var(--col-brand, #0d9488);
+  box-shadow: 0 0 0 1px var(--col-brand, #0d9488);
+}
+
+.st-ms-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.st-ms-placeholder {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 400;
+  padding: 2px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.st-ms-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--col-brand, #0d9488);
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 0.79rem;
+  font-weight: 500;
+  line-height: 1.35;
+  max-width: 100%;
+  transition: background-color 0.15s ease;
+}
+
+.st-ms-pill:hover {
+  background-color: var(--col-brand-dk, #0f766e);
+}
+
+.st-ms-pill-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 165px;
+}
+
+.st-ms-pill-remove {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0 1px;
+  cursor: pointer;
+  opacity: 0.85;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.st-ms-pill-remove:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.st-ms-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.st-ms-clear {
+  background: transparent;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.st-ms-clear:hover {
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+.st-ms-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  transition: transform 0.2s ease;
+}
+
+.st-ms-container.is-open .st-ms-chevron {
+  transform: rotate(180deg);
+}
+
+.st-ms-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 400;
+  background: #ffffff;
+  border: 1px solid rgba(49, 51, 63, 0.16);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.14), 0 4px 10px -4px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+
+.st-ms-container.is-open .st-ms-dropdown {
+  display: flex;
+}
+
+.st-ms-search-wrap {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
+}
+
+.st-ms-search {
+  width: 100% !important;
+  padding: 5px 8px !important;
+  font-size: 0.82rem !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 5px !important;
+  background: #ffffff !important;
+  color: #31333F !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.st-ms-search:focus {
+  border-color: var(--col-brand, #0d9488) !important;
+  transform: none !important;
+}
+
+.st-ms-options {
+  max-height: 210px;
+  overflow-y: auto;
+  padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.st-ms-option {
+  padding: 6px 12px;
+  font-size: 0.84rem;
+  font-weight: 400;
+  color: #31333F;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.st-ms-option:hover {
+  background-color: #f0fdfa;
+  color: var(--col-brand-dk, #0f766e);
+}
+
+.st-ms-empty {
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-align: center;
+  font-style: italic;
+}
+
+
+/* ==========================================================================
+   TEMA EJECUTIVO CORPORATIVO (NAVY SAP #1B365D + ROYAL BLUE #2563EB)
+   ========================================================================== */
+:root {
+  --col-brand: #2563eb;
+  --col-brand-dk: #1b365d;
+  --col-brand-lt: #3b82f6;
+  --col-brand-gradient: linear-gradient(135deg, #1b365d 0%, #2563eb 100%);
+  --bg-body: #f4f6f9;
+}
+
+body {
+  background-color: #f4f6f9 !important;
+  color: #1e293b !important;
+}
+
+/* 1. Topbar en Azul Marino Corporativo Profundo (#0F172A -> #1B365D) */
+.topbar {
+  background: linear-gradient(135deg, #0f172a 0%, #1b365d 60%, #1e3a8a 100%) !important;
+  animation: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 0.85rem 1.5rem !important;
+}
+
+.topbar-left .title {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.topbar-left .subtitle {
+  color: #cbd5e1 !important;
+}
+
+/* Badge del topbar elegante (reemplaza el naranja chillón por un pill translúcido ejecutivo) */
+.topbar .topbar-badge {
+  background: rgba(56, 189, 248, 0.14) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  color: #e0f2fe !important;
+  font-weight: 500 !important;
+  font-size: 0.78rem !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+}
+
+#userGreeting {
+  color: #e2e8f0 !important;
+  border-right-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 2. Barra Lateral (Sidebar) con acento Royal Blue (#2563EB) como el ejemplo de Streamlit */
+.st-sidebar {
+  background: #f8fafc !important;
+  border-right: 3px solid #2563eb !important;
+}
+
+.st-ctrl-title,
+.st-filters-title {
+  color: #1b365d !important;
+}
+
+.st-refresh-mini,
+.st-sidebar .btn-clear {
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  color: #1d4ed8 !important;
+}
+
+.st-refresh-mini:hover,
+.st-sidebar .btn-clear:hover {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.st-sidebar .help-btn {
+  background: #1b365d !important;
+  color: #ffffff !important;
+}
+
+.st-sidebar .help-btn:hover {
+  background: #2563eb !important;
+}
+
+.st-expand-btn {
+  color: #1b365d !important;
+  border-color: #2563eb !important;
+}
+
+.st-expand-btn:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+/* Pills del Multiselect en Royal Blue Corporativo */
+.st-ms-pill {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-radius: 5px !important;
+}
+
+.st-ms-pill:hover {
+  background-color: #1d4ed8 !important;
+}
+
+.st-ms-option:hover {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* 3. Pestañas de Navegación (Tabs) estilo Ejecutivo */
+.tabs {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 5px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+}
+
+.tab {
+  color: #64748b !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+}
+
+.tab:hover {
+  color: #1b365d !important;
+  background: #f8fafc !important;
+}
+
+.tab.active {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
+  border: 1px solid #bfdbfe !important;
+  box-shadow: none !important;
+}
+
+/* 4. Encabezados de Paneles limpios y refinados (fondo claro, texto Navy #1B365D, sin bloques pesados) */
+.panel-title,
+.page-mm .mm-block-title {
+  background: #ffffff !important;
+  color: #1b365d !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  padding: 0.75rem 1.25rem !important;
+}
+
+.panel-title::before,
+.page-mm .mm-block-title::before {
+  background: #2563eb !important;
+  width: 7px !important;
+  height: 7px !important;
+}
+
+/* Ajustar íconos y badges que están dentro de .panel-title ahora que el fondo es blanco limpio */
+.panel-title .topbar-badge {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0 !important;
+  font-weight: 500 !important;
+}
+
+.panel-title .help-btn {
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  color: #1d4ed8 !important;
+}
+
+.panel-title .help-btn:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+.page-cumplimiento .chart-icon-btn {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+.page-cumplimiento .chart-icon-btn:hover {
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+  color: #2563eb !important;
+}
+
+.panel-title #dem_btnDownloadNoArea {
+  color: #475569 !important;
+}
+
+.panel-title #dem_btnDownloadNoArea:hover {
+  color: #2563eb !important;
+}
+
+.panel-title .status-dot.blue {
+  background: #2563eb !important;
+}
+
+/* Banner informativo en Servicios en tono azul corporativo suave en lugar de naranja fuerte */
+#panel-servicios > .topbar-badge {
+  background-color: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  color: #1e3a8a !important;
+  box-shadow: none !important;
+}
+
+
+/* ==========================================================================
+   SELECTOR DE SECTOR (ABASTECIMIENTO / COMPRAS) EN BARRA LATERAL
+   ========================================================================== */
+.st-sidebar-toprow {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-bottom: 0.85rem !important;
+}
+
+.st-sector-switcher {
+  flex: 1;
+  min-width: 0;
+}
+
+.st-sector-select {
+  width: 100% !important;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #1b365d !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  color: #ffffff !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.03em !important;
+  padding: 8px 32px 8px 12px !important;
+  border: 1px solid #2563eb !important;
+  border-radius: 7px !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 5px rgba(27, 54, 93, 0.18) !important;
+  transition: all 0.15s ease !important;
+}
+
+.st-sector-select:hover {
+  background-color: #2563eb !important;
+  border-color: #1d4ed8 !important;
+}
+
+.st-sector-select:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35) !important;
+  transform: none !important;
+}
+
+.st-sector-select option {
+  background: #ffffff !important;
+  color: #1b365d !important;
+  font-weight: 600 !important;
+  padding: 8px !important;
+}
+
+
+/* ==========================================================================
+   ESTILO UNIFICADO DE BOTONES (Azul Royal Gradiente como Reporte en Excel)
+   ========================================================================== */
+.btn,
+.btn-arriba,
+.btn-outline,
+.btn-table-download,
+.btn-emrf-excel {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%) !important;
+  color: #ffffff !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  min-height: 36px !important;
+  padding: 7px 12px !important;
+  border: none !important;
+  border-radius: 7px !important;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.32) !important;
+  transition: all 0.2s ease-in-out !important;
+  cursor: pointer !important;
+}
+
+.btn::before,
+.btn-arriba::before {
+  display: none !important;
+}
+
+.btn:hover,
+.btn-arriba:hover,
+.btn-outline:hover,
+.btn-table-download:hover,
+.btn-emrf-excel:hover {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn:active,
+.btn-arriba:active,
+.btn-outline:active,
+.btn-table-download:active,
+.btn-emrf-excel:active {
+  transform: translateY(1px) !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.28) !important;
+}
+
+.btn-arriba.btn-active {
+  background: linear-gradient(135deg, #1b365d 0%, #1e40af 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(27, 54, 93, 0.45) !important;
+}
+
+
+/* ==========================================================================
+   TEMAS DE COLOR DINÁMICOS POR SECTOR (OBRAS / SEDE / COMPRAS / ALMACEN)
+   ========================================================================== */
+body,
+body[data-sector="abastecimiento"] {
+  --sector-dark: #064e3b;
+  --sector-dark-gradient: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  --sector-primary: #059669;
+  --sector-primary-dk: #047857;
+  --sector-soft-bg: #ecfdf5;
+  --sector-soft-border: #a7f3d0;
+  --sector-badge-bg: rgba(52, 211, 153, 0.16);
+  --sector-badge-border: rgba(52, 211, 153, 0.38);
+  --sector-badge-text: #d1fae5;
+  --sector-btn-gradient: linear-gradient(135deg, #047857 0%, #059669 50%, #0d9488 100%);
+  --sector-btn-hover: linear-gradient(135deg, #065f46 0%, #047857 50%, #0f766e 100%);
+  --sector-btn-shadow: rgba(5, 150, 105, 0.32);
+}
+
+body[data-sector="sede"] {
+  --sector-dark: #1b365d;
+  --sector-dark-gradient: linear-gradient(135deg, #0f2544 0%, #1b365d 100%);
+  --sector-primary: #2563eb;
+  --sector-primary-dk: #1d4ed8;
+  --sector-soft-bg: #eff6ff;
+  --sector-soft-border: #bfdbfe;
+  --sector-badge-bg: rgba(56, 189, 248, 0.14);
+  --sector-badge-border: rgba(56, 189, 248, 0.35);
+  --sector-badge-text: #e0f2fe;
+  --sector-btn-gradient: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%);
+  --sector-btn-hover: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #0369a1 100%);
+  --sector-btn-shadow: rgba(37, 99, 235, 0.32);
+}
+
+body[data-sector="compras"] {
+  --sector-dark: #7c2d12;
+  --sector-dark-gradient: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  --sector-primary: #ea580c;
+  --sector-primary-dk: #c2410c;
+  --sector-soft-bg: #fff7ed;
+  --sector-soft-border: #fed7aa;
+  --sector-badge-bg: rgba(52, 211, 153, 0.16);
+  --sector-badge-border: rgba(52, 211, 153, 0.38);
+  --sector-badge-text: #d1fae5;
+  --sector-btn-gradient: linear-gradient(135deg, #c2410c 0%, #ea580c 50%, #f97316 100%);
+  --sector-btn-hover: linear-gradient(135deg, #9a3412 0%, #c2410c 50%, #ea580c 100%);
+  --sector-btn-shadow: rgba(234, 88, 12, 0.32);
+}
+
+body[data-sector="almacen"] {
+  --sector-dark: #92400e;
+  --sector-dark-gradient: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  --sector-primary: #d97706;
+  --sector-primary-dk: #b45309;
+  --sector-soft-bg: #fffbeb;
+  --sector-soft-border: #fde68a;
+  --sector-badge-bg: rgba(52, 211, 153, 0.16);
+  --sector-badge-border: rgba(52, 211, 153, 0.38);
+  --sector-badge-text: #d1fae5;
+  --sector-btn-gradient: linear-gradient(135deg, #b45309 0%, #d97706 50%, #ea580c 100%);
+  --sector-btn-hover: linear-gradient(135deg, #92400e 0%, #b45309 50%, #c2410c 100%);
+  --sector-btn-shadow: rgba(217, 119, 6, 0.32);
+}
+
+/* Aplicación de variables del sector a Topbar, Sidebar, Filtros, Tabs y Botones */
+.topbar {
+  background: var(--sector-dark-gradient) !important;
+  border-bottom: 2px solid var(--sector-primary) !important;
+}
+
+.topbar .topbar-badge {
+  background: var(--sector-badge-bg) !important;
+  border-color: var(--sector-badge-border) !important;
+  color: var(--sector-badge-text) !important;
+}
+
+.st-sidebar {
+  border-right: 3px solid var(--sector-primary) !important;
+}
+
+.st-ctrl-title,
+.st-filters-title,
+.panel-title,
+.page-mm .mm-block-title {
+  color: var(--sector-dark) !important;
+}
+
+.panel-title::before,
+.page-mm .mm-block-title::before,
+.panel-title .status-dot.blue {
+  background: var(--sector-primary) !important;
+}
+
+.st-sector-select {
+  background-color: var(--sector-dark) !important;
+  border-color: var(--sector-primary) !important;
+}
+
+.st-sector-select:hover {
+  background-color: var(--sector-primary) !important;
+  border-color: var(--sector-primary-dk) !important;
+}
+
+.st-sector-select option {
+  color: var(--sector-dark) !important;
+}
+
+.st-refresh-mini,
+.st-sidebar .btn-clear,
+.panel-title .help-btn {
+  background: var(--sector-soft-bg) !important;
+  border: 1px solid var(--sector-soft-border) !important;
+  color: var(--sector-primary-dk) !important;
+}
+
+.st-refresh-mini:hover,
+.st-sidebar .btn-clear:hover,
+.panel-title .help-btn:hover {
+  background: var(--sector-primary) !important;
+  border-color: var(--sector-primary) !important;
+  color: #ffffff !important;
+}
+
+.st-sidebar .help-btn {
+  background: var(--sector-dark) !important;
+  color: #ffffff !important;
+}
+
+.st-sidebar .help-btn:hover {
+  background: var(--sector-primary) !important;
+}
+
+.st-expand-btn {
+  color: var(--sector-dark) !important;
+  border-color: var(--sector-primary) !important;
+}
+
+.st-expand-btn:hover {
+  background: var(--sector-primary) !important;
+  color: #ffffff !important;
+}
+
+.st-ms-pill {
+  background-color: var(--sector-primary) !important;
+}
+
+.st-ms-pill:hover {
+  background-color: var(--sector-primary-dk) !important;
+}
+
+.st-ms-option:hover {
+  background-color: var(--sector-soft-bg) !important;
+  color: var(--sector-primary-dk) !important;
+}
+
+.st-ms-control:focus-within,
+.st-ms-container.is-open .st-ms-control {
+  border-color: var(--sector-primary) !important;
+  box-shadow: 0 0 0 1px var(--sector-primary) !important;
+}
+
+.tab:hover {
+  color: var(--sector-dark) !important;
+}
+
+.tab.active {
+  background: var(--sector-soft-bg) !important;
+  color: var(--sector-primary-dk) !important;
+  border: 1px solid var(--sector-soft-border) !important;
+}
+
+.btn,
+.btn-arriba,
+.btn-outline,
+.btn-table-download,
+.btn-emrf-excel {
+  background: var(--sector-btn-gradient) !important;
+  box-shadow: 0 3px 10px var(--sector-btn-shadow) !important;
+}
+
+.btn:hover,
+.btn-arriba:hover,
+.btn-outline:hover,
+.btn-table-download:hover,
+.btn-emrf-excel:hover {
+  background: var(--sector-btn-hover) !important;
+  box-shadow: 0 5px 14px var(--sector-btn-shadow) !important;
+}
+
+.btn-arriba.btn-active {
+  background: var(--sector-dark-gradient) !important;
+}
+
+/* Unificación de tamaño y alineación en la 3ra fila de las tarjetas de Resumen */
+.cumpl-val-box .cumpl-kpi-num {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+.cumpl-val-box .cumpl-kpi-sub,
+.cumpl-val-box .kpi-sub {
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  margin-top: 3px !important;
+  line-height: 1.3 !important;
+}
+
+/* Ocultar íconos de ayuda (ℹ) en todas las pestañas */
+.help-btn,
+#emrf_btnHelp {
+  display: none !important;
+}
+
+/* Títulos de filtros más oscuros y nítidos en la barra lateral */
+.st-sidebar .filter label,
+#panel-emrf .st-sidebar .filter label,
+#panel-servicios .st-sidebar .filter label {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+.st-ctrl-title,
+.st-filters-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* Títulos principales en MAYÚSCULAS */
+.topbar-left .title,
+#topbarSubtitle {
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+
+/* Compactar tarjetas KPI en Análisis MM */
+#panel-mm > .panel:first-of-type .panel-body {
+  padding: 0.75rem 1rem !important;
+}
+
+#panel-mm .kpi-grid {
+  gap: 0.75rem !important;
+}
+
+#panel-mm .kpi {
+  padding: 0.65rem 0.95rem !important;
+}
+
+#panel-mm .kpi-head {
+  margin-bottom: 0.15rem !important;
+  align-items: center !important;
+}
+
+#panel-mm .kpi-title {
+  font-size: 0.72rem !important;
+  margin-bottom: 0 !important;
+}
+
+#panel-mm .kpi-icon {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 0.85rem !important;
+}
+
+#panel-mm .kpi-value {
+  font-size: 1.35rem !important;
+  line-height: 1.15 !important;
+  margin: 2px 0 !important;
+}
+
+#panel-mm .kpi-sub {
+  font-size: 0.74rem !important;
+  margin-top: 4px !important;
+}
+
+#panel-mm #mm_btnDLMB52Planif {
+  min-height: 26px !important;
+  height: 26px !important;
+  padding: 2px 10px !important;
+  font-size: 0.72rem !important;
+}
+
+/* Botones de descarga en la barra lateral de Análisis MM (unificados con el resto del dashboard) */
+body.page-mm #panel-mm #mm_btnDLMB52Planif,
+body.page-mm #panel-mm #mm_btnDLStoNuloPP,
+body.page-mm #panel-mm #mm_btnDLStockBase374,
+body.page-mm #panel-mm #mm_btnDLStockBase378 {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 36px !important;
+  padding: 7px 12px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  background: var(--sector-btn-gradient) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 3px 10px var(--sector-btn-shadow) !important;
+}
+
+body.page-mm #panel-mm #mm_btnDLMB52Planif:hover,
+body.page-mm #panel-mm #mm_btnDLStoNuloPP:hover,
+body.page-mm #panel-mm #mm_btnDLStockBase374:hover,
+body.page-mm #panel-mm #mm_btnDLStockBase378:hover {
+  background: var(--sector-btn-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Asegurar que los subtítulos ESTADOS y VALORIZACIÓN DE STOCK se vean con contraste oscuro */
+body.page-mm .mm-block-title {
+  color: var(--sector-dark, #0f172a) !important;
+  background: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Eliminar el título y la caja contenedora exterior de ESTADOS Y VALORIZACIÓN en Análisis MM */
+#panel-mm .panel:has(#mm_donutEstados) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#panel-mm .panel:has(#mm_donutEstados)::before {
+  display: none !important;
+}
+
+#panel-mm .panel:has(#mm_donutEstados) > .panel-title {
+  display: none !important;
+}
+
+#panel-mm .panel:has(#mm_donutEstados) > .panel-body {
+  padding: 0 !important;
+}
+
+#panel-mm .mm-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#panel-mm .mm-block {
+  border: 1px solid var(--st-border-subtle, #e2e8f0) !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+}
+
+/* Texto de PEDIDOS INCOMPLETOS en rojo y negrita */
+#cumpl_incompletosCard span,
+#cumpl_incompletosCard #cumpl_countIncompletos {
+  color: #dc2626 !important;
+  font-weight: 800 !important;
+}
+
+/* Resaltar en rojo toda la fila en Valorización de Stock cuando el RUBRO es ?, VACIO / SIN RUBRO u OBSOLETO */
+#mm_tablaValorizacion tbody tr.rubro-alert-row,
+#mm_tablaValorizacion tbody tr.rubro-alert-row td {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+}
+
+#mm_tablaValorizacion tbody tr.rubro-alert-row:hover td {
+  background-color: #fecaca !important;
+}
+
+/* Evitar transform/animation en #panel-emrf para que position:fixed de .st-sidebar nunca se desfase */
+#panel-emrf,
+.tab-panel {
+  animation: none !important;
+  transform: none !important;
+}

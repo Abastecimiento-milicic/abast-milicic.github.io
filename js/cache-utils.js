@@ -236,7 +236,11 @@
 
           // Resaltado de color en Caract.planif.nec.
           if (colIdx - 1 === caractIdx) {
-            const vStr = String(rawVal || '').trim().toUpperCase();
+            let vStr = String(rawVal || '').trim().toUpperCase();
+            if (vStr === 'NO PLANIFICADO') {
+              cell.value = '-';
+              vStr = '-';
+            }
             if (vStr && !['NO PLANIFICADO', 'ND', '-', 'SIN PLANIFICAR'].includes(vStr)) {
               cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
               cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF166534' } };

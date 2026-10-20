@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 
 <head>
@@ -15,13 +15,13 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261019_123451" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261019_123451" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261019_123451" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261019_123451" />
-  <link rel="stylesheet" href="css/ejemplo.css?v=20261019_123451" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261019_123451" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261019_123451" />
+  <link rel="stylesheet" href="css/base.css?v=20261020_142900" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261020_102000" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261020_102000" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261020_102000" />
+  <link rel="stylesheet" href="css/ejemplo.css?v=20261020_102000" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261020_102000" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261020_142900" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -224,14 +224,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
-<body class="page-cumplimiento">
+<body class="page-cumplimiento has-st-sidebar" data-sector="abastecimiento">
+  <!-- Botón flotante para reabrir la barra lateral estilo Streamlit -->
+  <button id="stExpandBtn" class="st-expand-btn" type="button" onclick="window.toggleStSidebar()" title="Mostrar Panel de Control">
+    <span>»</span>
+    <span>Panel de Control</span>
+  </button>
+
   <header class="topbar">
     <div class="topbar-left">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div class="title">ABASTECIMIENTO</div>
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div id="topbarSubtitle" class="title" style="font-size: 1.25rem;">Análisis de cumplimiento de pedidos por obra</div>
         <div class="topbar-badge">- Actualización del reporte: lunes y jueves a partir de las 13:00 hs.</div>
       </div>
-      <div id="topbarSubtitle" class="subtitle">Análisis de Cumplimiento de Pedidos por Obra</div>
     </div>
 
     <div class="topbar-right" style="display: flex; gap: 0.5rem; align-items: stretch;">
@@ -256,7 +261,7 @@
     <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
     <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
     <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
-    <button class="tab" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button>
+    <button class="tab" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button><button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button><button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button><button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button><button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
   </nav>
 
   <main class="container">
@@ -274,26 +279,41 @@
 
       <div id="cumpl_msg"></div>
 
-      <section class="panel">
-        <div class="panel-title" style="display: flex; align-items: center;">FILTROS
-          <button id="cumpl_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar Filtros</button>
-          <button class="help-btn" onclick="openHelp('Filtros — Cumplimiento', `
-            <h4>Cliente / Obra</h4>
-            <p>Filtrá los pedidos por el nombre de la obra o cliente. Podés seleccionar varios con <strong>Ctrl + clic</strong>.</p>
-            <h4>Clasificación</h4>
-            <p>La clasificacion agrupa los grupos de compra de acuerdo al tipo de pedido solicitado.</p>
-            <h4>GC OC</h4>
-            <p>Filtrá por Grupo de Compra</p>
-            <h4>Mes de Entrega</h4>
-            <p>Seleccioná uno o varios meses (formato <em>MMM-AAAA</em>) para acotar el período analizado.</p>
-            <h4>⬇ Descargar NO entregados</h4>
-            <p>Exporta en CSV el listado de pedidos no entregados según los filtros activos.</p>
-            <div class=&quot;hm-tip&quot;>💡 Si no seleccionás ningún filtro, se muestran todos los datos disponibles.</div>
-          `)" title="Ayuda sobre los filtros">ℹ</button>
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
+            </select>
+          </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <div class="panel-body filters filters-6">
+        <h3 class="st-ctrl-title">Panel de Control</h3>
+
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+          <div class="st-filters-actions">
+            <button id="cumpl_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
+            <button class="help-btn" onclick="openHelp('Filtros — Cumplimiento', `
+              <h4>Cliente / Obra</h4>
+              <p>Filtrá los pedidos por el nombre de la obra o cliente. Podés seleccionar varios con <strong>Ctrl + clic</strong>.</p>
+              <h4>Clasificación</h4>
+              <p>La clasificacion agrupa los grupos de compra de acuerdo al tipo de pedido solicitado.</p>
+              <h4>GC OC</h4>
+              <p>Filtrá por Grupo de Compra</p>
+              <h4>Mes de Entrega</h4>
+              <p>Seleccioná uno o varios meses (formato <em>MMM-AAAA</em>) para acotar el período analizado.</p>
+              <h4>⬇ Descargar NO entregados</h4>
+              <p>Exporta en CSV el listado de pedidos no entregados según los filtros activos.</p>
+              <div class=&quot;hm-tip&quot;>💡 Si no seleccionás ningún filtro, se muestran todos los datos disponibles.</div>
+            `)" title="Ayuda sobre los filtros">ℹ</button>
+          </div>
+        </div>
+
+        <div class="st-filters-stack">
           <div class="filter">
-            <label>CLIENTE / OBRA</label>
+            <label>Cliente / Obra:</label>
             <select id="cumpl_clienteSelect" multiple size="6" class="multi-select">
               <option value="">Todos</option>
             </select>
@@ -301,7 +321,7 @@
           </div>
 
           <div class="filter">
-            <label>CLASIFICACIÓN</label>
+            <label>Clasificación:</label>
             <select id="cumpl_clasif2Select" multiple size="6" class="multi-select">
               <option value="">Todos</option>
             </select>
@@ -309,7 +329,7 @@
           </div>
 
           <div class="filter">
-            <label>GC OC</label>
+            <label>Grupo de Compras (GC OC):</label>
             <select id="cumpl_gcocSelect" multiple size="6" class="multi-select">
               <option value="">Todos</option>
             </select>
@@ -317,56 +337,55 @@
           </div>
 
           <div class="filter">
-            <label>MES DE ENTREGA</label>
+            <label>Mes de Entrega:</label>
             <select id="cumpl_mesSelect" multiple size="6" class="multi-select"></select>
             <div id="cumpl_mesHint" class="hint">Mes seleccionado</div>
           </div>
 
           <div class="filter">
-            <label>CENTRO</label>
+            <label>Centro:</label>
             <select id="centroSelect" multiple size="6" class="multi-select">
               <option value="">Todos</option>
             </select>
             <div id="centroHint" class="hint">Columna: -</div>
           </div>
 
-          <div class="filter" style="align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px;">
-            <!-- Botón Medir Cumplimiento Arriba -->
-            <div style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
-              <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="width: 100%; font-weight: 700; height: 32px; font-size: 0.75rem; padding: 0 4px;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
-                🏔️ Medir cumplimiento arriba
-              </button>
-              <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
-                Obras 365 y 372 (año 2026)
-              </div>
-            </div>
+          <hr class="st-divider" />
 
-            <!-- Tarjeta Pedidos Incompletos -->
-            <div class="card-incomplete" style="background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 3px solid var(--col-amber, #f59e0b); position: relative;">
-              <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 2px;">Pedidos INCOMPLETOS</span>
-              <span id="cumpl_countIncompletos" style="font-size: 1.3rem; font-weight: bold; color: var(--col-amber, #f59e0b); display: block; margin-bottom: 6px; line-height: 1;">0</span>
-              <button id="cumpl_btnDownloadIncompletos" class="btn" style="padding: 4px 8px; font-size: 0.75rem; min-height: unset; height: unset; font-weight: bold; width: 100%; background: linear-gradient(to bottom, #ffffff 0%, #fef3c7 100%); border-color: #fde68a;">
-                ⬇ Descargar
-              </button>
-            </div>
-
-            <!-- Botón Descargar NO entregados -->
-            <div style="width: 100%;">
-              <button id="cumpl_btnDownloadNO" class="btn" style="font-size: 0.8rem; padding: 0.5rem 0.75rem;">
-                ⬇ Descargar NO entregados
-              </button>
-              <div class="hint">Exporta CSV con “;”</div>
+          <!-- Botón Medir Cumplimiento Arriba -->
+          <div id="cumpl_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
+            <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
+              🏔️ Medir cumplimiento arriba
+            </button>
+            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
+              Obras 365 y 372 (año 2026)
             </div>
           </div>
+
+          <!-- Tarjeta Pedidos Incompletos -->
+          <div id="cumpl_incompletosCard" class="card-incomplete" style="order: 10; background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 10px 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 3px solid var(--col-amber, #f59e0b); position: relative;">
+            <span style="font-size: 0.78rem; font-weight: 800 !important; color: #dc2626 !important; text-transform: uppercase; letter-spacing: 0.03em; display: block; margin-bottom: 6px;">PEDIDOS INCOMPLETOS: <span id="cumpl_countIncompletos" style="font-size: 0.88rem; font-weight: 800 !important; color: #dc2626 !important;">0</span></span>
+            <!-- inline count moved above -->
+            <button id="cumpl_btnDownloadIncompletos" class="btn" style="width: 100%;">
+              ⬇ Descargar Incompletos
+            </button>
+          </div>
+
+          <!-- Botón Descargar NO entregados -->
+          <div style="width: 100%;">
+            <button id="cumpl_btnDownloadNO" class="btn" style="width: 100%;">
+              ⬇ Descargar NO entregados
+            </button>
+            <div class="hint" style="text-align: center;">Exporta Excel / CSV</div>
+          </div>
         </div>
-      </section>
+      </aside>
 
       <!-- BOX ÚNICO: MÉTRICAS Y GRÁFICO DE CUMPLIMIENTO -->
       <section class="panel">
         <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <span>CUMPLIMIENTO POR MES Y MÉTRICAS</span>
-            <span class="topbar-badge" style="font-size: 0.75rem; padding: 3px 8px;">- Para los cálculos acumulados se excluye el mes vigente</span>
+            <span>CUMPLIMIENTO POR MES</span>
           </div>
           <div class="panel-title-actions">
             <!-- Filtro solo icono sin nombre para meses del gráfico -->
@@ -420,7 +439,7 @@
               <div class="cumpl-card-header">
                 <div class="cumpl-card-header-top">
                   <span class="cumpl-card-title">RESUMEN</span>
-                  <span id="cumpl_panelMesTitle" class="cumpl-month-badge">MES SELECCIONADO</span>
+                  <span id="cumpl_panelMesTitle" class="cumpl-month-badge" style="display: none;">MES SELECCIONADO</span>
                 </div>
                 <div class="cumpl-cols-header">
                   <div class="cumpl-col-head col-acum">
@@ -572,29 +591,29 @@
 
            <div class="filters filters-6" style="margin-bottom: 20px;">
              <div class="filter">
-               <label>CLIENTE / OBRA</label>
+               <label>Cliente / Obra:</label>
                <select id="envio_clienteSelect" multiple size="6" class="multi-select">
                  <option value="">Todos</option>
                </select>
              </div>
              <div class="filter">
-               <label>CLASIFICACIÓN</label>
+               <label>Clasificación:</label>
                <select id="envio_clasif2Select" multiple size="6" class="multi-select">
                  <option value="">Todos</option>
                </select>
              </div>
              <div class="filter">
-               <label>GC OC</label>
+               <label>Grupo de Compras (GC OC):</label>
                <select id="envio_gcocSelect" multiple size="6" class="multi-select">
                  <option value="">Todos</option>
                </select>
              </div>
              <div class="filter">
-               <label>MES DE ENTREGA</label>
+               <label>Mes de Entrega:</label>
                <select id="envio_mesSelect" multiple size="6" class="multi-select"></select>
              </div>
              <div class="filter">
-               <label>CENTRO</label>
+               <label>Centro:</label>
                <select id="envio_centroSelect" multiple size="6" class="multi-select">
                  <option value="">Todos</option>
                </select>
@@ -628,39 +647,55 @@
       </div>
 -->
 
-      <section class="panel">
-        <div class="panel-title">FILTROS Y DISPONIBILIDAD
-          <button class="help-btn" onclick="openHelp('Filtros y Disponibilidad — Análisis MM', `
-            <h4>Cliente (Almacén)</h4>
-            <p>Seleccioná uno o varios almacenes para filtrar.</p>
-            <h4>⬇ Descargar ANALISIS MM</h4>
-            <p>Exporta el Maestro de materiales del almacén seleccionado, compatible con Excel (separador <strong>;</strong>).</p>
-            <h4>📦 Cant. Materiales</h4>
-            <p>Es la cantidad de materiales distintos planificados en el MM de acuerdo a la selección filtrada.</p>
-            <h4>✅ Cant. Disponible</h4>
-            <p>Es la cantidad de materiales disponibles (con stock distinto de cero) de acuerdo a la última actualización.</p>
-            <h4>📈 % Disponible</h4>
-            <p>Representa la cantidad de materiales disponibles en porcentaje.</p>
-            <div class=&quot;hm-tip&quot;>💡 Podés seleccionar múltiples almacenes con <strong>Ctrl + clic</strong>.</div>
-          `)" title="Ayuda sobre filtros y disponibilidad">ℹ</button>
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
+            </select>
+          </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        
-        <div class="panel-body" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch;">
-          
-          <!-- Lado Izquierdo: Filtro -->
-          <div class="filter" style="flex: 0 0 auto; width: 260px; display: flex; flex-direction: column;">
-            <label>CLIENTE (ALMACEN)</label>
-            <div class="mm-client-row" style="flex: 1;">
-              <select id="mm_clienteSelect" class="multi-select" multiple size="6" style="height: 100%; width: 100%;"></select>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
+
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+          <div class="st-filters-actions">
+            <button class="help-btn" onclick="openHelp('Filtros y Disponibilidad — Análisis MM', `
+              <h4>Cliente (Almacén)</h4>
+              <p>Seleccioná uno o varios almacenes para filtrar.</p>
+              <h4>⬇ Descargar ANALISIS MM</h4>
+              <p>Exporta el Maestro de materiales del almacén seleccionado, compatible con Excel (separador <strong>;</strong>).</p>
+              <h4>📦 Cant. Materiales</h4>
+              <p>Es la cantidad de materiales distintos planificados en el MM de acuerdo a la selección filtrada.</p>
+              <h4>✅ Cant. Disponible</h4>
+              <p>Es la cantidad de materiales disponibles (con stock distinto de cero) de acuerdo a la última actualización.</p>
+              <h4>📈 % Disponible</h4>
+              <p>Representa la cantidad de materiales disponibles en porcentaje.</p>
+              <div class=&quot;hm-tip&quot;>💡 Podés seleccionar múltiples almacenes con <strong>Ctrl + clic</strong>.</div>
+            `)" title="Ayuda sobre filtros y disponibilidad">ℹ</button>
+          </div>
+        </div>
+
+        <div class="st-filters-stack">
+          <div class="filter">
+            <label>Cliente (Almacén):</label>
+            <div class="mm-client-row">
+              <select id="mm_clienteSelect" class="multi-select" multiple size="10" style="height: 210px !important; width: 100%;"></select>
             </div>
             <div id="mm_clienteHint" class="hint">Columna: -</div>
-            <div class="hint">Descarga segun el almacen seleccionado</div>
-            <div class="hint">Mantén presionado Ctrl y haz clic en los almacenes para seleccion multiple</div>
-            <div class="hint" style="margin-top: 5px;"><b>Fuente:</b> ANALISIS-MM.csv</div>
+            <div class="hint">Descarga según el almacén seleccionado</div>
+            <div class="hint">Mantén presionado Ctrl y haz clic en los almacenes para selección múltiple</div>
+            <div class="hint" style="margin-top: 5px;"><b>Fuente:</b> ANALISIS-MM.csv</div></div><hr class="st-divider" /><button id="mm_btnDLMB52Planif" class="btn" type="button" title="Descargar Stock MB52 con Planificación según cliente seleccionado" style="width: 100%;">⬇ STOCK MB52</button><button id="mm_btnDLStoNuloPP" class="btn" type="button" title="Descargar filas sin rubro" style="width: 100%;">⬇ SIN RUBRO</button><button id="mm_btnDLStockBase374" class="btn" type="button" title="Descargar Stock Base Obra 0374.csv" style="width: 100%;">⬇ Stock Base obra 374</button><button id="mm_btnDLStockBase378" class="btn" type="button" title="Descargar Stock Base Obra 0378.csv" style="width: 100%;">⬇ Stock Base obra 378</button><div style="display:none;">
           </div>
-          
-          <!-- Lado Derecho: KPIs -->
-          <div class="kpi-grid kpi-grid-3" style="flex: 1 1 0%; align-content: center;">
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-title">DISPONIBILIDAD DE MATERIALES</div>
+        <div class="panel-body">
+          <div class="kpi-grid kpi-grid-3" style="width: 100%;">
             <div class="kpi kpi-blue">
               <div class="kpi-head">
                 <div class="kpi-title">CANT MATERIALES</div>
@@ -669,7 +704,7 @@
               <div id="mm_kpiMat" class="kpi-value">-</div>
               <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-top: auto; gap: 8px;">
                 <div class="kpi-sub kpi-sub-strong" style="margin: 0;">Materiales distintos</div>
-                <button id="mm_btnDLMB52Planif" class="btn btn-outline" type="button" title="Descargar Stock MB52 con Planificación según cliente seleccionado" style="min-width: auto !important; width: auto !important; padding: 4px 8px !important; font-size: 10px !important; white-space: nowrap; background: rgba(37,99,235,0.08); border-color: #2563eb; color: #1d4ed8; font-weight: 600;">
+                <button id="mm_btnDLMB52Planif_old" style="display: none !important;" type="button">
                   ⬇ STOCK MB52
                 </button>
               </div>
@@ -724,14 +759,14 @@
                 <div class="mm-block-title-row">
                   <div class="mm-block-title">VALORIZACIÓN DE STOCK</div>
                 </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 10px; justify-content: flex-end; flex-wrap: wrap;">
-                  <button id="mm_btnDLStoNuloPP" class="btn btn-outline" type="button" title="Descargar filas sin rubro">
+                <div style="display: none !important;">
+                  <button id="mm_btnDLStoNuloPP_old" type="button">
                     ⬇ SIN RUBRO
                   </button>
-                  <button id="mm_btnDLStockBase374" class="btn btn-outline" type="button" title="Descargar Stock Base Obra 0374.csv">
+                  <button id="mm_btnDLStockBase374_old" type="button">
                     ⬇ Stock Base obra 374
                   </button>
-                  <button id="mm_btnDLStockBase378" class="btn btn-outline" type="button" title="Descargar Stock Base Obra 0378.csv">
+                  <button id="mm_btnDLStockBase378_old" type="button">
                     ⬇ Stock Base obra 378
                   </button>
                 </div>
@@ -797,33 +832,50 @@
 
       <div id="dem_msg"></div>
 
-      <section class="panel">
-        <div class="panel-body filters filters-demoras">
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
+            </select>
+          </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
+        </div>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
+
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        </div>
+
+        <div class="st-filters-stack">
           <div class="filter">
-            <label>CLIENTE</label>
+            <label>Cliente:</label>
             <select id="dem_clienteSelect" multiple size="6" class="multi-select">
               <option value="">Todos</option>
             </select>
             <div id="dem_clienteHint" class="hint">Columna cliente: -</div>
           </div>
+
           <div class="filter">
-            <label>CLASIFICACIÓN PEDIDO</label>
+            <label>Clasificación de Pedido:</label>
             <select id="dem_clasifSelect" multiple size="6" class="multi-select"></select>
             <div id="dem_clasifHint" class="hint">Columna: -</div>
           </div>
 
           <div class="filter">
-            <label>MES</label>
-            <div class="filter-flex">
-              <select id="dem_mesSelect" multiple size="6" class="multi-select"></select>
-              <div class="filter-actions">
-                <button id="dem_btnDownloadFiltrado" class="btn btn-sm" type="button">⬇ Descargar</button>
-              </div>
-            </div>
+            <label>Mes:</label>
+            <select id="dem_mesSelect" multiple size="6" class="multi-select"></select>
             <div id="dem_mesHint" class="hint">Mes seleccionado: -</div>
           </div>
+
+          <hr class="st-divider" />
+
+          <button id="dem_btnDownloadFiltrado" class="btn" type="button" style="width: 100%;">
+            ⬇ Descargar Demoras Filtradas
+          </button>
         </div>
-      </section>
+      </aside>
 
       <section class="panel" style="grid-column: 1 / -1; margin-bottom: 20px; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
         <div class="panel-title" style="display:flex; align-items:center; justify-content: space-between; width: 100%;">
@@ -894,7 +946,7 @@
       </section>
 
       <section class="panel">
-        <div class="panel-title">CANTIDAD Y PORCENTAJE DE DEMORAS POR MES</div>
+        <style>#panel-demoras .panel:has(#dem_chartMes) { display: none !important; }</style><div class="panel-title">CANTIDAD Y PORCENTAJE DE DEMORAS POR MES</div>
         <div class="panel-body">
           <div class="chart-card" style="width:100%;">
             <div class="chart-wrap" style="height: 540px;">
@@ -952,29 +1004,40 @@
         ℹ️ Este reporte contempla las VA tipo <strong>ZPAN</strong> y <strong>ZPAI</strong> de clientes (obras) cuyo GC es <strong>24, 25, 26, 16 ó 04</strong>, y posiciones con Tipo de Ítem <strong>"SERVICIOS"</strong> (aun si pertenecen a otro GC). No se muestran los servicios ya finalizados (sin cantidades pendientes de recepción y con fecha vencida).
       </div>
 
-      <section class="panel">
-        <div class="panel-title">FILTROS DE SERVICIOS</div>
-        <div class="panel-body filters-6"> 
-          <div class="filter"><label>CLIENTE</label><select id="serv_clienteSelect" multiple class="multi-select"></select></div>
-          
-          <div class="filter"><label>PERÍODO</label><select id="serv_clasif2Select" multiple class="multi-select"></select></div>
-          
-          <div class="filter"><label>ESTADO</label><select id="serv_gcocSelect" multiple class="multi-select"></select></div>  
-          
-          <div class="filter"><label>G. COMPRA</label><select id="serv_grupoCompraSelect" multiple class="multi-select"></select></div> 
-          
-          <div class="filter"><label>ESTADO ITEM</label><select id="serv_estadoItemSelect" multiple class="multi-select"></select></div>
-          
-          <div class="filter-kpi">
-            <label>TOTAL</label>
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
+            </select>
+          </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
+        </div>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
+
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        </div>
+
+        <div class="st-filters-stack">
+          <div class="filter"><label>Cliente:</label><select id="serv_clienteSelect" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Período:</label><select id="serv_clasif2Select" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Estado:</label><select id="serv_gcocSelect" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Grupo de Compra:</label><select id="serv_grupoCompraSelect" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Estado del Ítem:</label><select id="serv_estadoItemSelect" multiple class="multi-select"></select></div>
+
+          <hr class="st-divider" />
+
+          <div class="filter-kpi" style="display: flex; flex-direction: column; gap: 8px;">
             <div class="kpi-mini-box">
               <span id="serv_kpiTotal" class="kpi-mini-value">0</span>
-              <span class="kpi-mini-label">Servicios</span>
+              <span class="kpi-mini-label">Servicios Seleccionados</span>
             </div>
-            <button id="serv_btnDownloadSelection" class="btn-small">⬇ Descargar</button>
+            <button id="serv_btnDownloadSelection" class="btn" style="width: 100%;">⬇ Descargar Selección</button>
           </div>
         </div>
-      </section>
+      </aside>
 
       <section class="panel">
         <div class="panel-title">RESUMEN DE PEDIDOS POR ESTADO</div>
@@ -1453,32 +1516,59 @@
 
     <!-- PANEL TIEMPOS Y PRIORIDAD -->
     <section id="panel-tiempos" class="tab-panel" style="display:none;">
-      <div class="tiempos-container">
-        
-        <!-- Top Bar: Selector de Obra, Banner de Regla y Botón Excel -->
-        <div class="tiempos-topbar">
-          <div class="tiempos-filter-group">
-            <label for="tiempos_obraSelect">Obra:</label>
-            <select id="tiempos_obraSelect" class="tiempos-select">
-              <!-- Opciones dinámicas de las 10 obras -->
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
             </select>
           </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
+        </div>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
 
-          <div id="tiempos_banner" class="tiempos-banner-rule">
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        </div>
+
+        <div class="st-filters-stack">
+          <div class="filter">
+            <label for="tiempos_obraSelect">Obra:</label>
+            <select id="tiempos_obraSelect" class="tiempos-select"></select>
+          </div>
+
+          <div id="tiempos_banner" class="tiempos-banner-rule" style="font-size: 0.78rem; padding: 8px 10px; text-align: center; width: 100%;">
             PARA OBRA 372 POCO TIEMPO &lt; 16 DÍAS
           </div>
 
-          <div>
-            <button id="tiempos_btn_export" class="btn" style="background:#10b981; color:white; display:flex; align-items:center; gap:6px; font-weight:700;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Descargar Excel
-            </button>
+          <div class="tiempos-slicer-card" style="width: 100%; box-shadow: none;">
+            <div class="tiempos-slicer-header">
+              <div class="tiempos-slicer-title">
+                <span>🗓</span>
+                <span>MES ENTREGA</span>
+              </div>
+              <div class="tiempos-slicer-actions">
+                <button id="tiempos_btn_select_all" class="tiempos-slicer-btn-mini" title="Seleccionar todos">Todos</button>
+                <button id="tiempos_btn_2025" class="tiempos-slicer-btn-mini" title="Seleccionar año 2025">2025</button>
+                <button id="tiempos_btn_2026" class="tiempos-slicer-btn-mini" title="Seleccionar año 2026">2026</button>
+                <button id="tiempos_btn_clear_all" class="tiempos-slicer-btn-mini" title="Deseleccionar todos">Limpiar</button>
+              </div>
+            </div>
+            <div id="tiempos_slicer_list" class="tiempos-slicer-list" style="max-height: 260px;">
+              <!-- Meses dinámicos -->
+            </div>
           </div>
-        </div>
 
-        <!-- Main Layout: Tablas a la izquierda, Slicer de Mes a la derecha -->
-        <div class="tiempos-main-layout">
-          
+          <button id="tiempos_btn_export" class="btn" style="width: 100%; background:#0d9488; color:white; display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Descargar Excel
+          </button>
+        </div>
+      </aside>
+
+      <div class="tiempos-container">
+        <div class="tiempos-main-layout" style="grid-template-columns: 1fr;">
           <div class="tiempos-tables-column">
             
             <!-- Tabla 1: Cantidades -->
@@ -1573,27 +1663,7 @@
 
           </div>
 
-          <!-- Slicer lateral de Mes de Entrega -->
-          <aside class="tiempos-slicer-card">
-            <div class="tiempos-slicer-header">
-              <div class="tiempos-slicer-title">
-                <span>🗓</span>
-                <span>MES ENTREGA</span>
-              </div>
-              <div class="tiempos-slicer-actions">
-                <button id="tiempos_btn_select_all" class="tiempos-slicer-btn-mini" title="Seleccionar todos">Todos</button>
-                <button id="tiempos_btn_2025" class="tiempos-slicer-btn-mini" title="Seleccionar año 2025">2025</button>
-                <button id="tiempos_btn_2026" class="tiempos-slicer-btn-mini" title="Seleccionar año 2026">2026</button>
-                <button id="tiempos_btn_clear_all" class="tiempos-slicer-btn-mini" title="Deseleccionar todos">Limpiar</button>
-              </div>
-            </div>
-            <div id="tiempos_slicer_list" class="tiempos-slicer-list">
-              <!-- Meses dinámicos -->
-            </div>
-          </aside>
-
         </div>
-
       </div>
     </section>
 
@@ -1641,34 +1711,54 @@
         </div>
       </div>
 
-      <!-- Panel de Filtros -->
-      <section class="panel">
-        <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span>FILTROS</span>
-            <button id="emrf_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar Filtros</button>
+      <!-- Barra Lateral Estilo Streamlit para EM/RF -->
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
+            </select>
+          </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
+        </div>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
+
+        <!-- 1. Base de Datos / Sociedad (como en Streamlit) -->
+        <div class="st-field-group" style="margin-top: 4px;">
+          <div class="st-field-label-row">
+            <span>Base de Datos / Sociedad:</span>
+          </div>
+          <select id="emrf_sociedadSelect" class="st-select" style="padding: 8px 10px; font-weight: 600;">
+            <option value="TODAS">Todas (Consolidado)</option>
+            <option value="MLAR">MLAR</option>
+            <option value="MMAR">MMAR</option>
+            <option value="U003">U003</option>
+            <option value="U365">U365</option>
+          </select>
+        </div>
+
+        <hr class="st-divider" />
+
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+          <div class="st-filters-actions">
+            <button id="emrf_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
             <button id="emrf_btnHelp" class="help-btn" title="Ayuda y Guía Operativa de la Cuenta EM/RF">ℹ</button>
           </div>
-          <div class="hint" style="font-size: 0.75rem;">Filtros operativos para conciliación contable</div>
         </div>
-        <div class="panel-body filters filters-6">
-          <!-- 1. Base / Sociedad -->
+
+        <div class="st-filters-stack">
+          <!-- Búsqueda rápida por Pedido o Proveedor -->
           <div class="filter">
-            <label>BASE / SOCIEDAD</label>
-            <select id="emrf_sociedadSelect" size="6" class="multi-select">
-              <option value="TODAS">Todas (Consolidado)</option>
-              <option value="MLAR">MLAR</option>
-              <option value="MMAR">MMAR</option>
-              <option value="U003">U003</option>
-              <option value="U365">U365</option>
-            </select>
-            <div class="hint">Sociedad contable</div>
+            <label>Buscar Pedido o Proveedor:</label>
+            <input type="text" id="emrf_searchInput" class="st-search-input" placeholder="Ej: 4500121598 o AURELIA" />
           </div>
 
           <!-- 2. Estado Contable EM/RF -->
           <div class="filter">
-            <label>ESTADO CONTABLE EM/RF</label>
-            <select id="emrf_estadoSelect" multiple size="6" class="multi-select">
+            <label>Estado Contable EM/RF:</label>
+            <select id="emrf_estadoSelect" multiple size="4" class="multi-select" style="height: 92px !important;">
               <option value="TIENE RECEPCIÓN - FALTA FACTURA" selected>TIENE RECEPCIÓN - FALTA FACTURA</option>
               <option value="TIENE FACTURA - FALTA RECEPCIÓN">TIENE FACTURA - FALTA RECEPCIÓN</option>
               <option value="COMPENSABLE (Saldo $0)">COMPENSABLE (Saldo $0)</option>
@@ -1678,35 +1768,33 @@
 
           <!-- 3. Grupo de Compras OC -->
           <div class="filter">
-            <label>GC OC</label>
-            <select id="emrf_gcSelect" multiple size="6" class="multi-select"></select>
+            <label>Grupo de Compras OC:</label>
+            <select id="emrf_gcSelect" multiple size="5" class="multi-select"></select>
             <div class="hint">Por defecto: C01 y C07</div>
           </div>
 
           <!-- 4. Vencimiento de OC -->
           <div class="filter">
-            <label>VENCIMIENTO DE OC</label>
-            <select id="emrf_vencSelect" multiple size="6" class="multi-select"></select>
+            <label>Vencimiento de OC:</label>
+            <select id="emrf_vencSelect" multiple size="4" class="multi-select" style="height: 88px !important;"></select>
             <div class="hint">Vencida / Vigente / Sin fecha</div>
           </div>
 
           <!-- 5. Operador OC -->
           <div class="filter">
-            <label>OPERADOR OC</label>
-            <select id="emrf_operOcSelect" multiple size="6" class="multi-select"></select>
+            <label>Operador OC:</label>
+            <select id="emrf_operOcSelect" multiple size="5" class="multi-select"></select>
             <div class="hint">Comprador responsable</div>
           </div>
 
           <!-- 6. Tarjeta Posiciones Seleccionadas -->
-          <div class="filter" style="align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end;">
-            <div class="card-incomplete" style="background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 12px 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 110px; border-top: 3px solid #2563eb; position: relative;">
-              <span style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">POSICIONES SELECCIONADAS</span>
-              <span id="emrf_kpiCount" style="font-size: 1.85rem; font-weight: 800; color: #2563eb; display: block; margin-bottom: 4px; line-height: 1;">0</span>
-              <span id="emrf_kpiPct" style="font-size: 0.75rem; color: #64748b; font-weight: 600; display: block;">0% del total</span>
-            </div>
+          <div class="card-incomplete" style="background: #ffffff; border: 1px solid var(--border-light, #e2e8f0); border-radius: var(--radius-md, 8px); padding: 10px 8px; text-align: center; box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05)); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 95px; border-top: 3px solid var(--col-brand, #0d9488); position: relative;">
+            <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">POSICIONES SELECCIONADAS</span>
+            <span id="emrf_kpiCount" style="font-size: 1.75rem; font-weight: 800; color: var(--col-brand-dk, #0f766e); display: block; margin-bottom: 2px; line-height: 1;">0</span>
+            <span id="emrf_kpiPct" style="font-size: 0.74rem; color: #64748b; font-weight: 600; display: block;">0% del total</span>
           </div>
         </div>
-      </section>
+      </aside>
 
       <!-- Barra de herramientas de la tabla -->
       <div class="emrf-table-toolbar">
@@ -1756,33 +1844,77 @@
 
   </main>
 
-  <script src="js/last-update.js?v=20261019_123451"></script>
-  <script src="js/help.js?v=20261019_123451"></script>
-  <script src="js/cache-utils.js?v=20261019_123451"></script>
+  <script src="js/last-update-obras.js?v=20261020_144600"></script><script src="js/last-update-sede.js?v=20261020_144600"></script><script src="js/last-update-compras.js?v=20261020_144600"></script><script src="js/last-update-almacen.js?v=20261020_144600"></script><script src="js/last-update.js?v=20261020_144600"></script>
+  <script src="js/help.js?v=20261020_102000"></script>
+  <script src="js/cache-utils.js?v=20261020_102000"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/cumplimiento.js?v=20261019_123451"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261019_123451"></script>
-  <script src="js/analisis-mm.js?v=20261019_123451"></script>
-  <script src="js/evolucion.js?v=20261019_123451"></script>
-  <script src="js/demoras.js?v=20261019_123451"></script>
-  <script src="js/servicios.js?v=20261019_123451"></script>
-  <script src="js/tiempos-entrega.js?v=20261019_123451"></script>
-  <script src="js/control-emrf.js?v=20261019_123451"></script>
+  <script src="js/cumplimiento.js?v=20261020_125900"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261020_102000"></script>
+  <script src="js/analisis-mm.js?v=20261020_123300"></script>
+  <script src="js/evolucion.js?v=20261020_102000"></script>
+  <script src="js/demoras.js?v=20261020_102000"></script>
+  <script src="js/servicios.js?v=20261020_112600"></script>
+  <script src="js/tiempos-entrega.js?v=20261020_102000"></script>
+  <script src="js/control-emrf.js?v=20261020_142900"></script>
 
   <script>
+    window.currentAppSector = 'abastecimiento';
+
     // Subtítulos para cada pestaña
     const TAB_SUBTITLES = {
-      'cumplimiento': 'Análisis de Cumplimiento de Pedidos por Obra',
-      'mm': 'Análisis de Disponibilidad de Materiales (MM)',
-      'demoras': 'Análisis de Demoras y Desglose por Área',
-      'servicios': 'Análisis de Servicios y Subcontratos de Obra',
-      'tiempos': 'Cumplimiento por Criticidad y Tiempos de Entrega',
-      'emrf': 'Control de Partidas Abiertas SAP - Cuenta EM/RF (2101011001)',
+      'cumplimiento': 'Análisis de cumplimiento de pedidos por obra',
+      'mm': 'Análisis de disponibilidad de materiales (MM)',
+      'demoras': 'Análisis de demoras y desglose por área',
+      'servicios': 'Análisis de servicios y subcontratos de obra',
+      'tiempos': 'Cumplimiento por criticidad y tiempos de entrega',
+      'emrf': 'Control de partidas abiertas SAP - Cuenta EM/RF (2101011001)',
       'ejemplo': 'Ejemplo de uso del dashboard'
     };
 
-    window.switchTab = function(tabName) {
+    window.switchSector = function(sector) {
+      const sec = (sector === 'compras' || sector === 'almacen' || sector === 'sede') ? sector : 'abastecimiento';
+      window.currentAppSector = sec; document.body.setAttribute('data-sector', sec); if (typeof window.syncSectorLastUpdate === 'function') window.syncSectorLastUpdate(sec);
+
+      // Sincronizar todos los selectores de sector en las barras laterales
+      document.querySelectorAll('.st-sector-select').forEach(sel => {
+        sel.value = sec;
+      });
+
+      // Ocultar la barra de pestañas completa en Compras (y restaurarla en Abastecimiento)
+      const navTabs = document.querySelector('.tabs');
+      if (navTabs) {
+        navTabs.style.display = (sec === 'compras' || sec === 'almacen') ? 'none' : ''; document.querySelectorAll('.tabs .tab[data-tab]').forEach(el => { el.style.display = (sec === 'sede') ? 'none' : ''; }); document.querySelectorAll('.tabs .sede-tab').forEach(el => { el.style.display = (sec === 'sede') ? '' : 'none'; });
+      }
+
+      // Mostrar/ocultar botón de "Medir cumplimiento arriba" (exclusivo de Abastecimiento)
+      const arribaWrap = document.getElementById('cumpl_arribaWrap');
+      const btnArriba = document.getElementById('cumpl_btnArriba'); const incompletosCard = document.getElementById('cumpl_incompletosCard');
+      if (sec !== 'abastecimiento') {
+        if (btnArriba && btnArriba.classList.contains('btn-active')) {
+          btnArriba.click();
+        }
+        if (arribaWrap) arribaWrap.style.display = 'none'; if (incompletosCard) incompletosCard.style.display = 'none';
+      } else {
+        if (arribaWrap) arribaWrap.style.display = 'flex'; if (incompletosCard) incompletosCard.style.display = 'flex';
+      }
+
+      // Actualizar subtítulo principal
+      const subtitleEl = document.getElementById('topbarSubtitle');
+      if (subtitleEl) {
+        subtitleEl.textContent = sec === 'compras'
+          ? 'Compras — Análisis de cumplimiento acumulado' : (sec === 'almacen' ? 'Almacén — Análisis de cumplimiento acumulado' : TAB_SUBTITLES['cumplimiento']);
+        // subtítulo ajustado arriba
+      }
+
+      // Asegurar que estamos en la pestaña de Cumplimiento y cargar el dataset del sector
+      if (sec === 'sede') { window.switchSedeTab('sede'); return; } window.switchTab('cumplimiento');
+      if (typeof window.setCumplimientoSector === 'function') {
+        window.setCumplimientoSector(sec);
+      }
+    };
+
+    window.switchSedeTab = function(sedeTab) { document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active')); const activeBtn = document.querySelector(`.tabs .sede-tab[data-sede-tab="${sedeTab}"]`); if (activeBtn) activeBtn.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(el => el.style.display = 'none'); const wasCollapsed = document.body.classList.contains('sidebar-collapsed'); document.body.className = 'page-cumplimiento has-st-sidebar' + (wasCollapsed ? ' sidebar-collapsed' : ''); const subtitleEl = document.getElementById('topbarSubtitle'); const sedeTitles = { sede: 'Sede — Análisis de cumplimiento acumulado', sede_reap: 'Sede (REAP) — Análisis de cumplimiento acumulado', sede_pi: 'Sede (Pedidos de información) — Análisis de cumplimiento acumulado', sede_servicios: 'Sede — Análisis de servicios y subcontratos' }; if (subtitleEl) subtitleEl.textContent = sedeTitles[sedeTab] || sedeTitles.sede; if (sedeTab === 'sede_servicios') { const p = document.getElementById('panel-servicios'); if (p) p.style.display = 'block'; if (typeof window.loadServiciosSector === 'function') window.loadServiciosSector('sede'); } else { const p = document.getElementById('panel-cumplimiento'); if (p) p.style.display = 'block'; if (typeof window.setCumplimientoSector === 'function') window.setCumplimientoSector(sedeTab); } setTimeout(() => { window.dispatchEvent(new Event('resize')); window.scrollTo({ top: 0, behavior: 'instant' }); }, 50); }; window.switchTab = function(tabName) {
       // 1. Quitar clase active de todas las pestañas de navegación
       document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active'));
       
@@ -1800,18 +1932,30 @@
       // 5. Cambiar el subtítulo del Topbar dinámicamente
       const subtitleEl = document.getElementById('topbarSubtitle');
       if (subtitleEl) {
-        subtitleEl.textContent = TAB_SUBTITLES[tabName] || 'Abastecimiento';
+        if (window.currentAppSector === 'compras' && tabName === 'cumplimiento') {
+          subtitleEl.textContent = 'Compras — Análisis de cumplimiento acumulado'; } else if (window.currentAppSector === 'almacen' && tabName === 'cumplimiento') { subtitleEl.textContent = 'Almacén — Análisis de cumplimiento acumulado';
+        } else {
+          subtitleEl.textContent = TAB_SUBTITLES[tabName] || 'Abastecimiento';
+        }
       }
       
-      // 6. Cambiar la clase del body para dar coherencia a las reglas específicas de páginas antiguas
+      // 6. Cambiar la clase del body preservando el estado de la barra lateral estilo Streamlit
       const body = document.body;
+      const wasCollapsed = body.classList.contains('sidebar-collapsed');
       body.className = ''; // limpiar
-      if (tabName === 'cumplimiento') body.className = 'page-cumplimiento';
-      else if (tabName === 'mm') body.className = 'page-mm';
-      else if (tabName === 'demoras') body.className = 'page-demoras';
-      else if (tabName === 'servicios') body.className = 'page-cumplimiento'; // comparte estilos con cumplimiento
-      else if (tabName === 'tiempos') body.className = 'page-cumplimiento';
-      else if (tabName === 'emrf') body.className = 'page-emrf';
+      if (tabName === 'cumplimiento') body.classList.add('page-cumplimiento', 'has-st-sidebar');
+      else if (tabName === 'mm') body.classList.add('page-mm', 'has-st-sidebar');
+      else if (tabName === 'demoras') body.classList.add('page-demoras', 'has-st-sidebar');
+      else if (tabName === 'servicios') body.classList.add('page-cumplimiento', 'has-st-sidebar');
+      else if (tabName === 'tiempos') body.classList.add('page-cumplimiento', 'has-st-sidebar');
+      else if (tabName === 'emrf') body.classList.add('page-emrf', 'has-st-sidebar');
+      if (wasCollapsed) body.classList.add('sidebar-collapsed');
+
+      // Sincronizar fecha de actualización en la barra lateral
+      const currentUpdateText = (document.getElementById('lastUpdate')?.textContent || window.LAST_UPDATE || '07/09/2026').trim();
+      document.querySelectorAll('.st-sync-date').forEach(el => {
+        el.textContent = currentUpdateText;
+      });
       
       // 7. Inicializar de forma diferida (Lazy Load / On-Demand)
       setTimeout(() => {
@@ -1870,6 +2014,287 @@
         }
       });
     }
+
+
+    /* ==========================================================================
+       STREAMLIT PILL MULTISELECT CONTROLLER (Sincronizado con <select multiple>)
+       ========================================================================== */
+    (function() {
+      const instances = new Map();
+
+      function isAllOption(opt) {
+        const val = (opt.value || '').trim();
+        const txt = (opt.textContent || '').trim().toLowerCase();
+        return val === '' || val === '__ALL__' || txt === 'todos' || txt === 'todas';
+      }
+
+      function createStMultiSelect(sel) {
+        if (instances.has(sel)) return instances.get(sel);
+
+        sel.classList.add('st-ms-hidden');
+
+        const container = document.createElement('div');
+        container.className = 'st-ms-container';
+
+        const control = document.createElement('div');
+        control.className = 'st-ms-control';
+        control.tabIndex = 0;
+
+        const pillsWrap = document.createElement('div');
+        pillsWrap.className = 'st-ms-pills';
+
+        const actionsWrap = document.createElement('div');
+        actionsWrap.className = 'st-ms-actions';
+
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'st-ms-clear';
+        clearBtn.title = 'Limpiar selección (mostrar Todos)';
+        clearBtn.innerHTML = `<svg viewBox="0 0 16 16" width="15" height="15" fill="none"><circle cx="8" cy="8" r="7" fill="#6b7280"/><path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+        const chevron = document.createElement('span');
+        chevron.className = 'st-ms-chevron';
+        chevron.innerHTML = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+        actionsWrap.appendChild(clearBtn);
+        actionsWrap.appendChild(chevron);
+        control.appendChild(pillsWrap);
+        control.appendChild(actionsWrap);
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'st-ms-dropdown';
+
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'st-ms-search-wrap';
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'st-ms-search';
+        searchInput.placeholder = 'Buscar opción...';
+        searchWrap.appendChild(searchInput);
+
+        const optionsList = document.createElement('div');
+        optionsList.className = 'st-ms-options';
+
+        dropdown.appendChild(searchWrap);
+        dropdown.appendChild(optionsList);
+
+        container.appendChild(control);
+        container.appendChild(dropdown);
+
+        sel.parentNode.insertBefore(container, sel.nextSibling);
+
+        let isUpdating = false;
+
+        function triggerSelectChange() {
+          isUpdating = true;
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+          setTimeout(() => {
+            isUpdating = false;
+            render();
+          }, 0);
+        }
+
+        function clearAllSelection(e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const opts = Array.from(sel.options);
+          const allOpt = opts.find(isAllOption);
+          opts.forEach(o => {
+            o.selected = (allOpt && o === allOpt) ? true : false;
+          });
+          triggerSelectChange();
+        }
+
+        function removeOptionValue(val, e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const opts = Array.from(sel.options);
+          opts.forEach(o => {
+            if (o.value === val && !isAllOption(o)) {
+              o.selected = false;
+            }
+          });
+          const remainingSpecific = opts.filter(o => !isAllOption(o) && o.selected);
+          const allOpt = opts.find(isAllOption);
+          if (remainingSpecific.length === 0 && allOpt) {
+            allOpt.selected = true;
+          }
+          triggerSelectChange();
+        }
+
+        function addOptionValue(val, e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const opts = Array.from(sel.options);
+          opts.forEach(o => {
+            if (isAllOption(o)) {
+              o.selected = false;
+            } else if (o.value === val) {
+              o.selected = true;
+            }
+          });
+          triggerSelectChange();
+        }
+
+        let lastSig = '';
+
+        function render(force = false) {
+          const opts = Array.from(sel.options);
+          const sig = opts.map(o => o.value + ':' + (o.selected ? '1' : '0')).join('|') + '||' + (searchInput.value || '');
+          if (!force && sig === lastSig) return;
+          lastSig = sig;
+          const specificOpts = opts.filter(o => !isAllOption(o));
+          const allOpt = opts.find(isAllOption);
+
+          // Si la opción "Todos" está marcada junto con otras por carga inicial, o si sólo está "Todos", determinar las específicas activas
+          const selectedSpecific = specificOpts.filter(o => o.selected);
+
+          pillsWrap.innerHTML = '';
+
+          if (selectedSpecific.length === 0) {
+            const ph = document.createElement('span');
+            ph.className = 'st-ms-placeholder';
+            ph.textContent = 'Todos';
+            pillsWrap.appendChild(ph);
+            clearBtn.style.display = 'none';
+          } else {
+            clearBtn.style.display = 'inline-flex';
+            selectedSpecific.forEach(o => {
+              const pill = document.createElement('span');
+              pill.className = 'st-ms-pill';
+              pill.title = o.textContent;
+
+              const txt = document.createElement('span');
+              txt.className = 'st-ms-pill-text';
+              txt.textContent = o.textContent;
+
+              const rem = document.createElement('button');
+              rem.type = 'button';
+              rem.className = 'st-ms-pill-remove';
+              rem.innerHTML = '&times;';
+              rem.title = 'Quitar ' + o.textContent;
+              rem.addEventListener('click', (ev) => removeOptionValue(o.value, ev));
+
+              pill.appendChild(txt);
+              pill.appendChild(rem);
+              pillsWrap.appendChild(pill);
+            });
+          }
+
+          // Mostrar buscador interno si hay más de 6 opciones
+          searchWrap.style.display = specificOpts.length > 6 ? 'block' : 'none';
+          const q = (searchInput.value || '').trim().toLowerCase();
+
+          // Opciones disponibles (no seleccionadas aún)
+          const availableOpts = specificOpts.filter(o => {
+            if (o.selected) return false;
+            if (!q) return true;
+            return (o.textContent || '').toLowerCase().includes(q);
+          });
+
+          optionsList.innerHTML = '';
+          if (availableOpts.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'st-ms-empty';
+            empty.textContent = specificOpts.length > 0 && selectedSpecific.length === specificOpts.length
+              ? 'Todas las opciones seleccionadas'
+              : 'Sin opciones coincidentes';
+            optionsList.appendChild(empty);
+          } else {
+            availableOpts.forEach(o => {
+              const item = document.createElement('div');
+              item.className = 'st-ms-option';
+              item.textContent = o.textContent;
+              item.addEventListener('click', (ev) => addOptionValue(o.value, ev));
+              optionsList.appendChild(item);
+            });
+          }
+        }
+
+        clearBtn.addEventListener('click', clearAllSelection);
+
+        control.addEventListener('click', (e) => {
+          if (e.target.closest('.st-ms-pill-remove') || e.target.closest('.st-ms-clear')) return;
+          const wasOpen = container.classList.contains('is-open');
+          // Cerrar otros dropdowns abiertos
+          document.querySelectorAll('.st-ms-container.is-open').forEach(el => {
+            if (el !== container) el.classList.remove('is-open');
+          });
+          container.classList.toggle('is-open', !wasOpen);
+          if (!wasOpen) {
+            searchInput.value = '';
+            render();
+            if (searchWrap.style.display !== 'none') {
+              setTimeout(() => searchInput.focus(), 20);
+            }
+          }
+        });
+
+        searchInput.addEventListener('input', () => render());
+        searchInput.addEventListener('click', (e) => e.stopPropagation());
+
+        // Observar cambios en las opciones del <select> subyacente
+        const observer = new MutationObserver(() => {
+          if (!isUpdating) render();
+        });
+        observer.observe(sel, { childList: true, subtree: true, attributes: true });
+
+        sel.addEventListener('change', () => {
+          setTimeout(() => render(), 10);
+        });
+
+        render();
+
+        const inst = { render, container, sel };
+        instances.set(sel, inst);
+        return inst;
+      }
+
+      window.syncAllStMultiSelects = function() {
+        document.querySelectorAll('.st-sidebar select.multi-select').forEach(sel => {
+          const inst = createStMultiSelect(sel);
+          inst.render();
+        });
+      };
+
+      // Cerrar dropdown al hacer clic fuera
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.st-ms-container')) {
+          document.querySelectorAll('.st-ms-container.is-open').forEach(el => el.classList.remove('is-open'));
+        }
+      });
+
+      // Sincronizar al hacer clic en botones de limpiar o cambiar pestañas
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-clear') || e.target.closest('#cumpl_btnArriba')) {
+          setTimeout(() => window.syncAllStMultiSelects(), 60);
+        }
+      });
+
+      window.addEventListener('DOMContentLoaded', () => {
+        window.syncAllStMultiSelects();
+        // Sincronización periódica ligera para reflejar cargas asíncronas de CSV/JSON
+        setInterval(() => window.syncAllStMultiSelects(), 600);
+      });
+    })();
+
+    window.toggleStSidebar = function() {
+      const body = document.body;
+      if (window.innerWidth <= 992) {
+        body.classList.toggle('sidebar-mobile-open');
+      } else {
+        body.classList.toggle('sidebar-collapsed');
+      }
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 260);
+    };
 
     // Inicializar la primera pestaña por defecto al cargar el DOM o según URL
     window.addEventListener('DOMContentLoaded', () => {
@@ -1979,7 +2404,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261019_123451"></script>
+  <script src="js/auth-user.js?v=20261020_102000"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

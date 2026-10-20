@@ -41,13 +41,18 @@
   }
 
   /* ============================
-     CONFIG
+     CONFIG (Multi-Sector: Abastecimiento / Compras)
   ============================ */
-  const csvUrl = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+  const SECTOR_CSV_URLS = {
+    abastecimiento: "data/CUMPLIMIENTO_OPTIMIZADO.csv",
+    compras: "data - compras/R1 - REPORTE CUMPLIMIENTO COMPRAS ACUMULADO.csv", almacen: "data - almacen/ALMACEN.csv", sede: "data - sede/CUMPLIMIENTO_SEDE.csv", sede_reap: "data - sede/R1 - REPORTE CUMPLIMIENTO REAP ACUMULADO.csv", sede_pi: "data - sede/R1 - REPORTE CUMPLIMIENTO PI ACUMULADO.csv"
+  };
+  let currentSector = "abastecimiento";
+  let csvUrl = SECTOR_CSV_URLS.abastecimiento;
   const DELIM = ";";
 
   const FECHA_COL = "FECHA ENTREGA ESPERADA";
-  const DEMORA_COL = "DIAS DE DEMORA";
+  let DEMORA_COL = "DIAS DE DEMORA";
 
   function avgDelay(rows) {
     let s = 0, c = 0;
@@ -59,13 +64,25 @@
   }
   const CLIENT_CANDIDATES = ["CLIENTE / OBRA", "CLIENTE NRO.", "CLIENTE"];
 
-  const CLASIF2_CANDIDATES = ["CLASIFICACION 2", "CLASIFICACIÓN 2", "CLASIFICACION2", "CLASIFICACION_2"];
+  const CLASIF2_CANDIDATES = ["CLASIFICACION 2", "CLASIFICACIÓN 2", "CLASIFICACION2", "CLASIFICACION_2", "CLASIFICACION", "GCCLASIFICACION"];
   const GCOC_CANDIDATES = ["GRUPO DE COMPRAS OC", "GRUPO DE COMPRAS_OC", "GRUPO DE COMPRA OC"];
   const CENTRO_CANDIDATES = ["CENTRO"];
 
   let AT_COL = "ENTREGADOS AT";
   let FT_COL = "ENTREGADOS FT";
   let NO_COL = "NO ENTREGADOS";
+
+  function syncMetricColsFromHeaders(hdrs) {
+    if (hdrs.includes("RESPONDIDO AT")) { AT_COL = "RESPONDIDO AT"; FT_COL = "RESPONDIDO FT"; NO_COL = "NO RESPONDIDO"; DEMORA_COL = hdrs.includes("dDIAS DEMORA") ? "dDIAS DEMORA" : "DIAS DE DEMORA"; } else if (hdrs.includes("CUMPLIDO AT") && !hdrs.includes("ENTREGADOS AT")) { DEMORA_COL = "DIAS DE DEMORA";
+      AT_COL = "CUMPLIDO AT";
+      FT_COL = "CUMPLIDO FT";
+      NO_COL = hdrs.includes("NO CUMPLIDO ALMACEN") ? "NO CUMPLIDO ALMACEN" : "NO CUMPLIDO COMPRAS";
+    } else {
+      AT_COL = "ENTREGADOS AT";
+      FT_COL = "ENTREGADOS FT";
+      NO_COL = "NO ENTREGADOS"; DEMORA_COL = "DIAS DE DEMORA";
+    }
+  }
 
   /* ============================
      COLORES (match KPIs)
@@ -104,7 +121,7 @@
   /* ============================
      HELPERS
   ============================ */
-  const clean = (v) => (v ?? "").toString().trim();
+  const clean = (v) => (v ?? "").toString().replace(/&#160;|&nbsp;/gi, " ").trim();
 
   function setText(id, txt) {
     const el = document.getElementById(id);
@@ -141,7 +158,7 @@
 
   function setDelta(el, text, cls) {
     if (!el) return;
-    el.className = "kpi-sub"; 
+    el.className = "cumpl-kpi-sub kpi-sub-strong";
     if (cls) el.classList.add(cls);
     el.textContent = text;
   }
@@ -318,7 +335,7 @@
     const cs = getSelValues("cumpl_clienteSelect");
     let rows = cs.length ? data.filter(r => cs.includes(clean(r[CLIENT_COL]))) : data;
 
-    if (CLASIF2_COL) {
+    if (CLASIF2_COL && currentSector === "abastecimiento") {
       const equiposNorm = "EQUIPOS MENORES".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const almacenNorm = "ALMACEN".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -1373,8 +1390,8 @@
     });
   }
 
-  function updateIncompletosCount() {
-    const rowsFilt = filteredRowsByAll();
+  function updateIncompletosCount() { const rowsFilt = filteredRowsNoMes();
+    // rowsFilt calculated without month filter above
     const count = getIncompletosRows(rowsFilt).length;
     setText("cumpl_countIncompletos", fmtInt(count));
   }
@@ -1393,10 +1410,8 @@
     hiddenChartMonths.clear();
 
     useFinalColumns = false;
-    AT_COL = "ENTREGADOS AT";
-    FT_COL = "ENTREGADOS FT";
-    NO_COL = "NO ENTREGADOS";
-    const btnAlt = document.getElementById("cumpl_btnAlternativo");
+    syncMetricColsFromHeaders(headers);
+    const btnAlt = document.getElementById("cumpl_btnAlternativo") || document.getElementById("cumpl_btnArriba");
     if (btnAlt) {
       btnAlt.textContent = "Medir cumplimiento arriba";
       btnAlt.classList.remove("btn-active");
@@ -1582,100 +1597,140 @@
   /* ============================
      EXPOSE DEFERRED INITIALIZATION LIFE CYCLE HOOK
   =========================== */
-  window.initCumplimiento = function() {
-    if (window.cumplimientoInitialized) return;
-    window.cumplimientoInitialized = true;
+  const sectorMemoryCache = {};
+  let uiEventsBound = false;
 
-    applyChartDefaults();
+  function showLoader() {
+    const loader = document.getElementById("cumpl_loader");
+    if (loader) loader.style.display = "flex";
+  }
 
-    setText("lastUpdate", (window.LAST_UPDATE || "").toString().trim() || "--/--/----");
-    const cacheKey = "processed_cumplimiento_" + window.CACHE_BUSTER;
+  function hideLoader() {
+    const loader = document.getElementById("cumpl_loader");
+    if (loader) loader.style.display = "none";
+  }
+
+  function resetSelectSelectionsForSectorSwitch() {
+    ["cumpl_clienteSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect"].forEach(id => {
+      const sel = document.getElementById(id);
+      if (sel) sel.innerHTML = '<option value="__ALL__" selected>Todos</option>';
+    });
+    hiddenChartMonths.clear();
+  }
+
+  function loadSectorData(sector) {
+    currentSector = SECTOR_CSV_URLS[sector] ? sector : "abastecimiento";
+    csvUrl = SECTOR_CSV_URLS[currentSector];
+
+    if (sectorMemoryCache[currentSector]) {
+      resetSelectSelectionsForSectorSwitch();
+      initializeUIWithData(sectorMemoryCache[currentSector].headers, sectorMemoryCache[currentSector].data);
+      hideLoader();
+      if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
+      return;
+    }
+
+    showLoader();
+    const cacheKey = "processed_cumplimiento_" + currentSector + "_" + window.CACHE_BUSTER;
 
     if (window.getCachedData) {
       window.getCachedData(cacheKey).then(cached => {
         if (cached && cached.headers && cached.data) {
+          sectorMemoryCache[currentSector] = cached;
+          resetSelectSelectionsForSectorSwitch();
           initializeUIWithData(cached.headers, cached.data);
-          console.log("[cache-utils] Loaded preprocessed cumplimiento data from cache.");
           hideLoader();
+          if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
         } else {
-          loadFromCsv();
+          loadFromCsv(cacheKey);
         }
       }).catch(err => {
         console.warn("Cache load failed, falling back to CSV", err);
-        loadFromCsv();
+        loadFromCsv(cacheKey);
       });
     } else {
-      loadFromCsv();
+      loadFromCsv(cacheKey);
     }
+  }
 
-    function hideLoader() {
-      const loader = document.getElementById("cumpl_loader");
-      if (loader) loader.style.display = "none";
-    }
-
-    function loadFromCsv() {
-      fetchWithCache(csvUrl + "?t=" + window.CACHE_BUSTER)
-        .then(text => {
-          const m = parseDelimited(text, DELIM);
-          if (!m.length || m.length < 2) {
-            showError("El CSV está vacío o no tiene filas.");
-            return;
-          }
-
-          const parsedHeaders = m[0].map(clean);
-
-          const parsedData = m.slice(1).map(row => {
-            const o = {};
-            parsedHeaders.forEach((h, i) => (o[h] = clean(row[i])));
-            return o;
-          });
-
-          if (window.setCachedData) {
-            window.setCachedData(cacheKey, { headers: parsedHeaders, data: parsedData });
-          }
-
-          initializeUIWithData(parsedHeaders, parsedData);
-        })
-        .catch(err => {
-          console.error(err);
-          showError("Error cargando CSV: " + (err?.message || err));
-        })
-        .finally(() => {
-          hideLoader();
-        });
-    }
-
-    function initializeUIWithData(processedHeaders, processedData) {
-        headers = processedHeaders;
-        data = processedData;
-        window.getCumplimientoData = () => data;
-        window.getCumplimientoHeaders = () => headers;
-
-        CLIENT_COL = CLIENT_CANDIDATES.find(c => headers.includes(c));
-        if (!CLIENT_COL) {
-          showError("No encuentro columna CLIENTE. Probé: " + CLIENT_CANDIDATES.join(" / "));
+  function loadFromCsv(cacheKey) {
+    const encodedUrl = encodeURI(csvUrl) + "?t=" + window.CACHE_BUSTER;
+    fetchWithCache(encodedUrl)
+      .then(text => {
+        const m = parseDelimited(text, DELIM);
+        if (!m.length || m.length < 2) {
+          showError("El CSV está vacío o no tiene filas.");
           return;
         }
 
-        CLASIF2_COL = CLASIF2_CANDIDATES.find(c => headers.includes(c)) || null;
-        GCOC_COL = GCOC_CANDIDATES.find(c => headers.includes(c)) || null;
-        CENTRO_COL = CENTRO_CANDIDATES.find(c => headers.includes(c)) || null;
+        const parsedHeaders = m[0].map(clean);
 
-        setText("cumpl_clienteHint", `Columna cliente: ${CLIENT_COL}`);
-        setText("cumpl_clasif2Hint", CLASIF2_COL ? `Columna: ${CLASIF2_COL}` : "Columna: (no encontrada)");
-        setText("cumpl_gcocHint", GCOC_COL ? `Columna: ${GCOC_COL}` : "Columna: (no encontrada)");
-        setText("centroHint", CENTRO_COL ? `Columna: ${CENTRO_COL}` : "Columna: (no encontrada)");
+        const parsedData = m.slice(1).map(row => {
+          const o = {};
+          parsedHeaders.forEach((h, i) => (o[h] = clean(row[i])));
+          return o;
+        });
 
-        renderClientes();
-        renderCentros();
-        const baseCliente = rowsByClienteBase();
-        renderClasif2(baseCliente);
-        renderGcoc(baseCliente);
-        
-        applyAll();
-        setupChartFilterEvents();
+        sectorMemoryCache[currentSector] = { headers: parsedHeaders, data: parsedData };
+        if (window.setCachedData && currentSector === "abastecimiento") {
+          window.setCachedData(cacheKey, { headers: parsedHeaders, data: parsedData });
+        }
 
-        const btnAlt = document.getElementById("cumpl_btnAlternativo");
+        resetSelectSelectionsForSectorSwitch();
+        initializeUIWithData(parsedHeaders, parsedData);
+        if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
+      })
+      .catch(err => {
+        console.error(err);
+        showError("Error cargando CSV: " + (err?.message || err));
+      })
+      .finally(() => {
+        hideLoader();
+      });
+  }
+
+  function initializeUIWithData(processedHeaders, processedData) {
+      headers = processedHeaders;
+      data = processedData;
+      window.getCumplimientoData = () => data;
+      window.getCumplimientoHeaders = () => headers;
+
+      useFinalColumns = false;
+      syncMetricColsFromHeaders(headers);
+
+      CLIENT_COL = CLIENT_CANDIDATES.find(c => headers.includes(c));
+      if (!CLIENT_COL) {
+        showError("No encuentro columna CLIENTE. Probé: " + CLIENT_CANDIDATES.join(" / "));
+        return;
+      }
+
+      CLASIF2_COL = CLASIF2_CANDIDATES.find(c => headers.includes(c)) || null;
+      GCOC_COL = GCOC_CANDIDATES.find(c => headers.includes(c) && data.some(r => clean(r[c]) !== "")) || (headers.includes("GRUPO DE COMPRA") ? "GRUPO DE COMPRA" : null) || GCOC_CANDIDATES.find(c => headers.includes(c)) || null;
+      CENTRO_COL = CENTRO_CANDIDATES.find(c => headers.includes(c)) || null;
+
+      setText("cumpl_clienteHint", `Columna cliente: ${CLIENT_COL}`);
+      setText("cumpl_clasif2Hint", CLASIF2_COL ? `Columna: ${CLASIF2_COL}` : "Columna: (no encontrada)");
+      setText("cumpl_gcocHint", GCOC_COL ? `Columna: ${GCOC_COL}` : "Columna: (no encontrada)");
+      setText("centroHint", CENTRO_COL ? `Columna: ${CENTRO_COL}` : "Columna: (no encontrada)");
+
+      renderClientes();
+      renderCentros();
+      const baseCliente = rowsByClienteBase();
+      renderClasif2(baseCliente);
+      renderGcoc(baseCliente);
+      
+      applyAll();
+
+      if (uiEventsBound) {
+        setHTML("cumpl_msg", "");
+        hideLoader();
+        return;
+      }
+      uiEventsBound = true;
+
+      setupChartFilterEvents();
+
+        const btnAlt = document.getElementById("cumpl_btnAlternativo") || document.getElementById("cumpl_btnArriba");
         if (btnAlt) {
           btnAlt.addEventListener("click", () => {
             useFinalColumns = !useFinalColumns;
@@ -1689,7 +1744,7 @@
             } else {
               AT_COL = "ENTREGADOS AT";
               FT_COL = "ENTREGADOS FT";
-              NO_COL = "NO ENTREGADOS";
+              NO_COL = "NO ENTREGADOS"; DEMORA_COL = "DIAS DE DEMORA";
               btnAlt.textContent = "Medir cumplimiento arriba";
               btnAlt.classList.remove("btn-active");
             }
@@ -1732,8 +1787,8 @@
           updateIncompletosCount();
         });
 
-        document.getElementById("cumpl_btnDownloadNO")?.addEventListener("click", () => {
-          const rowsFilt = filteredRowsByAll();
+        document.getElementById("cumpl_btnDownloadNO")?.addEventListener("click", () => { const rowsFilt = filteredRowsByAll();
+          // rowsFilt calculated without month filter above
           const noRows = getNoEntregadosRows(rowsFilt);
 
           if (!noRows.length) {
@@ -1753,9 +1808,9 @@
           downloadExcel(filename, noRows, cols, "No Entregados");
         });
 
-        document.getElementById("cumpl_btnDownloadIncompletos")?.addEventListener("click", () => {
-          const rowsFilt = filteredRowsByAll();
-          const incRows = getIncompletosRows(rowsFilt);
+        document.getElementById("cumpl_btnDownloadIncompletos")?.addEventListener("click", () => { const rowsFilt = filteredRowsNoMes(); const incRows = getIncompletosRows(rowsFilt);
+          // rowsFilt calculated without month filter above
+          // incRows calculated across all months above
 
           if (!incRows.length) {
             alert("No hay pedidos INCOMPLETOS para el filtro actual.");
@@ -1779,9 +1834,24 @@
         });
 
         setHTML("cumpl_msg", "");
-        const loader = document.getElementById("cumpl_loader");
-        if (loader) loader.style.display = "none";
+        hideLoader();
+  }
+
+  window.initCumplimiento = function() {
+    if (window.cumplimientoInitialized) return;
+    window.cumplimientoInitialized = true;
+    applyChartDefaults();
+    setText("lastUpdate", (window.LAST_UPDATE || "").toString().trim() || "--/--/----");
+    loadSectorData(window.currentAppSector || "abastecimiento");
+  };
+
+  window.setCumplimientoSector = function(sector) {
+    window.currentAppSector = sector;
+    if (!window.cumplimientoInitialized) {
+      window.initCumplimiento();
+      return;
     }
+    loadSectorData(sector);
   };
 
 })();

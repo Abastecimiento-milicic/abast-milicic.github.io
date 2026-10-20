@@ -4,7 +4,8 @@
    ============================================================================== */
 
 #panel-emrf {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: none !important;
+  transform: none !important;
 }
 
 @keyframes fadeIn {

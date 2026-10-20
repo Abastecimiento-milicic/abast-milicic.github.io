@@ -296,7 +296,7 @@
         value: it.qty,
         itemStyle: { color: colorByName[it.estado] },
         ...(isSN ? {
-          label: { color: "#ef4444", fontWeight: 950 },
+          label: { color: "#ef4444", fontWeight: 600 },
           labelLine: { lineStyle: { color: "#ef4444", width: 2 } }
         } : {})
       });
@@ -327,7 +327,7 @@
             const pct = (v / total) * 100;
             return `${p.name}\n${pct.toFixed(0)}%`;
           },
-          fontWeight: 950,
+          fontWeight: 600,
           fontSize: 12,
           color: "#0b1220"
         },
@@ -396,11 +396,12 @@
         btn.style.marginLeft = "auto";
         btn.style.height = "28px";
         btn.style.padding = "0 6px";
-        btn.style.borderRadius = "8px";
-        btn.style.border = "2px solid rgba(2,8,20,.35)";
+        btn.style.borderRadius = "6px";
+        btn.style.border = "1px solid rgba(49, 51, 63, 0.22)";
         btn.style.background = "#fff";
-        btn.style.fontWeight = "900";
-        btn.style.fontSize = "11px";
+        btn.style.color = "#31333F";
+        btn.style.fontWeight = "500";
+        btn.style.fontSize = "11.5px";
         btn.style.cursor = "pointer";
         btn.style.whiteSpace = "nowrap";
         btn.style.minWidth = "125px";
@@ -539,7 +540,7 @@
       const p = total > 0 ? (it.val / total * 100) : 0;
       const cumPct = total > 0 ? (cumSum / total * 100) : 0;
       
-      const tr = document.createElement("tr");
+      const tr = document.createElement("tr"); const normR = clean(it.rubro).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); if (["?", "VACIO", "SIN RUBRO", "OBSOLETO", "OBSOLETOS", "-", ""].includes(normR)) tr.classList.add("rubro-alert-row");
       tr.innerHTML = `
         <td style="font-weight: 500; color: #1e293b; text-align: left;">${it.rubro}</td>
         <td style="text-align: right;">$ ${fmtMoney(it.val)}</td>

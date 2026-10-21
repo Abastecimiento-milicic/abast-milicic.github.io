@@ -693,7 +693,7 @@
       </aside>
 
       <section class="panel">
-        <div class="panel-title">DISPONIBILIDAD DE MATERIALES</div>
+        <div class="panel-title">DISPONIBILIDAD DE MATERIALES<span id="mm_activeFiltersSummary" class="st-active-filters-summary"></span></div>
         <div class="panel-body">
           <div class="kpi-grid kpi-grid-3" style="width: 100%;">
             <div class="kpi kpi-blue">
@@ -880,7 +880,7 @@
       <section class="panel" style="grid-column: 1 / -1; margin-bottom: 20px; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
         <div class="panel-title" style="display:flex; align-items:center; justify-content: space-between; width: 100%;">
           <div style="display:flex; align-items:center;">
-            <div class="status-dot blue" style="background:#fff; margin-right:8px;"></div> RESUMEN DE DEMORAS
+            <div class="status-dot blue" style="background:#fff; margin-right:8px;"></div><span>RESUMEN DE DEMORAS</span><span id="dem_activeFiltersSummary" class="st-active-filters-summary"></span>
           </div>
           <button id="dem_btnDownloadNoArea" title="Descargar pedidos sin área asignada (Excel)" style="background: none; border: none; cursor: pointer; color: #fff; padding: 4px; display: flex; align-items: center; justify-content: center; outline: none; margin-right: 15px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -1040,7 +1040,7 @@
       </aside>
 
       <section class="panel">
-        <div class="panel-title">RESUMEN DE PEDIDOS POR ESTADO</div>
+        <div class="panel-title">RESUMEN DE PEDIDOS POR ESTADO<span id="serv_activeFiltersSummary" class="st-active-filters-summary"></span></div>
         <div class="panel-body" style="padding: 20px; overflow-x: auto;">
           <table id="serv_tablaResumen" class="serv-resumen-table">
             <thead>
@@ -1576,7 +1576,7 @@
               <div class="tiempos-card-header">
                 <div class="tiempos-card-title">
                   <span>📦</span>
-                  <span>Cantidad de Pedidos por Nivel de Criticidad y Plazo</span>
+                  <span>Cantidad de Pedidos por Nivel de Criticidad y Plazo</span><span id="tiempos_activeFiltersSummary" class="st-active-filters-summary"></span>
                 </div>
               </div>
               <div class="tiempos-table-wrap">
@@ -1800,7 +1800,7 @@
       <div class="emrf-table-toolbar">
         <h3 class="emrf-table-title">
           <span>📑 Todas las Posiciones</span>
-          <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">(<span id="emrf_tableCount">0</span>)</span>
+          <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">(<span id="emrf_tableCount">0</span>)</span><span id="emrf_activeFiltersSummary" class="st-active-filters-summary"></span>
         </h3>
       </div>
 
@@ -2256,7 +2256,7 @@
         return inst;
       }
 
-      window.updateCumplFiltersSummary = function() { const el = document.getElementById('cumpl_activeFiltersSummary'); if (!el) return; const isCompras = window.currentAppSector === 'compras'; const defs = isCompras ? [{ id: 'cumpl_clienteSelect', lbl: 'Cliente' }, { id: 'cumpl_operadorSelect', lbl: 'Comprador' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }, { id: 'cumpl_proveedorSelect', lbl: 'Proveedor' }, { id: 'cumpl_soloAbastSelect', lbl: 'Solo Abast.' }] : [{ id: 'cumpl_clienteSelect', lbl: 'Obra' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }]; el.innerHTML = '<span class="st-af-title">FILTROS:</span>' + defs.map(d => { const s = document.getElementById(d.id); const selOpts = s ? [...s.options].filter(o => o.selected && !isAllOption(o)) : []; const active = selOpts.length > 0; const valTxt = active ? selOpts.map(o => (o.textContent || o.value || '').trim()).join(', ') : 'Todos'; return `<span class="st-af-chip ${active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${valTxt}</span></span>`; }).join(''); }; window.syncAllStMultiSelects = function() {
+      window.updateCumplFiltersSummary = function() { const renderChips = (elId, defs) => { const el = document.getElementById(elId); if (!el) return; el.innerHTML = '<span class="st-af-title">FILTROS:</span>' + defs.map(d => { if (d.custom) { const res = d.custom(); return `<span class="st-af-chip ${res.active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${res.txt}</span></span>`; } const s = document.getElementById(d.id); const selOpts = s ? [...s.options].filter(o => o.selected && !isAllOption(o)) : []; const active = selOpts.length > 0; const valTxt = active ? selOpts.map(o => (o.textContent || o.value || '').trim()).join(', ') : 'Todos'; return `<span class="st-af-chip ${active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${valTxt}</span></span>`; }).join(''); }; const isCompras = window.currentAppSector === 'compras'; renderChips('cumpl_activeFiltersSummary', isCompras ? [{ id: 'cumpl_clienteSelect', lbl: 'Cliente' }, { id: 'cumpl_operadorSelect', lbl: 'Comprador' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }, { id: 'cumpl_proveedorSelect', lbl: 'Proveedor' }, { id: 'cumpl_soloAbastSelect', lbl: 'Solo Abast.' }] : [{ id: 'cumpl_clienteSelect', lbl: 'Obra' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }]); renderChips('mm_activeFiltersSummary', [{ id: 'mm_clienteSelect', lbl: 'Almacén' }]); renderChips('dem_activeFiltersSummary', [{ id: 'dem_clienteSelect', lbl: 'Cliente' }, { id: 'dem_clasifSelect', lbl: 'Clasif.' }, { id: 'dem_mesSelect', lbl: 'Mes' }]); renderChips('serv_activeFiltersSummary', [{ id: 'serv_clienteSelect', lbl: 'Cliente' }, { id: 'serv_clasif2Select', lbl: 'Período' }, { id: 'serv_gcocSelect', lbl: 'Estado' }, { id: 'serv_grupoCompraSelect', lbl: 'GC' }, { id: 'serv_estadoItemSelect', lbl: 'Estado Ítem' }]); renderChips('tiempos_activeFiltersSummary', [{ lbl: 'Obra', custom: () => { const s = document.getElementById('tiempos_obraSelect'); const o = s && s.selectedOptions[0]; const txt = o ? (o.textContent || o.value || '').trim() : 'Todos'; return { active: !!(txt && txt.toLowerCase() !== 'todos' && txt.toLowerCase() !== 'todas'), txt: txt || 'Todos' }; } }, { lbl: 'Mes', custom: () => { const list = document.getElementById('tiempos_slicer_list'); if (!list) return { active: false, txt: 'Todos' }; const all = list.querySelectorAll('.tiempos-slicer-item'); const act = list.querySelectorAll('.tiempos-slicer-item.active'); if (!act.length || act.length === all.length) return { active: false, txt: 'Todos' }; const names = [...act].map(i => (i.querySelector('span')?.textContent || '').trim()).filter(Boolean); return { active: true, txt: names.join(', ') }; } }]); renderChips('emrf_activeFiltersSummary', [{ lbl: 'Sociedad', custom: () => { const s = document.getElementById('emrf_sociedadSelect'); const v = s ? s.value : 'TODAS'; const o = s && s.selectedOptions[0]; return { active: v !== 'TODAS', txt: (v === 'TODAS' || !o) ? 'Todas' : o.textContent.trim() }; } }, { lbl: 'Búsqueda', custom: () => { const inp = document.getElementById('emrf_searchInput'); const v = inp ? inp.value.trim() : ''; return { active: !!v, txt: v || 'Todos' }; } }, { id: 'emrf_estadoSelect', lbl: 'Estado' }, { id: 'emrf_gcSelect', lbl: 'GC' }, { id: 'emrf_vencSelect', lbl: 'Venc.' }, { id: 'emrf_operOcSelect', lbl: 'Operador' }]); }; window.syncAllStMultiSelects = function() {
         document.querySelectorAll('.st-sidebar select.multi-select').forEach(sel => {
           const inst = createStMultiSelect(sel);
           inst.render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
@@ -2272,7 +2272,7 @@
 
       // Sincronizar al hacer clic en botones de limpiar o cambiar pestañas
       document.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-clear') || e.target.closest('#cumpl_btnArriba')) {
+        if (e.target.closest('.btn-clear') || e.target.closest('#cumpl_btnArriba') || e.target.closest('.st-sidebar')) { setTimeout(() => { if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary(); }, 20);
           setTimeout(() => window.syncAllStMultiSelects(), 60);
         }
       });
@@ -2281,6 +2281,8 @@
         window.syncAllStMultiSelects();
         // Sincronización periódica ligera para reflejar cargas asíncronas de CSV/JSON
         setInterval(() => window.syncAllStMultiSelects(), 600);
+        document.addEventListener('input', (e) => { if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary(); });
+        document.addEventListener('change', (e) => { if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') setTimeout(() => window.updateCumplFiltersSummary(), 15); });
       });
     })();
 

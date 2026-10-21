@@ -582,7 +582,7 @@
         if (cellFeCont.value) cellFeCont.numFmt = "DD/MM/YYYY";
 
         // Dias Atraso (col 8)
-        row.getCell(8).numFmt = "#,##0";
+        row.getCell(8).numFmt = "0";
 
         // Monedas (cols 9, 10, 11)
         row.getCell(9).numFmt = "$ #,##0.00";

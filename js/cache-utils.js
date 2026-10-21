@@ -222,15 +222,15 @@
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
           }
           
-          const rawVal = rowData[colIdx - 1];
+          const rawVal = (typeof rowData[colIdx - 1] === 'string' && /^\d{1,3}(\.\d{3})+$/.test(rowData[colIdx - 1].trim())) ? rowData[colIdx - 1].trim().replace(/\./g, '') : rowData[colIdx - 1];
           if (rawVal !== "" && !isNaN(rawVal) && typeof rawVal !== 'boolean') {
             const num = Number(rawVal);
             cell.value = num;
             cell.alignment = { vertical: 'middle', horizontal: 'right' };
             if (Number.isInteger(num)) {
-              cell.numFmt = '#,##0';
+              cell.numFmt = '0';
             } else {
-              cell.numFmt = '#,##0.00';
+              cell.numFmt = '0.00';
             }
           }
 

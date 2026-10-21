@@ -27,7 +27,7 @@ if (!cb) {
   cb = new Date().getTime();
   sessionStorage.setItem('mi_cache_buster', cb);
 }
-window.CACHE_BUSTER = cb + "_v64_periodo_corto";
+window.CACHE_BUSTER = cb + "_v65_20261021_145300";
 
 window.forceRefreshData = function() {
   sessionStorage.removeItem('mi_cache_buster');

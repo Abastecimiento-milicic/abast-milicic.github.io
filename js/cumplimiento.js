@@ -395,8 +395,7 @@
     if (sel) sel.disabled = false;
     fillSelect("centroSelect", vals, "Todos");
   }
-  function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["SI", "NO"], "Todos"); }
-  }
+  function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["Abastecimiento", "Equipos"], "TODO"); }
 
   function renderClasif2(rowsBase) {
     const hint = document.getElementById("cumpl_clasif2Hint");

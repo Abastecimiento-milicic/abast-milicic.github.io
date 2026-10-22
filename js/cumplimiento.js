@@ -360,7 +360,24 @@
     if (gcs.length && GCOC_COL) rows = rows.filter(r => gcs.includes(clean(r[GCOC_COL])));
     
     const cents = getSelValues("centroSelect");
-    if (cents.length && CENTRO_COL) rows = rows.filter(r => cents.includes(clean(r[CENTRO_COL]))); if (currentSector === "compras") { const ops = getSelValues("cumpl_operadorSelect"); if (ops.length && OPERADOR_COL) rows = rows.filter(r => ops.includes(clean(r[OPERADOR_COL]))); const provs = getSelValues("cumpl_proveedorSelect"); if (provs.length && PROVEEDOR_COL) rows = rows.filter(r => provs.includes(clean(r[PROVEEDOR_COL]))); const sa = getSelValues("cumpl_soloAbastSelect"); if (sa.length && SOLO_ABAST_COL) rows = rows.filter(r => { const raw = clean(r[SOLO_ABAST_COL]).toUpperCase(); const mapped = (raw === "1" || raw === "SI" || raw === "SÍ") ? "SI" : "NO"; return sa.includes(mapped); }); }
+    if (cents.length && CENTRO_COL) rows = rows.filter(r => cents.includes(clean(r[CENTRO_COL]))); if (currentSector === "compras") 
+    { const ops = getSelValues("cumpl_operadorSelect"); if (ops.length && OPERADOR_COL) rows = rows.filter(r => ops.includes(clean(r[OPERADOR_COL]))); 
+     const provs = getSelValues("cumpl_proveedorSelect"); if (provs.length && PROVEEDOR_COL) rows = rows.filter(r => provs.includes(clean(r[PROVEEDOR_COL]))); 
+    const sa = getSelValues("cumpl_soloAbastSelect"); 
+if (sa.length && SOLO_ABAST_COL) {
+  rows = rows.filter(r => { 
+    const raw = clean(r[SOLO_ABAST_COL]); 
+    let mapped = "";
+    if (raw === "1") {
+        mapped = "Abastecimiento";
+    } else if (raw === "2") {
+        mapped = "Equipos";
+    }
+    // Si selecciona "TODO", 'sa' estará vacío y se omitirá este filtro,
+    // dejando pasar el 1, el 2 y los null automáticamente.
+    return sa.includes(mapped); 
+  }); 
+}
     
     return rows;
   }
@@ -395,8 +412,7 @@
     if (sel) sel.disabled = false;
     fillSelect("centroSelect", vals, "Todos");
   }
-  function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["SI", "NO"], "Todos"); }
-  }
+  function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["Abastecimiento", "Equipos"], "TODO"); }
 
   function renderClasif2(rowsBase) {
     const hint = document.getElementById("cumpl_clasif2Hint");

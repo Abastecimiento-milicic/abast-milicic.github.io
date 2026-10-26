@@ -84,7 +84,7 @@ def apply_excel_table_styling(ws):
         'Punto de pedido', 'Stock alm.máx.', 'Libre utilización'
     }
     center_cols = {
-        'Centro', 'Almacén', 'E', 'Planificado', 'Caract.planif.nec.',
+        'Centro', 'Almacén', 'Lote', 'E', 'Planificado', 'Caract.planif.nec.',
         'Unidad medida base', 'Moneda', 'Tipo material'
     }
 
@@ -229,19 +229,68 @@ def load_analisis_mm(csv_path):
         raise RuntimeError(f"No se pudo leer {csv_path} con las codificaciones habituales.")
     return df_mm
 
-def load_auxiliary_descriptions(base_csv_path):
+def extract_digits_codes(text):
+    res = []
+    for num in re.findall(r'\d+', str(text)):
+        num_str = num.strip()
+        no0 = num_str.lstrip('0')
+        if no0 and no0 != '52' and no0 not in res:
+            res.append(no0)
+        if num_str not in res and num_str != '52':
+            res.append(num_str)
+    return res
+
+def load_auxiliary_data(base_csv_path):
+    """
+    Carga descripciones y lotes desde Cumplimiento Arriba (Base_Final_365_372.csv).
+    Mapea lotes por (almacen, material) y por material general, priorizando los más recientes.
+    """
     desc_map = {}
+    lote_map = {}
     if os.path.exists(base_csv_path):
-        try:
-            df_aux = pd.read_csv(base_csv_path, sep=';', usecols=['CODIGO ITEM', 'DESCRIPCION ITEM'], encoding='utf-8-sig', low_memory=False)
-            df_aux = df_aux.dropna(subset=['CODIGO ITEM', 'DESCRIPCION ITEM'])
-            for _, r in df_aux.iterrows():
-                m = norm_mat(r['CODIGO ITEM'])
-                if m and m not in desc_map:
-                    desc_map[m] = str(r['DESCRIPCION ITEM']).strip()
-        except Exception:
-            pass
-    return desc_map
+        encodings = ['utf-8-sig', 'utf-8', 'latin1', 'cp1252']
+        df_aux = None
+        for enc in encodings:
+            try:
+                df_aux = pd.read_csv(base_csv_path, sep=';', encoding=enc, low_memory=False)
+                break
+            except Exception:
+                continue
+        if df_aux is not None:
+            lote_col = None
+            for c in ['MB51 para consultas 2.Lote', 'Lote', 'LOTE', 'Lote / Batch', 'Batch']:
+                if c in df_aux.columns:
+                    lote_col = c
+                    break
+
+            # Iterar en orden cronológico inverso para registrar primero los lotes más recientes
+            for _, r in df_aux.iloc[::-1].iterrows():
+                m = norm_mat(r.get('CODIGO ITEM'))
+                if not m:
+                    continue
+
+                if m not in desc_map:
+                    d = str(r.get('DESCRIPCION ITEM', '') or '').strip()
+                    if d and d.lower() != 'nan':
+                        desc_map[m] = d
+
+                if lote_col and pd.notna(r.get(lote_col)):
+                    raw_l = str(r.get(lote_col)).strip()
+                    raw_l = re.sub(r'\.0$', '', raw_l)
+                    if raw_l and raw_l.lower() not in ('nan', 'none', '-', ''):
+                        alms = extract_digits_codes(r.get('CLIENTE', ''))
+                        for a in alms:
+                            k = (a, m)
+                            if k not in lote_map:
+                                lote_map[k] = []
+                            if raw_l not in lote_map[k]:
+                                lote_map[k].append(raw_l)
+                        if m not in lote_map:
+                            lote_map[m] = []
+                        if raw_l not in lote_map[m]:
+                            lote_map[m].append(raw_l)
+
+    return desc_map, lote_map
 
 def load_mm60_metadata(data_dir):
     """
@@ -322,10 +371,10 @@ def run_combination(base_dir=None):
                 'Grupo de compras': str(row.get('Grupo de compras', '') or '').strip()
             }
 
-    # Cargar descripciones auxiliares si existen
-    aux_descs = load_auxiliary_descriptions(aux_path)
+    # Cargar descripciones y lotes desde Cumplimiento Arriba (Base_Final_365_372)
+    aux_descs, aux_lotes = load_auxiliary_data(aux_path)
     if aux_descs:
-        print(f"-> {len(aux_descs):,d} descripciones adicionales disponibles desde Base_Final.")
+        print(f"-> {len(aux_descs):,d} descripciones y {len(aux_lotes):,d} referencias de lotes disponibles desde Cumplimiento Arriba (Base_Final).")
 
     # Cargar catálogo maestro MM60 (Tipo material, Texto breve, Grupo de compras)
     mm60_map = load_mm60_metadata(data_dir)
@@ -426,6 +475,28 @@ def run_combination(base_dir=None):
             if not desc and mat_clean in aux_descs:
                 desc = aux_descs[mat_clean]
 
+            # Extraer Lote:
+            # 1. Del propio archivo MB52 si la columna existe
+            lote_val = ''
+            for c_lote in ['Lote', 'LOTE', 'Lote/serie', 'Lote / Batch', 'Batch', 'MB51 para consultas 2.Lote']:
+                if c_lote in r and pd.notna(r[c_lote]):
+                    v = str(r[c_lote]).strip()
+                    v = re.sub(r'\.0$', '', v)
+                    if v and v.lower() not in ('nan', 'none', '-', ''):
+                        lote_val = v
+                        break
+
+            # 2. Si no viene en el archivo MB52, buscar desde Cumplimiento Arriba (Base_Final_365_372)
+            if not lote_val:
+                lotes_cands = []
+                for a in alm_candidates:
+                    if (a, mat_clean) in aux_lotes:
+                        lotes_cands = aux_lotes[(a, mat_clean)]
+                        break
+
+                if lotes_cands:
+                    lote_val = ', '.join(lotes_cands[:5])
+
             # Extraer Stock especial ('E' o vacío)
             stock_esp = ''
             for c_esp in ['Stock especial', 'Stock Especial', 'STOCK ESPECIAL', 'E', 'Stock esp.']:
@@ -442,6 +513,7 @@ def run_combination(base_dir=None):
                 'Tipo material': tipo_mat or '',
                 'Centro': str(r.get('Centro', '') or '').strip(),
                 'Almacén': norm_alm(r.get('Almacén', '')) or str(r.get('Almacén', '') or '').strip(),
+                'Lote': lote_val or '',
                 'E': stock_esp,
                 'Planificado': planif,
                 'Caract.planif.nec.': caract,

@@ -1090,7 +1090,23 @@
       return;
     }
 
-    const cols = arribaHeaders.length ? arribaHeaders : Object.keys(noRows[0]);
+    // Asegurar que cada fila tenga la columna LOTE explícita
+    noRows.forEach(r => {
+      if (!r["LOTE"]) {
+        r["LOTE"] = r["MB51 para consultas 2.Lote"] || r["Lote"] || "";
+      }
+    });
+
+    let cols = arribaHeaders.length ? [...arribaHeaders] : Object.keys(noRows[0]);
+    if (!cols.includes("LOTE")) {
+      const idxDesc = cols.indexOf("DESCRIPCION ITEM");
+      if (idxDesc !== -1) {
+        cols.splice(idxDesc + 1, 0, "LOTE");
+      } else {
+        cols.unshift("LOTE");
+      }
+    }
+
     const escapeCSV = (v) => {
       const s = (v ?? "").toString();
       if (/[;"\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;

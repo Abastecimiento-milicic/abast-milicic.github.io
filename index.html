@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 
 <head>
@@ -16,10 +16,9 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="css/base.css?v=20261026_124032" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261026_124032" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261027_142500" />
   <link rel="stylesheet" href="css/analisis-mm.css?v=20261026_124032" />
   <link rel="stylesheet" href="css/demoras.css?v=20261026_124032" />
-  <link rel="stylesheet" href="css/ejemplo.css?v=20261026_124032" />
   <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261026_124032" />
   <link rel="stylesheet" href="css/control-emrf.css?v=20261026_124032" />
   
@@ -235,7 +234,7 @@
     <div class="topbar-left">
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
         <div id="topbarSubtitle" class="title" style="font-size: 1.25rem;">Análisis de cumplimiento de pedidos por obra</div>
-        <div class="topbar-badge">- Actualización del reporte: lunes y jueves a partir de las 13:00 hs.</div>
+        <div id="topbarScheduleBadge" class="topbar-badge">- Actualización del reporte: lunes y jueves a partir de las 13:00 hs.</div>
       </div>
     </div>
 
@@ -261,7 +260,7 @@
     <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
     <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
     <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
-    <button class="tab" data-tab="ejemplo" onclick="window.switchTab('ejemplo')">📊 EJEMPLO</button><button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button><button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button><button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button><button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
+    <button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button><button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button><button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button><button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
   </nav>
 
   <main class="container">
@@ -428,6 +427,14 @@
               <p>Días promedio de atraso de pedidos FT. Tolerancia máxima de <strong>7 días</strong>.</p>
               <div class=&quot;hm-tip&quot;>💡 Podés seleccionar meses específicos en el filtro de embudo 🔍 para personalizar el gráfico.</div>
             `)" title="Ayuda sobre métricas y gráfico de cumplimiento">ℹ</button>
+            <button class="chart-icon-btn btn-fullscreen-box" type="button" onclick="window.toggleBoxFullscreen(this)" title="Pantalla completa" aria-label="Pantalla completa">
+                <svg class="icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+                <svg class="icon-compress" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M10 4v6m0 0H4m6 0L3 3m10 7V4m0 6h6m-6 0l7-7"></path>
+                </svg>
+              </button>
           </div>
         </div>
 
@@ -555,15 +562,26 @@
       </section>
 
       <section class="panel">
-        <div class="panel-title">TENDENCIA DE CUMPLIMIENTO
-          <button class="help-btn" onclick="openHelp('Gráfico — Tendencia de Cumplimiento', `
-            <p>Indica la tendencia/comportamiento de estos indicadores:<br>
-                                  🔹Entregados a término (AT)<br>
-                                  🔹Entregados fuera de término (FT)<br>
-                                  🔹% AT acumulado<br>
-                               <p>
-            <div class=&quot;hm-tip&quot;>💡 La línea de tendencia ayuda a ver si el desempeño mejora o empeora a lo largo del tiempo.</div>
-          `)" title="Ayuda sobre la tendencia">ℹ</button>
+        <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <span>TENDENCIA DE CUMPLIMIENTO</span>
+          <div class="panel-title-actions">
+            <button class="help-btn" onclick="openHelp('Gráfico — Tendencia de Cumplimiento', `
+              <p>Indica la tendencia/comportamiento de estos indicadores:<br>
+                                    🔹Entregados a término (AT)<br>
+                                    🔹Entregados fuera de término (FT)<br>
+                                    🔹% AT acumulado<br>
+                                 <p>
+              <div class=&quot;hm-tip&quot;>💡 La línea de tendencia ayuda a ver si el desempeño mejora o empeora a lo largo del tiempo.</div>
+            `)" title="Ayuda sobre la tendencia">ℹ</button>
+            <button class="chart-icon-btn btn-fullscreen-box" type="button" onclick="window.toggleBoxFullscreen(this)" title="Pantalla completa" aria-label="Pantalla completa">
+                <svg class="icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+                <svg class="icon-compress" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                  <path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M10 4v6m0 0H4m6 0L3 3m10 7V4m0 6h6m-6 0l7-7"></path>
+                </svg>
+              </button>
+          </div>
         </div>
         <div class="panel-body">
           <div class="chart-card">
@@ -1058,462 +1076,6 @@
     </section>
 
 
-    <section id="panel-ejemplo" class="tab-panel" style="display: none;">
-      <div class="ej-hero">
-        <h1>📊 ¿Cómo utilizar el Dashboard de Abastecimiento?</h1>
-        <h3>Actualización del reporte: lunes y jueves desde las 13:00 hs</h3>
-      </div>
-
-      <div class="ej-tabs-container">
-        <button class="ej-tab-btn active" onclick="showEjemploTab('tab-mm')">ANÁLISIS MM</button>
-        <button class="ej-tab-btn" onclick="showEjemploTab('tab-cumplimiento')">CUMPLIMIENTO</button>
-        <button class="ej-tab-btn" onclick="showEjemploTab('tab-demoras')">DEMORAS</button>
-      </div>
-
-      <section id="tab-mm" class="ej-tab-content active">
-        <section class="ej-scenario">
-          <div class="ej-scenario-header">
-            <span style="font-size:1.4rem">📦</span>
-            <div>
-              <div class="ej-sh-title">ANÁLISIS MM</div>
-            </div>
-            <span class="ej-tab-badge" style="background:#e0f2fe;color:#0369a1;margin-left:auto">ANÁLISIS MM</span>
-          </div>
-          
-          <div class="ej-step-card step-col-1">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">1</div>
-              <div class="ej-step-title">Filtro de Almacén</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/FILTROS_MM.JPG" alt="Filtros">
-              </div>    
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>En el filtro <strong>CLIENTE (ALMACÉN)</strong> seleccioná de la lista el proyecto que desees analizar. Por ej.: Si querés ver el ANALISIS MM del almacén definitivo de la obra <strong>"00341 Mov. Suelos San Luis"</strong>, seleccioná <strong>"0035 y 0341"</strong> ya que esta obra tiene dos almacenes. Para seleccionar más de un almacén definitivo, mantené presionada la tecla <strong>Ctrl</strong>.</span>
-                </div>
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>Desde el botón <strong>DESCARGAR ANALISIS MM</strong> se puede descargar el maestro de materiales completo. Para luego filtrar la obra que se desea analizar</span>
-                </div>
-              </div>
-            </div>
-          </div>    
-
-          <div class="ej-step-card step-col-1">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">2</div>
-              <div class="ej-step-title">TARJETAS DE DISPONIBILIDAD</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/TARJERAS MM.JPG" alt="Filtros">
-              </div>    
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span><strong>CANT MATERIALES</strong>: Es la cantidad de materiales distintos planificados en el MM de acuerdo a la selección filtrada .</span>
-                </div>
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span><strong>CANT DISPONIBLE</strong>: Es la cantidad de materiales disponibles (con stock distinto de cero) de acuerdo a la última actualización.</span>
-                </div>
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span><strong>DISPONIBLE</strong>: Representa la cantidad de materiales disponibles en porcentaje.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-1">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">3</div>
-              <div class="ej-step-title">ESTADOS</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/ESTADO_MM.JPG" alt="Filtros">
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>Este gráfico circular representa la disponibilidad de materiales del almacén seleccionado</span>
-                </div>
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>El stock de materiales los clasificamos en STOCK NULO, STOCK MENOR AL PP, STOCK MAYOR AL PP, STOCK MAYOR AL STOCK MAXIMO. Se puede descargar cada una de estas clasificaciones haciendo clic en los botones correspondientes.</span>
-                </div>
-              </div>
-            </div>                    
-          </div>
-
-          <div class="ej-step-card step-col-1">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">4</div>
-              <div class="ej-step-title">VALORIZACION DE STOCK</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/VALORIZACION.JPG" alt="Filtros">
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>Esta tabla muestra la valorización de stock por <strong>RUBRO</strong> del almacén seleccionado expuesto de mayor a menor</span>
-                </div>
-              </div>
-              <div class="ej-reading-item ej-ri-info">
-                <span class="ej-ri-icon">⚠️</span>
-                <span><strong>ALERTAS</strong>: Tené en cuenta que cuando veas RUBROS (vacios, ?, otros, obsoleto) aparecerá en rojo, y podés ver los códigos de materiales sin rubro presionando el botón <strong>SIN RUBRO</strong>. El responzable de abastecimiento del proyecto completará el rubro enviandolo a <strong>abastecimiento.sap</strong> .</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-1">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">5</div>
-              <div class="ej-step-title">EVOLUCION DEL MAESTRO DE MATERIALES</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/EVOLUCION.JPG" alt="Filtros">
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>Primero seleccioná la obra que desees analizar en el filtro</span>
-                </div>
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>Podrás ver la evolución del maestro de materiales a lo largo del año. Tanto la disponibilidad como las cantidades están promediadas mensualmente.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>  
-      </section>
-
-      <section id="tab-cumplimiento" class="ej-tab-content">
-        <section class="ej-scenario">
-          <div class="ej-hero" style="background: #f8fafc; border: 1px solid #e2e8f0; color: #1e293b; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <p>⚠️ <strong>Importante: Tener en cuenta</strong></p><br>
-            <p>🔹¿Que mide? El cumplimiento de los pedidos que surgen de una las VA tipo ZPAI, ZPAN, ZPAS y ZPOE cuyo cliente es una obra de cualquier sociedad (no tiene en cuenta solped y oc directas)</p><br>
-            <p>🔹¿Como mide? Es Cumplido a Término (AT) si la fecha de sello de almacenamiento en obra ≤ fecha de entrega esperada en VA (este indicador mide la totalidad del ítem indicado en la VA, no parciales).  </p><br>
-            <p>🔹 Características: La demora promedio se calcula solo sobre entregas demoradas.<br>
-            <p>🔹 Limitaciones: No se incluyen servicios (GC 24, 25, 26, 33, 16, 04) ni items tipo “Servicios”.</p>
-          </div>
-          
-          <div class="ej-scenario-header">
-            <span style="font-size:1.4rem">✅</span>
-            <div>
-              <div class="ej-sh-title">CUMPLIMIENTO</div>
-            </div>
-            <span class="ej-tab-badge badge-cumpl" style="margin-left:auto">CUMPLIMIENTO</span>
-          </div>
-
-          <div class="ej-step-card step-col-1">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">1</div>
-              <div class="ej-step-title">Selección de filtros</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/FILTROS.JPG" alt="Filtros">
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>En el primer filtro <strong>CLIENTE/OBRA</strong> elegí de la lista la obra que desees analizar. Por ej.: <strong>"00341 Mov. Suelos San Luis"</strong>. Si querés ver solo el mes de febrero, seleccioná <strong>"2026-02"</strong> en el filtro de <strong>MES DE ENTREGA</strong> con un click.</span>
-                </div>
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>La clasificacion agrupa los grupos de compra de acuerdo al tipo de pedido solicitado.</span>
-                </div>
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>ALMACEN: indica todos los materiales desde el almacen central al proyecto.<br>
-                        LOCAL CS: agrupa GC01,GC02,GC07.<br>
-                        AGV: GCAGV<br>
-                        COMPRAS ABASTECIMIENTO: GC SEDE + COMPRADORES EXCLUSIVOS.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-2">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">2</div>
-              <div class="ej-step-title">Leemos las tarjetas de cumplimiento acumulado</div>
-            </div>
-            <div class="ej-step-body">
-              <p style="font-size:0.88rem;color:var(--text-muted);margin:0 0 0.75rem;">
-                En estas tarjetas se muestra el cumplimiento acumulado de la obra seleccionada de los <strong>últimos 12 meses</strong>, independientemente del mes que hayamos filtrado.
-              </p>
-              <div class="ej-kpi-static-img">
-                <img src="img/ACUMULADO.JPG" alt="Cumplimiento acumulado (últimos 12 meses)">
-              </div>
-              <div class="ej-kpi-explains">
-                <div class="ej-kpi-explain-item">
-                  <div class="ej-reading-item ej-ri-info">
-                    <span class="ej-ri-icon">📦</span>
-                    <span class="ej-kpi-explain-badge" style="background:#dbeafe;color:#1d4ed8">COMPROMETIDOS</span>
-                    <span>En la obra <strong>"00341 Mov. Suelos San Luis"</strong> nos comprometimos a entregar/gestionar <strong>3072</strong> ítems en los últimos 12 meses.</span>
-                  </div>
-                </div>
-                <div class="ej-kpi-explain-item">
-                  <div class="ej-reading-item ej-ri-info">
-                    <span class="ej-ri-icon">✅</span>
-                    <span class="ej-kpi-explain-badge" style="background:#dcfce7;color:#166534">ENTREGADOS A TIEMPO (AT)</span>
-                    <span>El <strong>82,3 %</strong> de esos ítems fueron entregados AT, que equivalen a 2529 items. Figura en <strong>verde</strong> porque alcanzo el objetivo del <strong>78%</strong> establecido para el año 2026. De lo contrario figuraria en rojo.</span>
-                  </div> 
-                </div>
-                <div class="ej-kpi-explain-item">
-                  <div class="ej-reading-item ej-ri-info">
-                    <span class="ej-ri-icon">⏳</span>
-                    <span class="ej-kpi-explain-badge" style="background:#fef3c7;color:#92400e">FUERA DE TIEMPO (FT)</span>
-                    <span>El <strong>16,8%</strong> de esos ítems fueron entregados FT, que equivalen a 517 items. Para comprender las causas, es necesario analizar el detalle en la pestaña Demoras.</span>
-                  </div> 
-                </div>
-                <div class="ej-kpi-explain-item">
-                  <div class="ej-reading-item ej-ri-info">
-                    <span class="ej-ri-icon">🚫</span>
-                    <span class="ej-kpi-explain-badge" style="background:#fee2e2;color:#991b1b">NO ENTREGADOS (NE)</span>
-                    <span>Indica en porcentaje y cantidad los items que aun no han sido entregados en Obra. Estos los podes descargar desde el boton <strong>Descargar NO entregados</strong> en la sección de FILTROS.</span>
-                  </div> 
-                </div>
-                <div class="ej-kpi-explain-item">
-                  <div class="ej-reading-item ej-ri-info">
-                    <span class="ej-ri-icon">📅</span>
-                    <span class="ej-kpi-explain-badge" style="background:#f1f5f9;color:#475569">DEMORA PROMEDIO</span>
-                    <span>Indica que la <strong>demora promedio fue de 8 días</strong> de los pedidos que fueron entregados FT, durante los últimos 12 meses. Figura en <strong>rojo</strong> porque no alcanzo el objetivo de <strong>7 días</strong> establecido para el año 2026.</span>
-                  </div>
-                </div>
-              </div>    
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-3">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">3</div>
-              <div class="ej-step-title">Leemos las tarjetas del mes seleccionado</div>
-            </div>
-            <div class="ej-step-body">
-              <p style="font-size:0.88rem;color:var(--text-muted);margin:0 0 0.75rem;">
-                La segunda fila de tarjetas muestra <strong>solo el mes que filtramos</strong> (Feb-2026). Y hacemos el mismo analisis, podemos notar que el <strong>% ENTREGADO AT</strong> esta en <strong>rojo</strong> porque no alcanzo el 78% establecido y los dias de demora figura en <strong>verde</strong> porque esta por debajo de los 7 dias.
-              </p>
-              <div class="ej-kpi-static-img">
-                <img src="img/MENSUAL.JPG" alt="Cumplimiento MENSUAL">
-              </div>
-            </div>    
-          </div>
-
-          <div class="ej-step-card step-col-4">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">4</div>
-              <div class="ej-step-title">Analizamos el gráfico de cumplimiento por mes en los ultimos 12 meses</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/GRAFICO.JPG" alt="Grafico cumplimiento">
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-good">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>El gráfico de barras apiladas nos muestra el cumplimiento mes a mes. Cada barra suma 100% que equivale a la cantidad de items comprometidos a entregar y se divide en <span style="color:#10b981;font-weight:700">Entregados a término (AT)</span>, <span style="color:#f59e0b;font-weight:700">Entregados fuera de término (FT)</span> y <span style="color:#ef4444;font-weight:700">No entregados (NE)</span></span>
-                </div>
-                <div class="ej-reading-item ej-ri-good">
-                  <span class="ej-ri-icon">📊</span>
-                  <span>Podemos ver por ejemplo que en agosto 2025 a septiembre 2025 hubo una disminución de ítems Entregados a término (AT) de un 84% a 76% y el 76 % figura con alerta en rojo porque no supera el 78% objetivo establecido para el 2026.</span>
-                </div>
-                <div class="ej-reading-item ej-ri-good">
-                  <span class="ej-ri-icon">📊</span>
-                  <span>También podemos ver el % de ítems entregados fuera de término (FT) subio de 16% a 24% de agosto a septiembre 2025. Y el Promedio de días de demora (linea de color celeste) vemos cómo aumenta de 9 días a 11 días de agosto a septiembre 2025.</span> 
-                </div>
-                <div class="ej-reading-item ej-ri-good">
-                  <span class="ej-ri-icon">🔍</span>
-                  <span>Si analizamos el mes de febrero 2026 tenemos un 13% (16 items) No entregados (NE) (poniendo el cursor del mouse sobre la columna del mes, aparecerá una pequeña ventana con todos los datos)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-4">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">5</div>
-              <div class="ej-step-title">Analizamos el gráfico de tendencia de cumplimiento por mes</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/TENDENCIA.JPG" alt="Grafico tendencia">
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-good">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>Indica la tendencia/comportamiento de estos indicadores:<br>
-                    🔹<span style="color:#10b981;font-weight:700">Entregados a término (AT)</span><br>
-                    🔹<span style="color:#f59e0b;font-weight:700">Entregados fuera de término (FT)</span><br>
-                    🔹<span style="color:#ef4444;font-weight:700">No entregados (NE)</span><br>
-                    🔹<span style="color:#10b981;font-weight:700">Promedio mensual acumulado(AT)</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <section id="tab-demoras" class="ej-tab-content">
-        <section class="ej-scenario">
-          <div class="ej-scenario-header">
-            <span style="font-size:1.4rem">⏱</span>
-            <div>
-              <div class="ej-sh-title">DEMORAS</div>
-            </div>
-            <span class="ej-tab-badge badge-dem" style="margin-left:auto">DEMORAS</span>
-          </div>
-
-          <div class="ej-step-card step-col-1">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">1</div>
-              <div class="ej-step-title">Selección de filtros</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img">
-                <img src="img/FILTRO DEMORA.JPG" alt="Filtros">
-              </div>
-              <div class="ej-reading">
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>En el filtro <strong>CLIENTE</strong> y la CLASIFICACIÓN elegí de la lista la obra que desees. Por ej.: <strong>"00341 Mov. Suelos San Luis"</strong>. Si querés ver solo el mes de febrero, seleccioná <strong>"FEBRERO 2026"</strong> en el filtro de <strong>MES</strong> con un click.</span>
-                </div>
-                <div class="ej-reading-item ej-ri-info">
-                  <span class="ej-ri-icon">📌</span>
-                  <span>Podes descargar las demoras (Items entregados FT) haciendo click en el botón <strong>Descargar</strong></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-2">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">2</div>
-              <div class="ej-step-title">Leemos las tarjetas según el mes seleccionado</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img" style="margin-top:1rem">
-                <img src="img/TARJETAS DEMORAS.JPG" alt="Tarjetas demoras">
-              </div>
-              <div class="ej-reading-item ej-ri-good">
-                <span class="ej-ri-icon">📌</span>
-                <span>
-                  Estas tarjetas indican la cantidad total ítems que se entregaron FT durante el mes seleccionado.<br>
-                  🔴En este caso hubo <strong>35 ítems con demoras</strong> en el mes seleccionado<br>
-                  🔴El área con mayor cantidad de demoras en el mes fue <strong>COMPRAS</strong><br>
-                  🔴Con un porcentaje del 37,5%. 
-                </span>
-              </div> 
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-2">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">3</div>
-              <div class="ej-step-title">CANTIDAD DE DEMORAS POR MES Y POR ÁREA</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img" style="margin-top:1rem">
-                <img src="img/GRAFICO BARRAS DEMORAS.JPG" alt="Gráfico demoras">
-              </div>
-              <div class="ej-reading-item ej-ri-good">
-                <span class="ej-ri-icon">📌</span>
-                <span>
-                  📊 Este gráfico muestra la cantidad total de demoras por mes, desglosadas por área, junto con el porcentaje que representa cada una dentro del total mensual.<br>
-                  🔴El área con mayor cantidad de demoras se identifica con el color <strong>rojo</strong><br>
-                  🔵Tener en cuenta que un items con demora puede estar demorado en varias ÁREAS al mismo tiempo. <strong>EJEMPLO:</strong>
-                </span>
-              </div>
-              <div class="ej-kpi-static-img" style="margin-top: 1rem;">
-                <img src="img/EJEMPLO DEMORAS.JPG" alt="Ejemplo demoras desglose">
-              </div>
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-2">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">4</div>
-              <div class="ej-step-title">CANTIDAD DE DEMORAS POR MES SELECCIONADO Y POR ÁREA</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img" style="margin-top:1rem">
-                <img src="img/Grafico mensual DEMORAS AREA.JPG" alt="Gráfico circular demoras por área">
-              </div>
-              <div class="ej-reading-item ej-ri-good">
-                <span class="ej-ri-icon">📌</span>
-                <span>
-                  <strong>1️⃣ Gráfico circular</strong><br>
-                  Este gráfico muestra la distribución porcentual de las demoras por área en el mes que se encuentra seleccionado en el filtro.<br>
-                  El área con mayor cantidad de demoras se muestra en <strong>rojo</strong>
-                </span>
-              </div>
-              <div class="ej-reading-item ej-ri-good">
-                <span class="ej-ri-icon">📌</span>
-                <span>
-                  <strong>2️⃣ Tabla con mapa de calor</strong><br>
-                  “Muestra la cantidad de demoras por mes y por área (<strong>tener en cuenta que una demora puede repetirse en varias áreas</strong>)”<br>
-                  🔥 ¿Qué significa el color?<br>
-                  🔴 Rojo → Mayor cantidad de demoras<br>
-                  🟠 Naranja → Nivel medio<br>
-                  🟡 Amarillo → Nivel bajo<br>
-                  ⚪ Blanco → Muy bajo
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="ej-step-card step-col-2">
-            <div class="ej-step-header">
-              <div class="ej-num-badge">5</div>
-              <div class="ej-step-title">DEMORAS PROYECTO</div>
-            </div>
-            <div class="ej-step-body">
-              <div class="ej-kpi-static-img" style="margin-top:1rem">
-                                <img src="img/DEMORAS PROYECTO.JPG" alt="Demoras proyecto">
-              </div>
-              <div class="ej-reading-item ej-ri-good">
-                <span class="ej-ri-icon">📌</span>
-                <span>
-                  <strong>1️⃣ Gráfico circular</strong><br>
-                  Este gráfico muestra el motivo de las demoras correspondientes al área Proyecto, desagregadas por tipo de causa.<br>
-                  La causa con mayor cantidad de demoras se muestra en <strong>rojo</strong>
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <div class="footnote" style="display:block !important; margin-top:2rem;">
-        Ejemplo de Dashboard de Abastecimiento – Valores ilustrativos.
-      </div>
-    </section>
-
     <!-- PANEL TIEMPOS Y PRIORIDAD -->
     <section id="panel-tiempos" class="tab-panel" style="display:none;">
       <aside class="st-sidebar">
@@ -1868,8 +1430,63 @@
       'demoras': 'Análisis de demoras y desglose por área',
       'servicios': 'Análisis de servicios y subcontratos de obra',
       'tiempos': 'Cumplimiento por criticidad y tiempos de entrega',
-      'emrf': 'Control de partidas abiertas SAP - Cuenta EM/RF (2101011001)',
-      'ejemplo': 'Ejemplo de uso del dashboard'
+      'emrf': 'Control de partidas abiertas SAP - Cuenta EM/RF (2101011001)'
+    };
+
+    window.toggleBoxFullscreen = function(btn) {
+      const panel = btn.closest('.panel');
+      if (!panel) return;
+
+      const isFullscreen = panel.classList.toggle('panel-fullscreen');
+      document.body.classList.toggle('has-box-fullscreen', isFullscreen);
+
+      const iconExpand = btn.querySelector('.icon-expand');
+      const iconCompress = btn.querySelector('.icon-compress');
+      if (iconExpand && iconCompress) {
+        iconExpand.style.display = isFullscreen ? 'none' : '';
+        iconCompress.style.display = isFullscreen ? '' : 'none';
+      }
+      btn.title = isFullscreen ? 'Salir de pantalla completa (Esc)' : 'Pantalla completa';
+      btn.setAttribute('aria-label', btn.title);
+
+      const triggerResize = () => {
+        window.dispatchEvent(new Event('resize'));
+        const chartBoxes = panel.querySelectorAll('.chart-box');
+        chartBoxes.forEach(box => {
+          if (window.echarts) {
+            const inst = window.echarts.getInstanceByDom(box);
+            if (inst) inst.resize();
+          }
+        });
+      };
+
+      triggerResize();
+      setTimeout(triggerResize, 60);
+      setTimeout(triggerResize, 200);
+    };
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        const fsPanel = document.querySelector('.panel.panel-fullscreen');
+        if (fsPanel) {
+          const btn = fsPanel.querySelector('.btn-fullscreen-box');
+          if (btn) window.toggleBoxFullscreen(btn);
+        }
+      }
+    });
+
+    window.syncTopScheduleBadge = function(sector) {
+      const sec = (sector || window.currentAppSector || 'abastecimiento').toLowerCase();
+      const badgeEl = document.getElementById('topbarScheduleBadge') || document.querySelector('.topbar-left .topbar-badge');
+      if (badgeEl) {
+        if (sec === 'sede' || sec.startsWith('sede_') || sec === 'sede') {
+          badgeEl.textContent = '- Actualizacion del reporte: Martes a partir de las 13:00 hs.';
+        } else if (sec === 'compras' || sec === 'almacen') {
+          badgeEl.textContent = '- Actualizacion del reporte: primera semana del mes.';
+        } else {
+          badgeEl.textContent = '- Actualización del reporte: lunes y jueves a partir de las 13:00 hs.';
+        }
+      }
     };
 
     window.switchSector = function(sector) {
@@ -1880,6 +1497,10 @@
       document.querySelectorAll('.st-sector-select').forEach(sel => {
         sel.value = sec;
       });
+
+      if (typeof window.syncTopScheduleBadge === 'function') {
+        window.syncTopScheduleBadge(sec);
+      }
 
       // Ocultar la barra de pestañas completa en Compras (y restaurarla en Abastecimiento)
       const navTabs = document.querySelector('.tabs');
@@ -1914,7 +1535,7 @@
       }
     };
 
-    window.switchSedeTab = function(sedeTab) { document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active')); const activeBtn = document.querySelector(`.tabs .sede-tab[data-sede-tab="${sedeTab}"]`); if (activeBtn) activeBtn.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(el => el.style.display = 'none'); const wasCollapsed = document.body.classList.contains('sidebar-collapsed'); document.body.className = 'page-cumplimiento has-st-sidebar' + (wasCollapsed ? ' sidebar-collapsed' : ''); const subtitleEl = document.getElementById('topbarSubtitle'); const sedeTitles = { sede: 'Sede — Análisis de cumplimiento acumulado', sede_reap: 'Sede (REAP) — Análisis de cumplimiento acumulado', sede_pi: 'Sede (Pedidos de información) — Análisis de cumplimiento acumulado', sede_servicios: 'Sede — Análisis de servicios y subcontratos' }; if (subtitleEl) subtitleEl.textContent = sedeTitles[sedeTab] || sedeTitles.sede; if (sedeTab === 'sede_servicios') { const p = document.getElementById('panel-servicios'); if (p) p.style.display = 'block'; if (typeof window.loadServiciosSector === 'function') window.loadServiciosSector('sede'); } else { const p = document.getElementById('panel-cumplimiento'); if (p) p.style.display = 'block'; if (typeof window.setCumplimientoSector === 'function') window.setCumplimientoSector(sedeTab); } setTimeout(() => { window.dispatchEvent(new Event('resize')); window.scrollTo({ top: 0, behavior: 'instant' }); }, 50); }; window.switchTab = function(tabName) {
+    window.switchSedeTab = function(sedeTab) { document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active')); const activeBtn = document.querySelector(`.tabs .sede-tab[data-sede-tab="${sedeTab}"]`); if (activeBtn) activeBtn.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(el => el.style.display = 'none'); const wasCollapsed = document.body.classList.contains('sidebar-collapsed'); document.body.className = 'page-cumplimiento has-st-sidebar' + (wasCollapsed ? ' sidebar-collapsed' : ''); const subtitleEl = document.getElementById('topbarSubtitle'); const sedeTitles = { sede: 'Sede — Análisis de cumplimiento acumulado', sede_reap: 'Sede (REAP) — Análisis de cumplimiento acumulado', sede_pi: 'Sede (Pedidos de información) — Análisis de cumplimiento acumulado', sede_servicios: 'Sede — Análisis de servicios y subcontratos' }; if (subtitleEl) subtitleEl.textContent = sedeTitles[sedeTab] || sedeTitles.sede; if (typeof window.syncTopScheduleBadge === 'function') window.syncTopScheduleBadge('sede'); if (sedeTab === 'sede_servicios') { const p = document.getElementById('panel-servicios'); if (p) p.style.display = 'block'; if (typeof window.loadServiciosSector === 'function') window.loadServiciosSector('sede'); } else { const p = document.getElementById('panel-cumplimiento'); if (p) p.style.display = 'block'; if (typeof window.setCumplimientoSector === 'function') window.setCumplimientoSector(sedeTab); } setTimeout(() => { window.dispatchEvent(new Event('resize')); window.scrollTo({ top: 0, behavior: 'instant' }); }, 50); }; window.switchTab = function(tabName) {
       // 1. Quitar clase active de todas las pestañas de navegación
       document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active'));
       
@@ -1994,27 +1615,7 @@
       }, 50);
     };
 
-    // Control de pestañas internas del panel instructivo de EJEMPLO
-    function showEjemploTab(tabId) {
-      document.querySelectorAll('#panel-ejemplo .ej-tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.querySelectorAll('#panel-ejemplo .ej-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-
-      const targetTab = document.getElementById(tabId);
-      if (targetTab) {
-        targetTab.classList.add('active');
-      }
-
-      document.querySelectorAll('#panel-ejemplo .ej-tab-btn').forEach(btn => {
-        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
-          btn.classList.add('active');
-        }
-      });
-    }
-
+    
 
     /* ==========================================================================
        STREAMLIT PILL MULTISELECT CONTROLLER (Sincronizado con <select multiple>)
@@ -2301,6 +1902,14 @@
     // Inicializar la primera pestaña por defecto al cargar el DOM o según URL
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
+      const sectorFromQuery = urlParams.get('sector');
+      if (sectorFromQuery && (sectorFromQuery === 'sede' || sectorFromQuery === 'compras' || sectorFromQuery === 'almacen' || sectorFromQuery === 'abastecimiento')) {
+        window.switchSector(sectorFromQuery);
+      } else {
+        if (typeof window.syncTopScheduleBadge === 'function') {
+          window.syncTopScheduleBadge(window.currentAppSector || 'abastecimiento');
+        }
+      }
       const tabFromQuery = urlParams.get('tab');
       const tabFromHash = window.location.hash ? window.location.hash.replace('#', '') : null;
       const initialTab = tabFromQuery || tabFromHash || 'cumplimiento';

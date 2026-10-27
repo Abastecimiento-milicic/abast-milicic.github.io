@@ -20,6 +20,17 @@ window.syncSectorLastUpdate = function(sector) {
 
   const el = document.getElementById("lastUpdate");
   if (el) el.textContent = window.LAST_UPDATE;
+
+  const badgeEl = document.getElementById("topbarScheduleBadge") || document.querySelector(".topbar-left .topbar-badge");
+  if (badgeEl) {
+    if (sec === "sede" || sec.startsWith("sede_")) {
+      badgeEl.textContent = "- Actualizacion del reporte: Martes a partir de las 13:00 hs.";
+    } else if (sec === "compras" || sec === "almacen") {
+      badgeEl.textContent = "- Actualizacion del reporte: primera semana del mes.";
+    } else {
+      badgeEl.textContent = "- Actualización del reporte: lunes y jueves a partir de las 13:00 hs.";
+    }
+  }
 };
 
 let cb = sessionStorage.getItem('mi_cache_buster');

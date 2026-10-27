@@ -292,36 +292,6 @@ def load_auxiliary_data(base_csv_path):
 
     return desc_map, lote_map
 
-def load_mm60_metadata(data_dir):
-    """
-    Carga el catálogo maestro desde MM60 (ej: MM60 06-10-2026.xlsx) para obtener
-    'Tipo material', 'Texto breve de material' y 'Grupo de compras'.
-    """
-    pattern_xlsx = os.path.join(data_dir, "*MM60*.xlsx")
-    pattern_xls = os.path.join(data_dir, "*MM60*.XLSX")
-    candidates = glob.glob(pattern_xlsx) + glob.glob(pattern_xls)
-    candidates = [f for f in candidates if not os.path.basename(f).startswith('~$')]
-    if not candidates:
-        print("[AVISO] No se encontró archivo de MM60 en", data_dir)
-        return {}
-
-    candidates.sort(key=os.path.getmtime, reverse=True)
-    fpath = candidates[0]
-    fname = os.path.basename(fpath)
-    print(f"Cargando catálogo maestro desde {fname}...")
-    try:
-        cols = ['Material', 'Tipo material', 'Texto breve de material', 'Grupo de compras']
-        df = pd.read_excel(fpath, usecols=lambda c: c in cols)
-        df = df.dropna(subset=['Material']).drop_duplicates(subset=['Material']).copy()
-        df['mat_norm'] = df['Material'].apply(norm_mat)
-        cols_present = [c for c in ['Tipo material', 'Texto breve de material', 'Grupo de compras'] if c in df.columns]
-        mm60_map = df.set_index('mat_norm')[cols_present].to_dict(orient='index')
-        print(f"-> {len(mm60_map):,d} materiales indexados desde {fname}.")
-        return mm60_map
-    except Exception as e:
-        print(f"[ERROR al cargar {fname}]: {e}")
-        return {}
-
 def run_combination(base_dir=None):
     if base_dir is None:
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -376,8 +346,6 @@ def run_combination(base_dir=None):
     if aux_descs:
         print(f"-> {len(aux_descs):,d} descripciones y {len(aux_lotes):,d} referencias de lotes disponibles desde Cumplimiento Arriba (Base_Final).")
 
-    # Cargar catálogo maestro MM60 (Tipo material, Texto breve, Grupo de compras)
-    mm60_map = load_mm60_metadata(data_dir)
 
     # Buscar archivos MB52
     mb52_pattern = os.path.join(mb52_dir, "*.XLS*")
@@ -406,6 +374,25 @@ def run_combination(base_dir=None):
         except Exception as e:
             print(f"  [ERROR] No se pudo leer {fname}: {e}")
             continue
+
+        # Normalizar nombres de columnas clave de Base MB52
+        col_rename = {}
+        for col in df_mb.columns:
+            c_lower = str(col).lower()
+            if 'almac' in c_lower and 'nivel' not in c_lower:
+                col_rename[col] = 'Almacén'
+            elif 'libre' in c_lower and 'util' in c_lower and 'valor' not in c_lower:
+                col_rename[col] = 'Libre utilización'
+            elif 'valor' in c_lower and 'util' in c_lower:
+                col_rename[col] = 'Valor libre util.'
+            elif 'breve' in c_lower or ('texto' in c_lower and 'material' in c_lower):
+                col_rename[col] = 'Texto breve de material'
+            elif 'stock' in c_lower and 'esp' in c_lower:
+                col_rename[col] = 'Stock especial'
+            elif 'unidad' in c_lower and 'med' in c_lower:
+                col_rename[col] = 'Unidad medida base'
+        if col_rename:
+            df_mb.rename(columns=col_rename, inplace=True)
 
         if 'Material' not in df_mb.columns:
             print(f"  [SKIP] No tiene columna 'Material'. Omitiendo.")
@@ -440,7 +427,6 @@ def run_combination(base_dir=None):
                 estado_mm = str(row_mm.get('Estado', '') or '').strip() or 'PLANIFICADO'
                 pp = row_mm.get('Punto de pedido', 0)
                 stk_max = row_mm.get('Stock alm.máx.', 0)
-                desc = str(row_mm.get('Texto breve de material', '') or '').strip()
                 rubro = str(row_mm.get('Rubro', '') or '').strip()
                 subrubro = str(row_mm.get('SubRubro', '') or '').strip()
                 grp_comp = str(row_mm.get('Grupo de compras', '') or '').strip()
@@ -451,29 +437,35 @@ def run_combination(base_dir=None):
                 estado_mm = 'NO PLANIFICADO'
                 pp = 0
                 stk_max = 0
-                # Búsqueda de metadata por código de material
                 meta = mm_mat_meta.get(mat_clean, {})
-                desc = meta.get('Texto breve de material', '')
                 rubro = meta.get('Rubro', '')
                 subrubro = meta.get('SubRubro', '')
                 grp_comp = meta.get('Grupo de compras', '')
                 tipo_mat = meta.get('Tipo material', '')
 
-            # Complementar con catálogo maestro MM60
-            mm60_info = mm60_map.get(mat_clean, {})
-            if not tipo_mat:
-                tipo_mat = str(mm60_info.get('Tipo material', '') or '').strip()
-            if not desc or desc == 'SIN DESCRIPCIÓN':
-                mm60_desc = str(mm60_info.get('Texto breve de material', '') or '').strip()
-                if mm60_desc:
-                    desc = mm60_desc
-            if not grp_comp:
-                mm60_grp = str(mm60_info.get('Grupo de compras', '') or '').strip()
-                if mm60_grp:
-                    grp_comp = mm60_grp
+            # Prioridad 1: Obtener descripción directamente del archivo Base MB52
+            desc = ''
+            for c_desc_raw in ['Texto breve de material', 'Texto breve', 'Descripción', 'Descripcion', 'Denominación', 'Denominacion']:
+                if c_desc_raw in r and pd.notna(r[c_desc_raw]):
+                    val_raw_desc = str(r[c_desc_raw]).strip()
+                    if val_raw_desc and val_raw_desc.lower() not in ('nan', 'none', '-', '', 'sin descripción', 'sin descripcion'):
+                        desc = val_raw_desc
+                        break
 
+            # Prioridad 2: Buscar en ANALISIS-MM si Base MB52 no tuviera descripción
+            if not desc:
+                if row_mm is not None:
+                    desc = str(row_mm.get('Texto breve de material', '') or '').strip()
+                else:
+                    meta = mm_mat_meta.get(mat_clean, {})
+                    desc = meta.get('Texto breve de material', '')
+
+            # Prioridad 3: Referencia auxiliar (Base_Final_365_372)
             if not desc and mat_clean in aux_descs:
                 desc = aux_descs[mat_clean]
+
+            if not desc:
+                desc = 'SIN DESCRIPCIÓN'
 
             # Extraer Lote:
             # 1. Del propio archivo MB52 si la columna existe
@@ -553,8 +545,8 @@ def run_combination(base_dir=None):
         plan_c = (df_out['Planificado'] == 'SI').sum()
         no_plan_c = tot - plan_c
         pct_p = (plan_c / tot * 100) if tot else 0
-        v_plan = df_out.loc[df_out['Planificado'] == 'SI', 'Valor libre util.'].fillna(0).sum()
-        v_no_plan = df_out.loc[df_out['Planificado'] == 'NO', 'Valor libre util.'].fillna(0).sum()
+        v_plan = float(df_out.loc[df_out['Planificado'] == 'SI', 'Valor libre util.'].fillna(0).sum())
+        v_no_plan = float(df_out.loc[df_out['Planificado'] == 'NO', 'Valor libre util.'].fillna(0).sum())
 
         summary_list.append({
             'Archivo': fname,

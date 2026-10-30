@@ -2,7 +2,7 @@
   "name": "portal-web",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx http-server ."
+    "start": "npx http-server . -g --brotli"
   },
   "dependencies": {
     "http-server": "^14.1.1"

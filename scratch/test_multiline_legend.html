@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f1f5f9; padding: 20px; }
+    .card { background: white; width: 550px; border: 1px solid #ccc; padding: 10px; margin: 0 auto; }
+    #testChart { width: 100%; height: 460px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="testChart"></div>
+  </div>
+  <script>
+    const chart = echarts.init(document.getElementById("testChart"));
+    const data = [
+      { name: "FEMC (CON PRIORIDAD)", value: 34 },
+      { name: "FEMC (SIN PRIORIDAD)", value: 22 },
+      { name: "PLAZO DE ENTREGA EXCEDIDO CS", value: 19 },
+      { name: "ENTREGA DEL PROVEEDOR CS", value: 14 },
+      { name: "LIBERACION SOLPED CS", value: 8 },
+      { name: "COLOCACION OC CS", value: 5 },
+      { name: "LIBERACION OC CS", value: 3 }
+    ];
+    const total = data.reduce((a, b) => a + b.value, 0);
+
+    chart.setOption({
+      legend: {
+        type: "plain",
+        orient: "horizontal",
+        bottom: 5,
+        left: "center",
+        itemWidth: 11,
+        itemHeight: 8,
+        itemGap: 10,
+        textStyle: { fontSize: 10, color: "#334155" },
+        formatter: (name) => {
+          const it = data.find(x => x.name === name);
+          const pct = ((it.value / total) * 100).toFixed(1);
+          return `${name} (${pct}%)`;
+        }
+      },
+      series: [{
+        type: "pie",
+        radius: ["28%", "48%"],
+        center: ["50%", "36%"],
+        avoidLabelOverlap: true,
+        label: {
+          show: true,
+          position: "outside",
+          fontSize: 10,
+          fontWeight: "600",
+          color: "#1e293b",
+          formatter: (p) => `${p.name}\\n${p.percent.toFixed(1).replace(".", ",")}%`
+        },
+        labelLine: {
+          show: true,
+          length: 10,
+          length2: 8,
+          smooth: true
+        },
+        data: data
+      }]
+    });
+  </script>
+</body>
+</html>

@@ -54,7 +54,7 @@
       .toLowerCase();
   }
 
-  const clean = (v) => (v ?? "").toString().trim();
+  const clean = (v) => (v ?? "").toString().replace(/^\uFEFF/, "").trim();
 
   function byFirstExisting(candidates) {
     const norm = headers.map(h => normalizeHeaderName(h));

@@ -217,21 +217,55 @@
             bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } }
           };
           cell.alignment = { vertical: 'middle', horizontal: 'left' };
-          const hName = headers[colIdx - 1] || "";
-          if (/^(Centro|Almacén|Planificado|Caract\.planif\.nec|Unidad medida base|Moneda|Tipo material)$/i.test(hName.trim())) {
+          const hName = (headers[colIdx - 1] || "").trim();
+          if (/^(Centro|Almacén|Planificado|Caract\.planif\.nec|Unidad medida base|Moneda|Tipo material)$/i.test(hName)) {
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
           }
           
-          const rawVal = (typeof rowData[colIdx - 1] === 'string' && /^\d{1,3}(\.\d{3})+$/.test(rowData[colIdx - 1].trim())) ? rowData[colIdx - 1].trim().replace(/\./g, '') : rowData[colIdx - 1];
-          if (rawVal !== "" && !isNaN(rawVal) && typeof rawVal !== 'boolean') {
-            const num = Number(rawVal);
-            cell.value = num;
-            cell.alignment = { vertical: 'middle', horizontal: 'right' };
-            if (Number.isInteger(num)) {
-              cell.numFmt = '0';
-            } else {
-              cell.numFmt = '0.00';
+          let rawVal = rowData[colIdx - 1];
+          if (typeof rawVal === 'string') {
+            rawVal = rawVal.replace(/^\uFEFF/, "").trim();
+          }
+
+          // Proteger columnas que deben ser estrictamente texto (códigos, IDs, números de pieza con letras como 8E5529)
+          const isCodeOrIdCol = /^(Material|Centro|Almac[eé]n|Ubicaci[oó]n|Caract\.planif\.nec|Unidad|Moneda|Tipo|Fabricante|Pieza|Numero|Grupo|Id|Doc|Pedido|SolPed)/i.test(hName);
+
+          let isNumeric = false;
+          let numVal = null;
+
+          if (!isCodeOrIdCol && rawVal !== "" && rawVal !== null && rawVal !== undefined) {
+            let strVal = String(rawVal).trim();
+            // Códigos con ceros a la izquierda (ej: "0365", "01") se mantienen como texto
+            if (!/^0\d+/.test(strVal)) {
+              if (/^\d{1,3}(\.\d{3})+$/.test(strVal)) {
+                strVal = strVal.replace(/\./g, '');
+              } else if (/^\d{1,3}(\.\d{3})+,\d+$/.test(strVal)) {
+                strVal = strVal.replace(/\./g, '').replace(',', '.');
+              } else if (/^-?\d+,\d+$/.test(strVal)) {
+                strVal = strVal.replace(',', '.');
+              }
+
+              // Validar estrictamente número real finito (evita que códigos con 'E' como 8E5529 generen Infinity)
+              if (/^-?\d+(\.\d+)?$/.test(strVal)) {
+                const n = Number(strVal);
+                if (Number.isFinite(n) && !isNaN(n) && Math.abs(n) < 1e15) {
+                  isNumeric = true;
+                  numVal = n;
+                }
+              }
             }
+          }
+
+          if (isNumeric && numVal !== null) {
+            cell.value = numVal;
+            cell.alignment = { vertical: 'middle', horizontal: 'right' };
+            if (Number.isInteger(numVal)) {
+              cell.numFmt = '#,##0';
+            } else {
+              cell.numFmt = '#,##0.00';
+            }
+          } else {
+            cell.value = (rawVal === null || rawVal === undefined) ? "" : rawVal;
           }
 
           // Resaltado de color en Caract.planif.nec.

@@ -15,7 +15,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261103_140500" />
+  <link rel="stylesheet" href="css/base.css?v=20261103_150300" />
   <link rel="stylesheet" href="css/cumplimiento.css?v=20261102_140226" />
   <link rel="stylesheet" href="css/analisis-mm.css?v=20261102_140226" />
   <link rel="stylesheet" href="css/demoras.css?v=20261102_140226" />
@@ -262,7 +262,7 @@
   </header>
 
   <nav class="tabs">
-    <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')">RESUMEN</button>
+    <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')">TABLERO</button>
     <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
     <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
     <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
@@ -1527,37 +1527,36 @@
               <!-- 1.1 Disponibilidad General -->
               <div class="res-subcard">
                 <div class="res-subcard-header">
-                  <span>Disponibilidad General de Stock:</span>
+                  <span>Disponibilidad:</span>
                 </div>
                 <ul class="res-metric-list">
                   <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
                     <span class="res-ico">📦</span>
-                    <strong>Cant. Materiales:</strong>
+                    <strong>Materiales:</strong>
                     <span id="res_txtTotal" class="res-val" style="color: #2563eb;">-</span>
                   </li>
 
                   <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
                     <span class="res-ico">✅</span>
-                    <strong>Cant. Disponible:</strong>
+                    <strong>Disponible:</strong>
                     <span id="res_txtDisp" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">— Libre utiliz. &gt; 0</span>
                   </li>
 
                   <li id="res_rowDispPct" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
                     <span class="res-ico">📈</span>
-                    <strong>Disponible (%):</strong>
+                    <strong>Disp. (%):</strong>
                     <span id="res_txtPct" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">— Obj. 90%</span>
+                    <span class="res-note">· Obj 90%</span>
                   </li>
                 </ul>
               </div>
 
-              <!-- 1.2 Clasificación por Estado de Planificación -->
+              <!-- 1.2 Clasificación por Estado de Planificación + Mini Gráfico Tendencia Evolución MM abajo a la derecha -->
               <div class="res-subcard">
                 <div class="res-subcard-header">
-                  <span>Clasificación por Estado de Planificación:</span>
+                  <span>Clasificación:</span>
                 </div>
-                <ul class="res-metric-list">
+                <ul class="res-metric-list" style="margin-bottom: 4px !important;">
                   <li id="res_rowStockNulo" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 1.5px solid #dc2626; background: #fef2f2;">
                     <div style="display: flex; align-items: center;">
                       <span class="res-ico">🔴</span>
@@ -1567,26 +1566,36 @@
                       <span id="res_txtNulo" class="res-val" style="color: #dc2626;">-</span>
                     </div>
                   </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">🟡</span>
-                    <strong>Menor al PP:</strong>
-                    <span id="res_txtMenorPP" class="res-val" style="color: #d97706;">-</span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">🟢</span>
-                    <strong>Mayor al PP:</strong>
-                    <span id="res_txtMayorPP" class="res-val" style="color: #16a34a;">-</span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">🟠</span>
-                    <strong>Mayor a Stock Máx:</strong>
-                    <span id="res_txtMayorMax" class="res-val" style="color: #ea580c;">-</span>
-                    <span class="res-note">— Sobre-stock</span>
-                  </li>
                 </ul>
+
+                <div class="res-mm-bottom-grid">
+                  <ul class="res-metric-list">
+                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                      <span class="res-ico">🟡</span>
+                      <strong>Menor al PP:</strong>
+                      <span id="res_txtMenorPP" class="res-val" style="color: #d97706;">-</span>
+                    </li>
+
+                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                      <span class="res-ico">🟢</span>
+                      <strong>Mayor al PP:</strong>
+                      <span id="res_txtMayorPP" class="res-val" style="color: #16a34a;">-</span>
+                    </li>
+
+                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                      <span class="res-ico">🟠</span>
+                      <strong>Mayor a Stock Máx:</strong>
+                      <span id="res_txtMayorMax" class="res-val" style="color: #ea580c;">-</span>
+                    </li>
+                  </ul>
+
+                  <div class="res-subcard res-mini-chart-card">
+                    <div class="res-subcard-header">
+                      <span>📈 Tendencia Evolución</span>
+                    </div>
+                    <div id="res_chartEvolMM" class="res-mini-trend-box"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -1728,6 +1737,19 @@
                   </li>
                 </ul>
               </div>
+
+              <!-- 2.3 Mini Gráfico Tendencia de Cumplimiento -->
+              <div class="res-subcard res-mini-chart-card">
+                <div class="res-subcard-header" style="flex-wrap: wrap; gap: 4px;">
+                  <span>📈 Tendencia</span>
+                  <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 800; text-transform: none;">
+                    <span style="color: #16a34a;">● %AT</span>
+                    <span style="color: #7c3aed;">● %AT Acum</span>
+                    <span style="color: #f59e0b;">● %FT</span>
+                  </span>
+                </div>
+                <div id="res_chartTendenciaCumpl" class="res-mini-trend-box"></div>
+              </div>
             </div>
           </section>
 
@@ -1812,7 +1834,7 @@
                     <span>Porcentajes de Cumplimiento y Promedio de Días</span>
                   </span>
                   <span id="res_tiempos_rule_badge" style="font-size: 9px; font-weight: 800; color: #713f12; background: #fef08a; border: 1px solid #eab308; padding: 0px 6px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">
-                    Umbral Poco Tiempo según Obra
+                    POCO TIEMPO TODAS LAS OBRAS
                   </span>
                 </div>
                 <div style="width: 100%; overflow-x: hidden;">
@@ -1860,15 +1882,15 @@
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261102_140226"></script><script src="js/last-update-sede.js?v=20261102_140226"></script><script src="js/last-update-compras.js?v=20261102_140226"></script><script src="js/last-update-almacen.js?v=20261102_140226"></script><script src="js/last-update.js?v=20261103_140500"></script>
+  <script src="js/last-update-obras.js?v=20261102_140226"></script><script src="js/last-update-sede.js?v=20261102_140226"></script><script src="js/last-update-compras.js?v=20261102_140226"></script><script src="js/last-update-almacen.js?v=20261102_140226"></script><script src="js/last-update.js?v=20261103_150300"></script>
   <script src="js/help.js?v=20261102_140226"></script>
   <script src="js/cache-utils.js?v=20261102_140226"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261103_140500"></script>
-  <script src="js/resumen.js?v=20261103_140500"></script>
-  <script src="js/cumplimiento.js?v=20261103_140500"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261103_140500"></script>
+  <script src="js/demoras.js?v=20261103_150300"></script>
+  <script src="js/resumen.js?v=20261103_150300"></script>
+  <script src="js/cumplimiento.js?v=20261103_150300"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261103_150300"></script>
   <script src="js/analisis-mm.js?v=20261102_140226"></script>
   <script src="js/evolucion.js?v=20261102_140226"></script>
   <script src="js/servicios.js?v=20261102_140226"></script>
@@ -1880,7 +1902,7 @@
 
     // Subtítulos para cada pestaña
     const TAB_SUBTITLES = {
-      'resumen': 'Resumen',
+      'resumen': 'Tablero',
       'cumplimiento': 'Análisis de cumplimiento de pedidos por obra',
       'mm': 'Análisis de disponibilidad de materiales (MM)',
       'demoras': 'Análisis de demoras y desglose por área',
@@ -2093,6 +2115,7 @@
           }
           setTimeout(() => {
             if (typeof window.resizeResumenDemoras === 'function') window.resizeResumenDemoras();
+            if (typeof window.resizeResumenMiniCharts === 'function') window.resizeResumenMiniCharts();
           }, 150);
         } else if (tabName === 'cumplimiento') {
           if (typeof window.initCumplimiento === 'function') {

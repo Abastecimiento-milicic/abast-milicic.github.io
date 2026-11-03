@@ -2959,7 +2959,7 @@ body:has(#panel-resumen[style*="block"]) main.container {
 
 #panel-resumen .res-bento-grid {
   display: grid;
-  grid-template-columns: 2fr 3fr;
+  grid-template-columns: 1.45fr 3.55fr;
   gap: 8px;
   align-items: stretch;
   min-height: calc(100vh - 130px);
@@ -3066,9 +3066,9 @@ body:has(#panel-resumen[style*="block"]) main.container {
 
 #panel-resumen .res-div3 > .res-panel-body {
   display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 7px !important;
-  padding: 5px 8px !important;
+  grid-template-columns: 248px 268px minmax(260px, 1fr) !important;
+  gap: 6px !important;
+  padding: 5px 7px !important;
   align-items: stretch !important;
 }
 
@@ -3562,5 +3562,49 @@ body.is-app-fullscreen .container {
 
 #panel-resumen .res-inline-venc-btn:hover {
   transform: translateY(-1px) !important;
+}
+
+/* Grilla inferior 2 columnas en 1. ANÁLISIS MM (Menor/Mayor PP + Tendencia Evolución) */
+#panel-resumen .res-mm-bottom-grid {
+  display: grid !important;
+  grid-template-columns: 1.05fr 0.95fr !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+}
+
+#panel-resumen .res-mini-chart-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 5px 7px !important;
+  background: #ffffff !important;
+}
+
+#panel-resumen .res-mini-trend-box {
+  width: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 78px !important;
+  height: 100% !important;
+}
+
+#panel-resumen .res-div3 .res-mini-trend-box {
+  min-height: 135px !important;
+}
+
+#panel-resumen .res-div3 .res-metric-list > li {
+  padding: 3px 6px !important;
+  font-size: 10.5px !important;
+}
+
+#panel-resumen .res-div3 .res-metric-list > li strong {
+  font-size: 10.5px !important;
+}
+
+#panel-resumen .res-div3 .res-val {
+  font-size: 11.5px !important;
+}
+
+#panel-resumen .res-div3 .res-note {
+  font-size: 9.5px !important;
 }
 

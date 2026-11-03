@@ -12,6 +12,7 @@
   const CSV_CUMPL_URL = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
   const CSV_ARRIBA_URL = "data/Base_Final_365_372.csv";
   const CSV_SERV_URL = "data/SERVICIOS OBRA.csv";
+  const CSV_EVOL_URL = "data/EVOLUCION.csv";
   const JSON_EMRF_URL = "data/partidas_emrf.json";
   const DEFAULT_EMRF_GCS = ["C01", "C07", "C02"];
   const DELIM = ";";
@@ -24,7 +25,10 @@
   let cumplHeaders = [];
   let arribaRawData = null;
   let servRawData = null;
+  let evolRawData = null;
   let emrfRawData = null;
+  let chartEvolMMInstance = null;
+  let chartTendCumplInstance = null;
   let isResumenArribaActive = false;
   let isObraExcludeMode = false;
   let isDataLoading = false;
@@ -269,13 +273,14 @@
         return await res.text();
       };
 
-      const [textMM, textStoNulo, textCumpl, textArriba, textServ, textEmrf] = await Promise.all([
+      const [textMM, textStoNulo, textCumpl, textArriba, textServ, textEmrf, textEvol] = await Promise.all([
         fetchCSV(CSV_MM_URL),
         fetchCSV(CSV_STONULO_URL),
         fetchCSV(CSV_CUMPL_URL),
         fetchCSV(CSV_ARRIBA_URL).catch(() => ""),
         fetchCSV(CSV_SERV_URL).catch(() => ""),
-        fetchCSV(JSON_EMRF_URL).catch(() => "")
+        fetchCSV(JSON_EMRF_URL).catch(() => ""),
+        fetchCSV(CSV_EVOL_URL).catch(() => "")
       ]);
 
       const parsedMM = parseCSV(textMM);
@@ -312,6 +317,13 @@
         servRawData = parsedServ.rows;
       } else {
         servRawData = [];
+      }
+
+      if (textEvol && textEvol.length > 50) {
+        const parsedEvol = parseCSV(textEvol);
+        evolRawData = parsedEvol.rows;
+      } else {
+        evolRawData = [];
       }
 
       if (textEmrf && textEmrf.length > 20) {
@@ -978,9 +990,9 @@
         const lim = OBRAS_LIMIT_MAP[code] || 15;
         ruleBadge.textContent = `PARA OBRA ${code} POCO TIEMPO < ${lim} DÍAS`;
       } else if (selectedObras.length > 1) {
-        ruleBadge.textContent = `POCO TIEMPO SEGÚN UMBRAL DE CADA OBRA (${selectedObras.length} OBRAS)`;
+        ruleBadge.textContent = `POCO TIEMPO (${selectedObras.length} OBRAS)`;
       } else {
-        ruleBadge.textContent = "POCO TIEMPO SEGÚN UMBRAL DE CADA OBRA";
+        ruleBadge.textContent = "POCO TIEMPO TODAS LAS OBRAS";
       }
     }
 
@@ -1244,7 +1256,7 @@
         </li>
         <li style="display: flex; align-items: center; gap: 5px;">
           <span style="color: #dc2626; font-weight: 900;">•</span>
-          <mark style="background-color: #fef08a; color: #854d0e; padding: 0px 5px; font-size: 10px; border-radius: 3px; font-weight: 800; border: 1px solid #facc15;">${fmtInt(nuloSinPedido)} ESTÁN SIN PEDIDO</mark>
+          <mark style="background-color: #fef08a; color: #854d0e; padding: 0px 5px; font-size: 10px; border-radius: 3px; font-weight: 800; border: 1px solid #facc15;">${fmtInt(nuloSinPedido)} SIN PEDIDO</mark>
         </li>
         <li style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
           <span style="color: #dc2626; font-weight: 900;">•</span>
@@ -1257,6 +1269,123 @@
     setText("res_txtMenorPP", `${fmtInt(cantMenorPP)} (${fmtPct01(pctMenorPP)})`);
     setText("res_txtMayorPP", `${fmtInt(cantMayorPP)} (${fmtPct01(pctMayorPP)})`);
     setText("res_txtMayorMax", `${fmtInt(cantMayorMax)} (${fmtPct01(pctMayorMax)})`);
+
+    renderMiniEvolMMChart(selectedObras);
+  }
+
+  function renderMiniEvolMMChart(selectedObras) {
+    const el = document.getElementById("res_chartEvolMM");
+    if (!el || typeof window.echarts === "undefined" || !evolRawData) return;
+
+    if (!chartEvolMMInstance) {
+      chartEvolMMInstance = window.echarts.init(el, null, { renderer: "canvas" });
+    }
+
+    let rows = evolRawData;
+    if (selectedObras && selectedObras.length > 0) {
+      const obraSet = new Set(selectedObras.map(getCanonicalObraCode));
+      rows = evolRawData.filter(r => obraSet.has(getCanonicalObraCode(r["Obra"] || r["OBRA"])));
+    }
+
+    const monthMap = {};
+    for (const r of rows) {
+      const ym = parseYearMonth(r["Fecha"] || r["FECHA"]);
+      if (!ym) continue;
+      const rawPct = clean(r["% disponibilidad"] || r["% DISPONIBILIDAD"]).replace("%", "");
+      const val = toNumber(rawPct);
+      if (!monthMap[ym]) monthMap[ym] = { sum: 0, count: 0 };
+      monthMap[ym].sum += val;
+      monthMap[ym].count += 1;
+    }
+
+    const months = Object.keys(monthMap).sort();
+    const values = months.map(m => {
+      const obj = monthMap[m];
+      return obj.count ? +(obj.sum / obj.count).toFixed(1) : 0;
+    });
+
+    const shortLabels = months.map(ym => {
+      const [y, m] = ym.split("-");
+      return `${m}/${y.slice(-2)}`;
+    });
+
+    chartEvolMMInstance.setOption({
+      animation: true,
+      animationDuration: 400,
+      grid: { left: 6, right: 6, top: 8, bottom: 16, containLabel: false },
+      tooltip: {
+        trigger: "axis",
+        confine: true,
+        backgroundColor: "rgba(15, 23, 42, 0.92)",
+        borderColor: "#0d9488",
+        borderWidth: 1,
+        padding: [4, 8],
+        textStyle: { color: "#ffffff", fontSize: 10.5 },
+        formatter: (params) => {
+          const p = params && params[0];
+          if (!p) return "";
+          return `<b>${p.name}</b><br/>Disponibilidad: <b>${String(p.value).replace(".", ",")}%</b>`;
+        }
+      },
+      xAxis: {
+        type: "category",
+        data: shortLabels,
+        boundaryGap: false,
+        axisLine: { lineStyle: { color: "#cbd5e1" } },
+        axisTick: { show: false },
+        axisLabel: {
+          show: true,
+          fontSize: 8.5,
+          color: "#64748b",
+          interval: Math.max(0, Math.floor(shortLabels.length / 4) - 1)
+        }
+      },
+      yAxis: {
+        type: "value",
+        min: (v) => Math.max(0, Math.floor(v.min - 8)),
+        max: 100,
+        splitLine: { show: true, lineStyle: { color: "#f1f5f9", type: "dashed" } },
+        axisLabel: { show: false },
+        axisLine: { show: false },
+        axisTick: { show: false }
+      },
+      series: [
+        {
+          name: "% Disponibilidad",
+          type: "line",
+          smooth: 0.35,
+          symbol: "circle",
+          symbolSize: 4,
+          label: { show: false },
+          lineStyle: { width: 2.2, color: "#0d9488" },
+          itemStyle: { color: "#0d9488" },
+          areaStyle: {
+            color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: "rgba(13, 148, 136, 0.32)" },
+              { offset: 1, color: "rgba(13, 148, 136, 0.03)" }
+            ])
+          },
+          markLine: {
+            silent: true,
+            symbol: "none",
+            label: {
+              show: true,
+              position: "insideEndTop",
+              formatter: "Obj 90%",
+              fontSize: 8,
+              fontWeight: 600,
+              color: "rgba(100, 116, 139, 0.85)",
+              backgroundColor: "rgba(255, 255, 255, 0.65)",
+              padding: [0, 2],
+              borderRadius: 2
+            },
+            lineStyle: { color: "rgba(100, 116, 139, 0.55)", type: "dashed", width: 1.1 },
+            data: [{ yAxis: 90 }]
+          },
+          data: values
+        }
+      ]
+    }, true);
   }
 
   /* --- 2. BLOQUE CUMPLIMIENTO --- */
@@ -1491,7 +1620,173 @@
     setText("res_cumplDemoraAvg", Math.round(mCurr.avgDem) + " d");
     const elDem = document.getElementById("res_cumplDemoraAvg");
     if (elDem) elDem.style.setProperty("color", (mCurr.avgDem > 7) ? "#dc2626" : "#16a34a", "important");
+
+    renderMiniCumplTrendChart(rowsBase, ltmMonths);
   }
+
+  function renderMiniCumplTrendChart(rowsBase, ltmMonths) {
+    const el = document.getElementById("res_chartTendenciaCumpl");
+    if (!el || typeof window.echarts === "undefined") return;
+
+    if (!chartTendCumplInstance) {
+      chartTendCumplInstance = window.echarts.init(el, null, { renderer: "canvas" });
+    }
+
+    const months = (ltmMonths && ltmMonths.length) ? ltmMonths : [];
+    const monthStats = {};
+    months.forEach(m => { monthStats[m] = { at: 0, ft: 0, ne: 0, tot: 0 }; });
+
+    for (const r of rowsBase) {
+      const m = r._ym;
+      if (!m || !monthStats[m]) continue;
+      const at = toNumber(r["ENTREGADOS AT"]);
+      const ft = toNumber(r["ENTREGADOS FT"]);
+      const ne = toNumber(r["NO ENTREGADOS"]);
+      let tot = toNumber(r["COMPROMETIDOS"]);
+      if (!tot) tot = at + ft + ne;
+      monthStats[m].at += at;
+      monthStats[m].ft += ft;
+      monthStats[m].ne += ne;
+      monthStats[m].tot += tot;
+    }
+
+    const shortLabels = months.map(ym => {
+      const [y, m] = ym.split("-");
+      return `${m}/${y.slice(-2)}`;
+    });
+
+    const pctAtData = [];
+    const pctAtAcumData = [];
+    const pctFtData = [];
+
+    let runAt = 0;
+    let runTot = 0;
+
+    months.forEach(m => {
+      const s = monthStats[m];
+      const pAt = s.tot ? +((s.at / s.tot) * 100).toFixed(1) : 0;
+      const pFt = s.tot ? +((s.ft / s.tot) * 100).toFixed(1) : 0;
+      runAt += s.at;
+      runTot += s.tot;
+      const pAcum = runTot ? +((runAt / runTot) * 100).toFixed(1) : 0;
+
+      pctAtData.push(pAt);
+      pctAtAcumData.push(pAcum);
+      pctFtData.push(pFt);
+    });
+
+    chartTendCumplInstance.setOption({
+      animation: true,
+      animationDuration: 400,
+      grid: { left: 6, right: 6, top: 8, bottom: 18, containLabel: false },
+      tooltip: {
+        trigger: "axis",
+        confine: true,
+        backgroundColor: "rgba(15, 23, 42, 0.94)",
+        borderColor: "#334155",
+        borderWidth: 1,
+        padding: [5, 8],
+        textStyle: { color: "#ffffff", fontSize: 10.5 },
+        formatter: (params) => {
+          if (!params || !params.length) return "";
+          const name = params[0].name || "";
+          const lines = params.map(p => `${p.marker} ${p.seriesName}: <b>${String(p.value).replace(".", ",")}%</b>`);
+          return `<b>Período ${name}</b><br/>` + lines.join("<br/>");
+        }
+      },
+      xAxis: {
+        type: "category",
+        data: shortLabels,
+        boundaryGap: false,
+        axisLine: { lineStyle: { color: "#cbd5e1" } },
+        axisTick: { show: false },
+        axisLabel: {
+          show: true,
+          fontSize: 8.5,
+          color: "#64748b",
+          interval: Math.max(0, Math.floor(shortLabels.length / 4) - 1)
+        }
+      },
+      yAxis: {
+        type: "value",
+        min: 0,
+        max: 100,
+        splitLine: { show: true, lineStyle: { color: "#f1f5f9", type: "dashed" } },
+        axisLabel: { show: false },
+        axisLine: { show: false },
+        axisTick: { show: false }
+      },
+      series: [
+        {
+          name: "% AT",
+          type: "line",
+          smooth: 0.35,
+          symbol: "none",
+          showSymbol: false,
+          label: { show: false },
+          lineStyle: { width: 2.2, color: "#16a34a" },
+          itemStyle: { color: "#16a34a" },
+          areaStyle: {
+            color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: "rgba(22, 163, 74, 0.18)" },
+              { offset: 1, color: "rgba(22, 163, 74, 0.02)" }
+            ])
+          },
+          markLine: {
+            silent: true,
+            symbol: "none",
+            label: {
+              show: true,
+              position: "insideEndTop",
+              formatter: "Obj 78%",
+              fontSize: 8,
+              fontWeight: 600,
+              color: "rgba(100, 116, 139, 0.85)",
+              backgroundColor: "rgba(255, 255, 255, 0.65)",
+              padding: [0, 2],
+              borderRadius: 2
+            },
+            lineStyle: { color: "rgba(100, 116, 139, 0.55)", type: "dashed", width: 1.1 },
+            data: [{ yAxis: 78 }]
+          },
+          data: pctAtData
+        },
+        {
+          name: "% AT Acum.",
+          type: "line",
+          smooth: 0.35,
+          symbol: "none",
+          showSymbol: false,
+          label: { show: false },
+          lineStyle: { width: 2.2, color: "#7c3aed" },
+          itemStyle: { color: "#7c3aed" },
+          data: pctAtAcumData
+        },
+        {
+          name: "% FT",
+          type: "line",
+          smooth: 0.35,
+          symbol: "none",
+          showSymbol: false,
+          label: { show: false },
+          lineStyle: { width: 2, color: "#f59e0b" },
+          itemStyle: { color: "#f59e0b" },
+          data: pctFtData
+        }
+      ]
+    }, true);
+  }
+
+  window.resizeResumenMiniCharts = function () {
+    if (chartEvolMMInstance) chartEvolMMInstance.resize();
+    if (chartTendCumplInstance) chartTendCumplInstance.resize();
+  };
+
+  window.addEventListener("resize", () => {
+    if (typeof window.resizeResumenMiniCharts === "function") {
+      window.resizeResumenMiniCharts();
+    }
+  });
 
   // Hook global de inicialización
   window.initResumen = function () {

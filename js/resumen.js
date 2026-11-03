@@ -333,6 +333,8 @@
       setObraExcludeMode(false);
       renderCumplInlineMesSelect(true);
       renderGcEmrfSelect(true);
+      const selVencEmrf = document.getElementById("res_emrfInlineVencSelect");
+      if (selVencEmrf) selVencEmrf.value = "VENCIDA";
       hookClearButton();
       hookExcludeObraButton();
       hookArribaButtons();
@@ -685,15 +687,44 @@
     updateEmrfBlock();
   }
 
-  /* --- 6. BLOQUE CONTROL DE PARTIDAS (.div6) --- */
+  /* --- 5. BLOQUE CONTROL DE PARTIDAS (.div6) --- */
+  let emrfVencBound = false;
+  function bindEmrfVencSelect() {
+    if (emrfVencBound) return;
+    const sel = document.getElementById("res_emrfInlineVencSelect");
+    if (!sel) return;
+    emrfVencBound = true;
+    sel.addEventListener("change", () => {
+      updateEmrfBlock();
+    });
+  }
+
   function updateEmrfBlock() {
     if (!emrfRawData) return;
+    bindEmrfVencSelect();
+
     const selectedGCs = getSelectedGcEmrf();
+    const selVencEl = document.getElementById("res_emrfInlineVencSelect");
+    const vencFilter = selVencEl ? selVencEl.value : "VENCIDA";
+
+    const btnWrap = document.getElementById("res_emrfVencBtnWrap");
+    if (btnWrap) {
+      btnWrap.classList.remove("is-vencida", "is-novencida", "is-all");
+      if (vencFilter === "VENCIDA") btnWrap.classList.add("is-vencida");
+      else if (vencFilter === "NO_VENCIDA") btnWrap.classList.add("is-novencida");
+      else btnWrap.classList.add("is-all");
+    }
 
     let rows = emrfRawData;
     if (selectedGCs.length > 0) {
       const gcSet = new Set(selectedGCs.map(clean));
-      rows = emrfRawData.filter(r => gcSet.has(clean(r.Grupo_Compras)));
+      rows = rows.filter(r => gcSet.has(clean(r.Grupo_Compras)));
+    }
+
+    if (vencFilter === "VENCIDA") {
+      rows = rows.filter(r => clean(r.Estado_Vencimiento) === "VENCIDA");
+    } else if (vencFilter === "NO_VENCIDA") {
+      rows = rows.filter(r => clean(r.Estado_Vencimiento) !== "VENCIDA");
     }
 
     const badgeEl = document.getElementById("res_emrf_gc_badge");
@@ -707,52 +738,121 @@
       }
     }
 
-    const total = rows.length;
     let faltaFact = 0;
     let faltaRecep = 0;
-    let compensable = 0;
-    let vencida = 0;
-    let vigente = 0;
 
     for (const r of rows) {
       const grp = clean(r.Grupo_EMRF);
-      const venc = clean(r.Estado_Vencimiento);
-
       if (grp === "TIENE RECEPCIÓN - FALTA FACTURA") faltaFact++;
       else if (grp === "TIENE FACTURA - FALTA RECEPCIÓN") faltaRecep++;
-      else if (grp.includes("COMPENSABLE")) compensable++;
-
-      if (venc === "VENCIDA") vencida++;
-      else if (venc === "VIGENTE") vigente++;
     }
 
+    const total = faltaFact + faltaRecep;
     const pctFF = total ? (faltaFact / total) : 0;
     const pctFR = total ? (faltaRecep / total) : 0;
-    const pctComp = total ? (compensable / total) : 0;
-    const pctVenc = total ? (vencida / total) : 0;
-    const pctVig = total ? (vigente / total) : 0;
 
     setText("res_emrfTotal", fmtInt(total));
     setText("res_emrfFaltaFact", `${fmtInt(faltaFact)} (${fmtPct01(pctFF)})`);
     setText("res_emrfFaltaRecep", `${fmtInt(faltaRecep)} (${fmtPct01(pctFR)})`);
-    setText("res_emrfCompensable", `${fmtInt(compensable)} (${fmtPct01(pctComp)})`);
-    setText("res_emrfVencida", `${fmtInt(vencida)} (${fmtPct01(pctVenc)})`);
-    setText("res_emrfVigente", `${fmtInt(vigente)} (${fmtPct01(pctVig)})`);
-
-    const rowVenc = document.getElementById("res_emrfRowVencida");
-    const elVenc = document.getElementById("res_emrfVencida");
-    if (rowVenc) {
-      rowVenc.style.border = vencida > 0 ? "1.5px solid #dc2626" : "1.5px solid #16a34a";
-      rowVenc.style.background = vencida > 0 ? "#fef2f2" : "#f0fdf4";
-    }
-    if (elVenc) {
-      elVenc.style.color = vencida > 0 ? "#dc2626" : "#16a34a";
-    }
   }
 
-  /* --- 5. BLOQUE SERVICIOS (.div5) --- */
+  /* --- 4. BLOQUE SERVICIOS (.div5) CON TOOLTIPS DE SUBCATEGORÍAS (ESTADO ITEM) --- */
+  let servBreakdownsByCat = {};
+  let servTooltipsBound = false;
+
+  function getServItemBadgeClass(estadoItem) {
+    const val = clean(estadoItem).toUpperCase();
+    const rojos = ["ADJUDICADO", "ADJUDICADO PARCIAL", "RESPONDIDO", "INCOMPLETO", "SIN TRATAMIENTO"];
+    const verdes = ["CUMPLIDO", "ALMACENADO", "CONSUMIDO PARCIAL"];
+    if (verdes.includes(val)) return "res-ft-badge-verde";
+    if (rojos.includes(val)) return "res-ft-badge-rojo";
+    return "res-ft-badge-azul";
+  }
+
+  function ensureServTooltipDOM() {
+    let tip = document.getElementById("res_servFloatingTooltip");
+    if (!tip) {
+      tip = document.createElement("div");
+      tip.id = "res_servFloatingTooltip";
+      tip.className = "res-floating-tooltip";
+      document.body.appendChild(tip);
+    }
+    return tip;
+  }
+
+  function bindServiciosTooltips() {
+    if (servTooltipsBound) return;
+    servTooltipsBound = true;
+
+    const pills = document.querySelectorAll("#panel-resumen .res-serv-pill[data-serv-cat]");
+    pills.forEach(pill => {
+      pill.addEventListener("mouseenter", () => {
+        const cat = pill.getAttribute("data-serv-cat");
+        const info = servBreakdownsByCat[cat];
+        if (!info) return;
+        const tip = ensureServTooltipDOM();
+        tip.innerHTML = info.html;
+        tip.style.display = "block";
+
+        const rect = pill.getBoundingClientRect();
+        const tipRect = tip.getBoundingClientRect();
+        let top = rect.top - tipRect.height - 8;
+        if (top < 8) {
+          top = rect.bottom + 8;
+        }
+        let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+        if (left < 8) left = 8;
+        if (left + tipRect.width > window.innerWidth - 8) {
+          left = window.innerWidth - tipRect.width - 8;
+        }
+        tip.style.top = `${Math.round(top)}px`;
+        tip.style.left = `${Math.round(left)}px`;
+      });
+
+      pill.addEventListener("mouseleave", () => {
+        const tip = document.getElementById("res_servFloatingTooltip");
+        if (tip) tip.style.display = "none";
+      });
+    });
+  }
+
+  function buildSubcatTooltipHTML(title, totalCount, mapCounts, extraNote = "") {
+    const entries = Object.entries(mapCounts).sort((a, b) => b[1] - a[1]);
+    if (entries.length === 0) {
+      return `
+        <div class="res-ft-header">
+          <span>${title}</span>
+          <span style="color:#2563eb;">0 pos.</span>
+        </div>
+        <div style="font-size:10.5px; color:#64748b; font-style:italic;">Sin posiciones para el filtro actual</div>
+      `;
+    }
+    const itemsHtml = entries.map(([subcat, cnt]) => {
+      const pct = totalCount > 0 ? fmtPct01(cnt / totalCount) : "0,0%";
+      const bCls = getServItemBadgeClass(subcat);
+      return `
+        <li class="res-ft-row">
+          <span class="res-ft-badge ${bCls}">${subcat}</span>
+          <span class="res-ft-val">${fmtInt(cnt)} <span class="res-ft-pct">(${pct})</span></span>
+        </li>
+      `;
+    }).join("");
+
+    return `
+      <div class="res-ft-header">
+        <span>${title}</span>
+        <span style="color:#0d9488;">${fmtInt(totalCount)} pos.</span>
+      </div>
+      <div class="res-ft-sub">Subcategorías (ESTADO ITEM):</div>
+      <ul class="res-ft-list">${itemsHtml}</ul>
+      ${extraNote ? `<div style="margin-top:6px; padding-top:4px; border-top:1px dashed #cbd5e1; font-size:9.5px; color:#475569;">${extraNote}</div>` : ""}
+    `;
+  }
+
   function updateServiciosBlock() {
     if (!servRawData) return;
+    bindServiciosTooltips();
+
     const selectedObras = getSelectedObras();
 
     let rows = servRawData;
@@ -769,16 +869,44 @@
     let pedInfo = 0;
     let sinTrat = 0;
 
+    const mapTotal = {};
+    const mapEnCurso = {};
+    const mapTotRecep = {};
+    const mapVencidos = {};
+    const mapProxVencer = {};
+    const mapSinTratInfo = {};
+
+    const inc = (obj, k) => { obj[k] = (obj[k] || 0) + 1; };
+
     for (const r of rows) {
       const estServ = clean(r["Estado Servicio"]);
-      const estItem = clean(r["ESTADO ITEM"]).toUpperCase();
-      if (estServ === "En curso") enCurso++;
-      else if (estServ.includes("Próximo a vencer") || estServ.includes("Proximo a vencer")) proxVencer++;
-      else if (estServ.includes("Vencido")) vencido++;
-      else if (estServ.includes("Total recepcionado")) totRecep++;
-      else if (estServ.includes("Pedido de Info")) pedInfo++;
+      const estItem = clean(r["ESTADO ITEM"]).toUpperCase() || "SIN ESTADO ITEM";
 
-      if (estItem === "SIN TRATAMIENTO") sinTrat++;
+      inc(mapTotal, estItem);
+
+      if (estServ === "En curso") {
+        enCurso++;
+        inc(mapEnCurso, estItem);
+      } else if (estServ.includes("Próximo a vencer") || estServ.includes("Proximo a vencer")) {
+        proxVencer++;
+        inc(mapProxVencer, estItem);
+      } else if (estServ.includes("Vencido")) {
+        vencido++;
+        inc(mapVencidos, estItem);
+      } else if (estServ.includes("Total recepcionado")) {
+        totRecep++;
+        inc(mapTotRecep, estItem);
+      } else if (estServ.includes("Pedido de Info")) {
+        pedInfo++;
+        inc(mapSinTratInfo, `PED. INFO → ${estItem}`);
+      }
+
+      if (estItem === "SIN TRATAMIENTO") {
+        sinTrat++;
+        if (!estServ.includes("Pedido de Info")) {
+          inc(mapSinTratInfo, `SIN TRAT. (${estServ})`);
+        }
+      }
     }
 
     const pctEnCurso = total ? (enCurso / total) : 0;
@@ -794,6 +922,33 @@
     setText("res_servProxVencer", `${fmtInt(proxVencer)} (${fmtPct01(pctProx)})`);
     setText("res_servSinTrat", fmtInt(sinTrat + pedInfo));
     setText("res_servSinTratNote", `(${fmtInt(sinTrat)} sin trat. · ${fmtInt(pedInfo)} ped. info)`);
+
+    // Construir los desgloses por ESTADO ITEM para cada tarjeta de Servicios
+    servBreakdownsByCat = {
+      TOTAL: {
+        html: buildSubcatTooltipHTML("📋 Total Servicios", total, mapTotal)
+      },
+      EN_CURSO: {
+        html: buildSubcatTooltipHTML("🟢 En Curso", enCurso, mapEnCurso)
+      },
+      RECEP_TOTAL: {
+        html: buildSubcatTooltipHTML("🟠 En curso - Total recepcionado", totRecep, mapTotRecep)
+      },
+      VENCIDOS: {
+        html: buildSubcatTooltipHTML("🔴 Vencido con cant. pend. a recep.", vencido, mapVencidos)
+      },
+      PROX_VENCER: {
+        html: buildSubcatTooltipHTML("🟡 En curso - Próximo a vencer", proxVencer, mapProxVencer)
+      },
+      SIN_TRAT_INFO: {
+        html: buildSubcatTooltipHTML(
+          "🟣 Sin Tratamiento / Pedido de Info",
+          sinTrat + pedInfo,
+          mapSinTratInfo,
+          `Incluye <b>${fmtInt(sinTrat)}</b> ítems con Estado Ítem «SIN TRATAMIENTO» y <b>${fmtInt(pedInfo)}</b> con Estado Servicio «Pedido de Info».`
+        )
+      }
+    };
 
     const rowVenc = document.getElementById("res_servRowVencido");
     const elVenc = document.getElementById("res_servVencido");

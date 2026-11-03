@@ -3435,3 +3435,132 @@ body.is-app-fullscreen .container {
   padding-right: 1rem !important;
 }
 
+/* Cursor interactivo y Tooltip Flotante de Subcategorías (ESTADO ITEM) para 4. SERVICIOS */
+#panel-resumen .res-serv-pill.res-has-tooltip {
+  cursor: help !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease !important;
+}
+
+#panel-resumen .res-serv-pill.res-has-tooltip:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.12) !important;
+}
+
+.res-floating-tooltip {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  background: #ffffff;
+  border: 1.5px solid #0d9488;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.22), 0 4px 10px -3px rgba(15, 23, 42, 0.12);
+  padding: 8px 10px;
+  min-width: 245px;
+  max-width: 320px;
+  font-family: var(--font-main, 'Source Sans 3', sans-serif);
+  color: #0f172a;
+  display: none;
+}
+
+.res-ft-header {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0f172a;
+  border-bottom: 1.5px solid #e2e8f0;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.res-ft-sub {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.res-ft-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.res-ft-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.res-ft-badge {
+  display: inline-block;
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.res-ft-badge-verde { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.res-ft-badge-rojo { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.res-ft-badge-azul { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+.res-ft-val {
+  font-weight: 800;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.res-ft-pct {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 10px;
+  margin-left: 3px;
+}
+
+/* Grilla de 3 tarjetas para 5. CONTROL DE PARTIDAS y botón filtro de Vencimiento OC */
+#panel-resumen .res-serv-strip.res-emrf-strip-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+#panel-resumen .res-inline-venc-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  border: 1.5px solid #991b1b !important;
+  border-radius: 999px !important;
+  padding: 1px 8px !important;
+  box-shadow: 0 0 0 2px #fecaca, 0 2px 5px rgba(220, 38, 38, 0.3) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  margin: 0 !important;
+}
+
+#panel-resumen .res-inline-venc-btn.is-novencida {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  border-color: #075985 !important;
+  box-shadow: 0 0 0 2px #bae6fd, 0 2px 5px rgba(2, 132, 199, 0.3) !important;
+}
+
+#panel-resumen .res-inline-venc-btn.is-all {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
+  border-color: #115e59 !important;
+  box-shadow: 0 0 0 2px #99f6e4, 0 2px 5px rgba(13, 148, 136, 0.3) !important;
+}
+
+#panel-resumen .res-inline-venc-btn:hover {
+  transform: translateY(-1px) !important;
+}
+

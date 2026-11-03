@@ -1682,7 +1682,7 @@
               <!-- 2.2 Rendimiento Mensual -->
               <div class="res-subcard">
                 <div class="res-subcard-header" style="gap: 6px;">
-                  <span>Período Evaluado:</span>
+                  <span>Período:</span>
                   <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado">
                     <span class="res-inline-mes-ico">📅</span>
                     <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" aria-label="Seleccionar mes evaluado de cumplimiento">
@@ -1753,73 +1753,76 @@
             </div>
           </section>
 
-          <!-- .div5: 4. SERVICIOS (Compacto en tira horizontal de KPIs) -->
-          <section class="panel res-div5">
-            <div class="panel-title res-panel-title">
-              <span>🛠️ 4. SERVICIOS</span>
-              <span id="res_serv_total_badge" style="display: none;">-</span>
-            </div>
-            <div class="panel-body res-panel-body" style="padding: 5px 8px !important;">
-              <div class="res-serv-strip">
-                <div class="res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
-                  <span class="res-serv-lbl">📋 Total</span>
-                  <span id="res_servTotal" class="res-serv-num" style="color: #2563eb;">-</span>
-                </div>
-                <div class="res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: #f0fdf4; border-color: #86efac;">
-                  <span class="res-serv-lbl">🟢 En Curso</span>
-                  <span id="res_servEnCurso" class="res-serv-num" style="color: #16a34a;">-</span>
-                </div>
-                <div class="res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL">
-                  <span class="res-serv-lbl">🟠 Recep. Total</span>
-                  <span id="res_servTotRecep" class="res-serv-num" style="color: #ea580c;">-</span>
-                </div>
-                <div id="res_servRowVencido" class="res-serv-pill res-has-tooltip" data-serv-cat="VENCIDOS" style="background: #fef2f2; border-color: #fca5a5;">
-                  <span class="res-serv-lbl">🔴 Vencidos</span>
-                  <span id="res_servVencido" class="res-serv-num" style="color: #dc2626;">-</span>
-                </div>
-                <div class="res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER">
-                  <span class="res-serv-lbl">🟡 Próx. Vencer</span>
-                  <span id="res_servProxVencer" class="res-serv-num" style="color: #d97706;">-</span>
-                </div>
-                <div class="res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO">
-                  <span class="res-serv-lbl">🟣 Sin Trat./Info</span>
-                  <span id="res_servSinTrat" class="res-serv-num" style="color: #7c3aed;">-</span>
-                  <span id="res_servSinTratNote" style="display: none;"></span>
+          <!-- Fila combinada: 4. SERVICIOS (izq) y 5. CONTROL DE PARTIDAS (der) -->
+          <div class="res-row-serv-emrf">
+            <!-- .div5: 4. SERVICIOS (Compacto en tira horizontal de KPIs) -->
+            <section class="panel res-div5">
+              <div class="panel-title res-panel-title">
+                <span>🛠️ 4. SERVICIOS</span>
+                <span id="res_serv_total_badge" style="display: none;">-</span>
+              </div>
+              <div class="panel-body res-panel-body" style="padding: 5px 6px !important;">
+                <div class="res-serv-strip">
+                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
+                    <span class="res-serv-lbl">📋 Total</span>
+                    <span id="res_servTotal" class="res-serv-num" style="color: #2563eb;">-</span>
+                  </div>
+                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: #f0fdf4; border-color: #86efac;">
+                    <span class="res-serv-lbl">🟢 En Curso</span>
+                    <span id="res_servEnCurso" class="res-serv-num" style="color: #16a34a;">-</span>
+                  </div>
+                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL">
+                    <span class="res-serv-lbl">🟠 Recep.</span>
+                    <span id="res_servTotRecep" class="res-serv-num" style="color: #ea580c;">-</span>
+                  </div>
+                  <div id="res_servRowVencido" class="res-serv-pill res-has-tooltip" data-serv-cat="VENCIDOS" style="background: #fef2f2; border-color: #fca5a5;">
+                    <span class="res-serv-lbl">🔴 Vencidos</span>
+                    <span id="res_servVencido" class="res-serv-num" style="color: #dc2626;">-</span>
+                  </div>
+                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER">
+                    <span class="res-serv-lbl">🟡 Próx.</span>
+                    <span id="res_servProxVencer" class="res-serv-num" style="color: #d97706;">-</span>
+                  </div>
+                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO">
+                    <span class="res-serv-lbl">🟣 Sin Trat.</span>
+                    <span id="res_servSinTrat" class="res-serv-num" style="color: #7c3aed;">-</span>
+                    <span id="res_servSinTratNote" style="display: none;"></span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <!-- .div6: 5. CONTROL DE PARTIDAS (3 tarjetas + filtro inline de Vencimiento OC) -->
-          <section class="panel res-div6">
-            <div class="panel-title res-panel-title" style="gap: 8px; flex-wrap: wrap;">
-              <span>📑 5. CONTROL DE PARTIDAS</span>
-              <span id="res_emrf_gc_badge" style="font-size: 9px; font-weight: 800; color: #0f766e; background: #ccfbf1; border: 1px solid #5eead4; padding: 0px 6px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">GC: C01, C07, C02</span>
-              <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar partidas por estado de vencimiento de OC">
-                <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" aria-label="Filtrar OC vencidas, no vencidas o todas">
-                  <option value="VENCIDA" selected>🔴 OC VENCIDAS</option>
-                  <option value="NO_VENCIDA">🔵 OC NO VENCIDAS</option>
-                  <option value="__ALL__">📋 TODAS LAS OC</option>
-                </select>
-              </label>
-            </div>
-            <div class="panel-body res-panel-body" style="padding: 5px 8px !important;">
-              <div class="res-serv-strip res-emrf-strip-3">
-                <div class="res-serv-pill">
-                  <span class="res-serv-lbl">📋 Total Partidas</span>
-                  <span id="res_emrfTotal" class="res-serv-num" style="color: #2563eb;">-</span>
-                </div>
-                <div class="res-serv-pill" style="background: #fffbeb; border-color: #fde68a;">
-                  <span class="res-serv-lbl">📦 Falta Factura</span>
-                  <span id="res_emrfFaltaFact" class="res-serv-num" style="color: #d97706;">-</span>
-                </div>
-                <div class="res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
-                  <span class="res-serv-lbl">📄 Falta Recepción</span>
-                  <span id="res_emrfFaltaRecep" class="res-serv-num" style="color: #ea580c;">-</span>
+            <!-- .div6: 5. CONTROL DE PARTIDAS (3 tarjetas + filtro inline de Vencimiento OC) -->
+            <section class="panel res-div6">
+              <div class="panel-title res-panel-title" style="gap: 5px; flex-wrap: wrap;">
+                <span>📑 5. PARTIDAS</span>
+                <span id="res_emrf_gc_badge" style="font-size: 8.5px; font-weight: 800; color: #0f766e; background: #ccfbf1; border: 1px solid #5eead4; padding: 0px 5px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">GC: C01, C07, C02</span>
+                <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar partidas por estado de vencimiento de OC">
+                  <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" aria-label="Filtrar OC vencidas, no vencidas o todas">
+                    <option value="VENCIDA" selected>🔴 OC VENCIDAS</option>
+                    <option value="NO_VENCIDA">🔵 OC NO VENCIDAS</option>
+                    <option value="__ALL__">📋 TODAS LAS OC</option>
+                  </select>
+                </label>
+              </div>
+              <div class="panel-body res-panel-body" style="padding: 5px 6px !important;">
+                <div class="res-serv-strip res-emrf-strip-3">
+                  <div class="res-serv-pill">
+                    <span class="res-serv-lbl">📋 Total</span>
+                    <span id="res_emrfTotal" class="res-serv-num" style="color: #2563eb;">-</span>
+                  </div>
+                  <div class="res-serv-pill" style="background: #fffbeb; border-color: #fde68a;">
+                    <span class="res-serv-lbl">📦 Falta Fact.</span>
+                    <span id="res_emrfFaltaFact" class="res-serv-num" style="color: #d97706;">-</span>
+                  </div>
+                  <div class="res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
+                    <span class="res-serv-lbl">📄 Falta Recep.</span>
+                    <span id="res_emrfFaltaRecep" class="res-serv-num" style="color: #ea580c;">-</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
           <!-- .div4: 6. TIEMPOS / PRIORIDAD (CONTROL) -->
           <section class="panel res-div4">

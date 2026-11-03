@@ -1650,9 +1650,14 @@
       monthStats[m].tot += tot;
     }
 
+    const MES_CORTO = {
+      "01": "ene", "02": "feb", "03": "mar", "04": "abr",
+      "05": "may", "06": "jun", "07": "jul", "08": "ago",
+      "09": "sep", "10": "oct", "11": "nov", "12": "dic"
+    };
     const shortLabels = months.map(ym => {
       const [y, m] = ym.split("-");
-      return `${m}/${y.slice(-2)}`;
+      return `${MES_CORTO[m] || m}${y.slice(-2)}`;
     });
 
     const pctAtData = [];
@@ -1678,7 +1683,7 @@
     chartTendCumplInstance.setOption({
       animation: true,
       animationDuration: 400,
-      grid: { left: 6, right: 6, top: 8, bottom: 18, containLabel: false },
+      grid: { left: 14, right: 14, top: 8, bottom: 18, containLabel: false },
       tooltip: {
         trigger: "axis",
         confine: true,
@@ -1704,7 +1709,8 @@
           show: true,
           fontSize: 8.5,
           color: "#64748b",
-          interval: Math.max(0, Math.floor(shortLabels.length / 4) - 1)
+          interval: 0,
+          hideOverlap: true
         }
       },
       yAxis: {

@@ -159,13 +159,22 @@
   function setDelta(el, text, cls) {
     if (!el) return;
     el.className = "cumpl-kpi-sub kpi-sub-strong";
-    if (cls) el.classList.add(cls);
-    el.textContent = text;
+    if (cls && cls !== "delta-neutral" && text.includes(" · ")) {
+      const parts = text.split(" · ");
+      el.innerHTML = `<span>${parts[0]}</span> <span class="${cls}">· ${parts[1]}</span>`;
+    } else {
+      if (cls) el.classList.add(cls);
+      el.textContent = text;
+    }
   }
 
   function fmtPct01(x) {
     if (!isFinite(x)) return "-";
     return (x * 100).toFixed(1).replace(".", ",") + "%";
+  }
+
+  function isCumplOk01(x) {
+    return isFinite(x) && (Math.round(x * 1000) / 10) >= 78;
   }
 
   function safeFilePart(s) {
@@ -527,12 +536,12 @@
     setText("cumpl_kpiATpct", fmtPct01(pctAT));
     setText("cumpl_kpiATqty", `Cant: ${fmtInt(t.at)}`);
     const elAT = document.getElementById("cumpl_kpiATpct");
-    if (elAT) elAT.style.color = (isFinite(pctAT) && pctAT >= 0.78) ? "#16a34a" : "#ef4444";
+    if (elAT) elAT.style.setProperty("color", isCumplOk01(pctAT) ? "#16a34a" : "#ef4444", "important");
 
     const avgG = avgDelay(rows);
     setText("cumpl_kpiDemoraAvg", isNaN(avgG) ? "-" : (Math.round(avgG) + " d"));
     const elDemG = document.getElementById("cumpl_kpiDemoraAvg");
-    if (elDemG) elDemG.style.color = (!isNaN(avgG) && avgG > 7) ? "#ef4444" : "#16a34a";
+    if (elDemG) elDemG.style.setProperty("color", (!isNaN(avgG) && avgG > 7) ? "#ef4444" : "#16a34a", "important");
 
     setText("cumpl_kpiFTpct", fmtPct01(pctFT));
     setText("cumpl_kpiFTqty", `Cant: ${fmtInt(t.ft)}`);
@@ -553,7 +562,7 @@
 
       setText("cumpl_kpiATmes", fmtPct01(pctAT));
       const elATmes = document.getElementById("cumpl_kpiATmes");
-      if (elATmes) elATmes.style.color = (isFinite(pctAT) && pctAT >= 0.78) ? "#16a34a" : "#ef4444";
+      if (elATmes) elATmes.style.setProperty("color", isCumplOk01(pctAT) ? "#16a34a" : "#ef4444", "important");
 
       setText("cumpl_kpiFTmes", fmtPct01(pctFT));
       setText("cumpl_kpiNOmes", fmtPct01(pctNO));
@@ -561,7 +570,7 @@
       const avgM = avgDelay(rows);
       setText("cumpl_kpiDemoraMes", isNaN(avgM) ? "-" : (Math.round(avgM) + " d"));
       const elDemM = document.getElementById("cumpl_kpiDemoraMes");
-      if (elDemM) elDemM.style.color = (!isNaN(avgM) && avgM > 7) ? "#ef4444" : "#16a34a";
+      if (elDemM) elDemM.style.setProperty("color", (!isNaN(avgM) && avgM > 7) ? "#ef4444" : "#16a34a", "important");
 
       const atSub = document.getElementById("cumpl_kpiATmesSub");
       const ftSub = document.getElementById("cumpl_kpiFTmesSub");
@@ -592,7 +601,7 @@
 
     setText("cumpl_kpiATmes", fmtPct01(pctAT));
     const elATmes = document.getElementById("cumpl_kpiATmes");
-    if (elATmes) elATmes.style.color = (isFinite(pctAT) && pctAT >= 0.78) ? "#16a34a" : "#ef4444";
+    if (elATmes) elATmes.style.setProperty("color", isCumplOk01(pctAT) ? "#16a34a" : "#ef4444", "important");
 
     setText("cumpl_kpiFTmes", fmtPct01(pctFT));
     setText("cumpl_kpiNOmes", fmtPct01(pctNO));
@@ -600,7 +609,7 @@
     const avgM = avgDelay(selectedRows);
     setText("cumpl_kpiDemoraMes", isNaN(avgM) ? "-" : (Math.round(avgM) + " d"));
     const elDemM = document.getElementById("cumpl_kpiDemoraMes");
-    if (elDemM) elDemM.style.color = (!isNaN(avgM) && avgM > 7) ? "#ef4444" : "#16a34a";
+    if (elDemM) elDemM.style.setProperty("color", (!isNaN(avgM) && avgM > 7) ? "#ef4444" : "#16a34a", "important");
 
     const atSub = document.getElementById("cumpl_kpiATmesSub");
     const ftSub = document.getElementById("cumpl_kpiFTmesSub");
@@ -624,7 +633,7 @@
 
         setDelta(atSub, dAT.text ? `Cant: ${fmtInt(at)} · ${dAT.text}` : `Cant: ${fmtInt(at)}`, clsAT);
         setDelta(ftSub, dFT.text ? `Cant: ${fmtInt(ft)} · ${dFT.text}` : `Cant: ${fmtInt(ft)}`, clsFT);
-        setDelta(noSub, dNO.text ? `Cant: ${fmtInt(no)} · ${dNO.text}` : `Cant: ${fmtInt(no)}`, clsNO);
+        setDelta(noSub, `Cant: ${fmtInt(no)}`, "delta-neutral");
         return;
       }
     }
@@ -934,7 +943,7 @@
           stack: "pct",
           data: pAT.map(v => {
             const val = +(+v).toFixed(4);
-            if (val < 78) {
+            if (Math.round(val) < 78) {
               return {
                 value: val,
                 itemStyle: {
@@ -973,7 +982,7 @@
               if (!q) return "";
               if (pct < 6) return "";
               const pctRound = Math.round(pct);
-              if (pct < 78) return `{warn|${fmtInt(q)}\n⚠ (${pctRound}%)}`;
+              if (pctRound < 78) return `{warn|${fmtInt(q)}\n⚠ (${pctRound}%)}`;
               return `${fmtInt(q)}\n(${pctRound}%)`;
             },
             rich: {
@@ -1319,7 +1328,8 @@
             position: "top",
             formatter: (p) => {
               const v = +p.data || 0;
-              return (v < 78) ? `{warn|⚠ ${_fmtPct(v)}}` : `{ok|${_fmtPct(v)}}`;
+              const vRound1 = Math.round(v * 10) / 10;
+              return (vRound1 < 78) ? `{warn|⚠ ${_fmtPct(v)}}` : `{ok|${_fmtPct(v)}}`;
             },
             rich: {
               ok: { fontWeight: 900, color: COLORS.green },

@@ -15,7 +15,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261102_140226" />
+  <link rel="stylesheet" href="css/base.css?v=20261103_131200" />
   <link rel="stylesheet" href="css/cumplimiento.css?v=20261102_140226" />
   <link rel="stylesheet" href="css/analisis-mm.css?v=20261102_140226" />
   <link rel="stylesheet" href="css/demoras.css?v=20261102_140226" />
@@ -250,11 +250,19 @@
         <div class="update-label">Última actualización</div>
         <div id="lastUpdate" class="update-date">07/09/2026</div>
       </div>
+      <button id="btnFullscreenTop" class="btn-refresh-top" onclick="window.toggleAppFullscreen()" title="Pantalla completa (Esc para salir)" aria-label="Pantalla completa">
+        <svg class="fs-icon-expand" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+        <svg class="fs-icon-compress" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+          <path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M10 4v6m0 0H4m6 0L3 3m10 7V4m0 6h6m-6 0l7-7"></path>
+        </svg>
+      </button>
     </div>
   </header>
 
   <nav class="tabs">
-    <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')" style="display: none;">RESUMEN</button>
+    <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')">RESUMEN</button>
     <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
     <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
     <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
@@ -1449,308 +1457,423 @@
         </div>
 
         <div class="st-filters-stack">
-          <div class="filter">
-            <label>Cliente / Obra:</label>
-            <select id="resumen_obraSelect" class="st-select" style="width: 100%; height: 38px; padding: 6px 10px; font-size: 0.88rem; font-weight: 600; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff; cursor: pointer;">
+          <div class="filter" id="resumen_obraFilterWrap">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%;">
+              <label style="margin-bottom: 0;">Cliente / Obra:</label>
+              <button type="button" id="resumen_btnExcludeObra" class="res-exclude-toggle-btn" title="Activar para EXCLUIR las obras seleccionadas en lugar de incluirlas">
+                🚫 Excluir: OFF
+              </button>
+            </div>
+            <select id="resumen_obraSelect" multiple size="6" class="multi-select">
               <option value="__ALL__">Todas las Obras</option>
             </select>
-            <div class="hint">Filtrar métricas por obra o almacén</div>
+            <div id="resumen_obraHint" class="hint">Elegí obras o activá «Excluir» para omitir una</div>
+          </div>
+
+          <div class="filter">
+            <label>Año:</label>
+            <select id="resumen_anioSelect" multiple size="4" class="multi-select">
+              <option value="__ALL__">Todos los Años</option>
+            </select>
+            <div class="hint">Filtrar por año de entrega</div>
           </div>
 
           <div class="filter">
             <label>Mes Evaluado:</label>
-            <select id="resumen_mesCumplSelect" class="st-select" style="width: 100%; height: 38px; padding: 6px 10px; font-size: 0.88rem; font-weight: 600; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff; cursor: pointer;">
-              <option value="2026-09">Septiembre 2026</option>
+            <select id="resumen_mesCumplSelect" multiple size="6" class="multi-select">
+              <option value="__ALL__">Todos los Meses</option>
             </select>
             <div class="hint">Período para rendimiento mensual</div>
+          </div>
+
+          <div class="filter">
+            <label>Grupo de Compras (Partidas):</label>
+            <select id="resumen_gcEmrfSelect" multiple size="5" class="multi-select">
+              <option value="__ALL__">Todos los Grupos</option>
+              <option value="C01" selected>C01</option>
+              <option value="C07" selected>C07</option>
+              <option value="C02" selected>C02</option>
+            </select>
+            <div class="hint">Solo afecta a Control de Partidas</div>
+          </div>
+
+          <hr class="st-divider" />
+
+          <!-- Botón Medir Cumplimiento Arriba en Resumen -->
+          <div id="resumen_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
+            <button id="resumen_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
+              🏔️ Medir cumplimiento arriba
+            </button>
+            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
+              Obras 365 y 372 (año 2026)
+            </div>
           </div>
         </div>
       </aside>
 
-      <!-- Banner informativo: Obra Seleccionada y Mes Evaluado -->
-      <section class="panel" style="margin-bottom: 12px; border-radius: 8px; background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-        <div class="panel-body" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px;">
-          <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;">
-            <span style="font-size: 15px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">
-              📍 OBRA:
-            </span>
-            <span id="resumen_lblObra" style="font-size: 24px; font-weight: 800; color: #2563eb; letter-spacing: -0.3px;">
-              Todas las Obras
-            </span>
-          </div>
+      <!-- GRILLA EJECUTIVA 5 BLOQUES COMPACTA EN 1 PANTALLA (Izquierda 2fr: div1 + div2 | Derecha 3fr: div3 + div4 + div5) -->
+      <div class="res-bento-grid">
 
-          <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 14px; border-radius: 6px;">
-            <span style="font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">
-              🗓️ MES EVALUADO:
-            </span>
-            <span id="res_cumplMesSide" style="font-size: 16px; font-weight: 800; color: #0f172a;">
-              Septiembre 2026
-            </span>
-          </div>
-        </div>
-      </section>
-          
-      <!-- BLOQUE 1: ANÁLISIS MM (DISTRIBUCIÓN EN 2 COLUMNAS) -->
-          <section class="panel" style="margin-bottom: 12px;">
-            <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 18px !important; min-height: 42px !important; font-size: 16px !important; font-weight: 800 !important;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span>📦 1. ANÁLISIS MM — DISPONIBILIDAD Y PLANIFICACIÓN DE MATERIALES</span>
-              </div>
-              <span style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase;">Fuente: ANALISIS-MM</span>
+        <!-- COLUMNA IZQUIERDA (2fr): .div1 (ANÁLISIS MM) + .div2 (DEMORAS) -->
+        <div class="res-col-left">
+
+          <!-- .div1: 1. ANÁLISIS MM -->
+          <section class="panel res-div1">
+            <div class="panel-title res-panel-title">
+              <span>📦 1. ANÁLISIS MM — DISPONIBILIDAD Y PLANIFICACIÓN</span>
             </div>
 
-            <div class="panel-body" style="padding: 12px 16px !important;">
-              <!-- Contenedor Flex de 2 Columnas -->
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; align-items: start;">
-                
-                <!-- Columna Izquierda: 1.1 Disponibilidad General -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
-                  <div style="font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1e293b; margin-bottom: 12px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 6px;">
-                    Disponibilidad General de Stock:
-                  </div>
-                  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">📦</span>
-                      <strong>Cant. Materiales:</strong>
-                      <span id="res_txtTotal" style="font-size: 18px; font-weight: 800; color: #2563eb; margin: 0 8px;">-</span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">✅</span>
-                      <strong>Cant. Disponible:</strong>
-                      <span id="res_txtDisp" style="font-size: 18px; font-weight: 800; color: #16a34a; margin: 0 8px;">-</span>
-                      <span style="color: #64748b; font-size: 13px;">— Ítems con libre utilización &gt; 0.</span>
-                    </li>
-
-                    <li id="res_rowDispPct" style="display: flex; align-items: center; font-size: 15px; color: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                      <span style="font-size: 18px; margin-right: 10px;">📈</span>
-                      <strong>Disponible (%):</strong>
-                      <span id="res_txtPct" style="font-size: 18px; font-weight: 800; color: #16a34a; margin: 0 8px;">-</span>
-                      <span style="color: #64748b; font-size: 13px;">— Disponibilidad Objetivo 90%</span>
-                    </li>
-                  </ul>
+            <div class="panel-body res-panel-body" style="display: flex; flex-direction: column; gap: 5px;">
+              <!-- 1.1 Disponibilidad General -->
+              <div class="res-subcard">
+                <div class="res-subcard-header">
+                  <span>Disponibilidad General de Stock:</span>
                 </div>
+                <ul class="res-metric-list">
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">📦</span>
+                    <strong>Cant. Materiales:</strong>
+                    <span id="res_txtTotal" class="res-val" style="color: #2563eb;">-</span>
+                  </li>
 
-                <!-- Columna Derecha: 1.2 Clasificación por Estado de Planificación -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
-                  <div style="font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1e293b; margin-bottom: 12px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 6px;">
-                    Clasificación por Estado de Planificación:
-                  </div>
-                  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
-                    <li id="res_rowStockNulo" style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #dc2626; background: #fef2f2;">
-                      <span style="font-size: 18px; margin-right: 10px;">🔴</span>
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">✅</span>
+                    <strong>Cant. Disponible:</strong>
+                    <span id="res_txtDisp" class="res-val" style="color: #16a34a;">-</span>
+                    <span class="res-note">— Libre utiliz. &gt; 0</span>
+                  </li>
+
+                  <li id="res_rowDispPct" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
+                    <span class="res-ico">📈</span>
+                    <strong>Disponible (%):</strong>
+                    <span id="res_txtPct" class="res-val" style="color: #16a34a;">-</span>
+                    <span class="res-note">— Obj. 90%</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- 1.2 Clasificación por Estado de Planificación -->
+              <div class="res-subcard">
+                <div class="res-subcard-header">
+                  <span>Clasificación por Estado de Planificación:</span>
+                </div>
+                <ul class="res-metric-list">
+                  <li id="res_rowStockNulo" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 1.5px solid #dc2626; background: #fef2f2;">
+                    <div style="display: flex; align-items: center;">
+                      <span class="res-ico">🔴</span>
                       <strong>Stock Nulo:</strong>
-                      <span id="res_wrapNulo" style="display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px;">
-                        <span id="res_txtNulo" style="font-size: 18px; font-weight: 800; color: #dc2626; margin: 0 8px;">-</span>
-                        <span style="color: #64748b; font-size: 13px;">— Físico en 0.</span>
-                      </span>
-                    </li>
+                    </div>
+                    <div id="res_wrapNulo" style="width: 100%; padding-left: 12px;">
+                      <span id="res_txtNulo" class="res-val" style="color: #dc2626;">-</span>
+                    </div>
+                  </li>
 
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">🟡</span>
-                      <strong>Menor al PP:</strong>
-                      <span id="res_txtMenorPP" style="font-size: 18px; font-weight: 800; color: #d97706; margin: 0 8px;">-</span>
-                    </li>
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">🟡</span>
+                    <strong>Menor al PP:</strong>
+                    <span id="res_txtMenorPP" class="res-val" style="color: #d97706;">-</span>
+                  </li>
 
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">🟢</span>
-                      <strong>Mayor al PP:</strong>
-                      <span id="res_txtMayorPP" style="font-size: 18px; font-weight: 800; color: #16a34a; margin: 0 8px;">-</span>
-                    </li>
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">🟢</span>
+                    <strong>Mayor al PP:</strong>
+                    <span id="res_txtMayorPP" class="res-val" style="color: #16a34a;">-</span>
+                  </li>
 
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">🟠</span>
-                      <strong>Mayor a Stock Máx:</strong>
-                      <span id="res_txtMayorMax" style="font-size: 18px; font-weight: 800; color: #ea580c; margin: 0 8px;">-</span>
-                      <span style="color: #64748b; font-size: 13px;">— Ítems sobre-stockeados.</span>
-                    </li>
-                  </ul>
-                </div>
-
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">🟠</span>
+                    <strong>Mayor a Stock Máx:</strong>
+                    <span id="res_txtMayorMax" class="res-val" style="color: #ea580c;">-</span>
+                    <span class="res-note">— Sobre-stock</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </section>
 
-          <!-- BLOQUE 2: CUMPLIMIENTO -->
-          <section class="panel" style="margin-bottom: 12px;">
-            <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; padding: 10px 18px !important; min-height: 42px !important; font-size: 16px !important; font-weight: 800 !important;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span>🎯 2. CUMPLIMIENTO</span>
-              </div>
-              <span style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase;">Fuente: PEDIDOS COMPRAS</span>
+          <!-- .div2: 3. DEMORAS -->
+          <section class="panel res-div2">
+            <div class="panel-title res-panel-title">
+              <span>⏱️ 3. DEMORAS</span>
             </div>
-
-            <div class="panel-body" style="padding: 12px 16px !important;">
-              <!-- Contenedor Flex de 2 Columnas: Acumulado 12 Meses vs Mensual -->
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; align-items: start;">
-                
-                <!-- Columna Izquierda: Acumulado Últimos 12 Meses -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
-                  <div style="font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1e293b; margin-bottom: 12px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>Acumulado Últimos 12 Meses:</span>
-                    <span id="res_cumplAcumRango" style="font-size: 12px; font-weight: 800; color: #1d4ed8; text-transform: none; border: 1.5px solid #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 5px; display: none;"></span>
-                  </div>
-                  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">📦</span>
-                      <strong>COMPROMETIDOS:</strong>
-                      <span id="res_cumplAcumComprometidos" style="font-size: 18px; font-weight: 800; color: #2563eb; margin: 0 8px;">-</span>
-                      <span style="color: #64748b; font-size: 13px;">— Total últimos 12 meses.</span>
-                    </li>
-
-                    <li id="res_cumplAcumRowAT" style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                      <span style="font-size: 18px; margin-right: 10px;">✅</span>
-                      <strong>A TIEMPO (AT):</strong>
-                      <span id="res_cumplAcumATpct" style="font-size: 18px; font-weight: 800; color: #16a34a; margin: 0 8px;">-</span>
-                      <span style="color: #475569; font-size: 13px;">
-                        Cant: <span id="res_cumplAcumATqty" style="font-weight: 700; color: #0f172a;">-</span>
-                        <span style="color: #64748b; margin-left: 6px;">— Objetivo 78%</span>
-                      </span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">⏳</span>
-                      <strong>FUERA DE TIEMPO (FT):</strong>
-                      <span id="res_cumplAcumFTpct" style="font-size: 18px; font-weight: 800; color: #f59e0b; margin: 0 8px;">-</span>
-                      <span style="color: #475569; font-size: 13px;">
-                        Cant: <span id="res_cumplAcumFTqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      </span>
-                    </li>
-
-                    <li id="res_cumplAcumRowNE" style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #dc2626; background: #fef2f2;">
-                      <span style="font-size: 18px; margin-right: 10px;">🚫</span>
-                      <strong>NO ENTREGADOS (NE):</strong>
-                      <span id="res_cumplAcumNEpct" style="font-size: 18px; font-weight: 800; color: #dc2626; margin: 0 8px;">-</span>
-                      <span style="color: #475569; font-size: 13px;">
-                        Cant: <span id="res_cumplAcumNEqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      </span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">📅</span>
-                      <strong>DEMORA PROMEDIO:</strong>
-                      <span id="res_cumplAcumDemoraAvg" style="font-size: 18px; font-weight: 800; color: #ea580c; margin: 0 8px;">-</span>
-                      <span style="color: #64748b; font-size: 13px;">— Promedio 12 meses.</span>
-                    </li>
-                  </ul>
+            <div class="panel-body res-panel-body" style="display: flex; flex-direction: column; flex: 1;">
+              <div class="res-subcard" style="display: flex; flex-direction: column; flex: 1;">
+                <div class="res-subcard-header">
+                  <span>Demora por Área</span>
+                  <span id="res_lblTotalAreas">-</span>
                 </div>
-
-                <!-- Columna Derecha: Rendimiento Mensual -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
-                  <div style="font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1e293b; margin-bottom: 12px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 6px;">
-                    Rendimiento Mensual (<span id="res_cumplMesLabel" style="color: #2563eb;">Septiembre 2026</span>):
-                  </div>
-                  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">📦</span>
-                      <strong>COMPROMETIDOS:</strong>
-                      <span id="res_cumplComprometidos" style="font-size: 18px; font-weight: 800; color: #2563eb; margin: 0 8px;">-</span>
-                      <span style="color: #64748b; font-size: 13px;">— Total del mes.</span>
-                    </li>
-
-                    <li id="res_cumplRowAT" style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                      <span style="font-size: 18px; margin-right: 10px;">✅</span>
-                      <strong>A TIEMPO (AT):</strong>
-                      <span id="res_cumplATpct" style="font-size: 18px; font-weight: 800; color: #16a34a; margin: 0 8px;">-</span>
-                      <span style="color: #475569; font-size: 13px;">
-                        Cant: <span id="res_cumplATqty" style="font-weight: 700; color: #0f172a;">-</span>
-                        <span id="res_cumplATdiff" style="color: #16a34a; font-weight: 700; margin-left: 4px;">· - vs mes anterior</span>
-                        <span style="color: #64748b; margin-left: 6px;">— Objetivo 78%</span>
-                      </span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">⏳</span>
-                      <strong>FUERA DE TIEMPO (FT):</strong>
-                      <span id="res_cumplFTpct" style="font-size: 18px; font-weight: 800; color: #f59e0b; margin: 0 8px;">-</span>
-                      <span style="color: #475569; font-size: 13px;">
-                        Cant: <span id="res_cumplFTqty" style="font-weight: 700; color: #0f172a;">-</span>
-                        <span id="res_cumplFTdiff" style="color: #16a34a; font-weight: 700; margin-left: 4px;">· - vs mes anterior</span>
-                      </span>
-                    </li>
-
-                    <li id="res_cumplRowNE" style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #dc2626; background: #fef2f2;">
-                      <span style="font-size: 18px; margin-right: 10px;">🚫</span>
-                      <strong>NO ENTREGADOS (NE):</strong>
-                      <span id="res_cumplNEpct" style="font-size: 18px; font-weight: 800; color: #dc2626; margin: 0 8px;">-</span>
-                      <span style="color: #475569; font-size: 13px;">
-                        Cant: <span id="res_cumplNEqty" style="font-weight: 700; color: #0f172a;">-</span>
-                        <span id="res_cumplNEdiff" style="color: #dc2626; font-weight: 700; margin-left: 4px;">· - vs mes anterior</span>
-                      </span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; font-size: 15px; color: #1e293b; flex-wrap: wrap; padding: 4px 10px; border-radius: 6px; border: 1.5px solid transparent;">
-                      <span style="font-size: 18px; margin-right: 10px;">📅</span>
-                      <strong>DEMORA PROMEDIO:</strong>
-                      <span id="res_cumplDemoraAvg" style="font-size: 18px; font-weight: 800; color: #ea580c; margin: 0 8px;">-</span>
-                      <span style="color: #64748b; font-size: 13px;">— Promedio mes.</span>
-                    </li>
-                  </ul>
-                </div>
-
+                <div id="res_chartAreas" style="width: 100%; height: 155px; min-height: 145px; flex: 1;"></div>
               </div>
             </div>
           </section>
 
-          <!-- BLOQUE 3: DEMORAS -->
-          <section class="panel" style="margin-bottom: 14px;">
-            <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 18px !important; min-height: 42px !important; font-size: 16px !important; font-weight: 800 !important;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span>⏱️ 3. DEMORAS</span>
-              </div>
-              <span style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase;">Fuente: PEDIDOS COMPRAS (CUMPLIMIENTO)</span>
+        </div>
+
+        <!-- COLUMNA DERECHA (3fr): .div3 (CUMPLIMIENTO) + .div4 (TIEMPOS/PRIORIDAD) + .div5 (SERVICIOS) -->
+        <div class="res-col-right">
+
+          <!-- .div3: 2. CUMPLIMIENTO (Compacto en 2 columnas) -->
+          <section class="panel res-div3">
+            <div class="panel-title res-panel-title">
+              <span>🎯 2. CUMPLIMIENTO</span>
             </div>
-            <div class="panel-body" style="padding: 16px 18px !important;">
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 20px; align-items: stretch;">
-                
-                <!-- Izquierda: Demora por Área -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 6px;">
-                    <span style="font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1e293b;">
-                      Demora por Área
+
+            <div class="panel-body res-panel-body" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; align-items: start;">
+              <!-- 2.1 Acumulado Últimos 12 Meses -->
+              <div class="res-subcard">
+                <div class="res-subcard-header">
+                  <span id="res_cumplAcumTitle">Acumulado 12 Meses:</span>
+                  <span id="res_cumplAcumRango" style="font-size: 9.5px; font-weight: 800; color: #1d4ed8; text-transform: none; border: 1px solid #2563eb; background: #eff6ff; padding: 0px 4px; border-radius: 3px; display: none;"></span>
+                </div>
+                <ul class="res-metric-list">
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">📦</span>
+                    <strong>COMPROMETIDOS:</strong>
+                    <span id="res_cumplAcumComprometidos" class="res-val" style="color: #2563eb;">-</span>
+                    <span class="res-note">— Total 12M</span>
+                  </li>
+
+                  <li id="res_cumplAcumRowAT" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
+                    <span class="res-ico">✅</span>
+                    <strong>A TIEMPO (AT):</strong>
+                    <span id="res_cumplAcumATpct" class="res-val" style="color: #16a34a;">-</span>
+                    <span class="res-note">
+                      Cant: <span id="res_cumplAcumATqty" style="font-weight: 700; color: #0f172a;">-</span>
+                      <span style="color: #64748b; margin-left: 2px;">· Obj 78%</span>
                     </span>
-                    <span id="res_lblTotalAreas" style="font-size: 12px; font-weight: 700; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 12px;">-</span>
-                  </div>
-                  <div id="res_chartAreas" style="width: 100%; height: 470px; min-height: 470px;"></div>
-                </div>
+                  </li>
 
-                <!-- Derecha: Demoras Proyecto (Motivos) -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 6px;">
-                    <span style="font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1e293b;">
-                      Demoras Proyecto (Motivos)
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">⏳</span>
+                    <strong>FUERA TIEMPO (FT):</strong>
+                    <span id="res_cumplAcumFTpct" class="res-val" style="color: #f59e0b;">-</span>
+                    <span class="res-note">
+                      Cant: <span id="res_cumplAcumFTqty" style="font-weight: 700; color: #0f172a;">-</span>
                     </span>
-                    <span id="res_lblTotalMotivos" style="font-size: 12px; font-weight: 700; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 12px;">-</span>
-                  </div>
-                  <div id="res_chartMotivos" style="width: 100%; height: 470px; min-height: 470px;"></div>
+                  </li>
+
+                  <li id="res_cumplAcumRowNE" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #dc2626; background: #fef2f2;">
+                    <span class="res-ico">🚫</span>
+                    <strong>NO ENTREG. (NE):</strong>
+                    <span id="res_cumplAcumNEpct" class="res-val" style="color: #dc2626;">-</span>
+                    <span class="res-note">
+                      Cant: <span id="res_cumplAcumNEqty" style="font-weight: 700; color: #0f172a;">-</span>
+                    </span>
+                  </li>
+
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">📅</span>
+                    <strong>DEMORA PROM.:</strong>
+                    <span id="res_cumplAcumDemoraAvg" class="res-val" style="color: #ea580c;">-</span>
+                    <span class="res-note">— Prom. 12M</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- 2.2 Rendimiento Mensual -->
+              <div class="res-subcard">
+                <div class="res-subcard-header" style="gap: 6px;">
+                  <span>Período Evaluado:</span>
+                  <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado">
+                    <span class="res-inline-mes-ico">📅</span>
+                    <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" aria-label="Seleccionar mes evaluado de cumplimiento">
+                      <option value="__ALL__">Todos los Meses</option>
+                    </select>
+                  </label>
+                  <span id="res_cumplMesLabel" style="display: none;"></span>
                 </div>
+                <ul class="res-metric-list">
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">📦</span>
+                    <strong>COMPROMETIDOS:</strong>
+                    <span id="res_cumplComprometidos" class="res-val" style="color: #2563eb;">-</span>
+                    <span class="res-note">— Total período</span>
+                  </li>
 
+                  <li id="res_cumplRowAT" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
+                    <span class="res-ico">✅</span>
+                    <strong>A TIEMPO (AT):</strong>
+                    <span id="res_cumplATpct" class="res-val" style="color: #16a34a;">-</span>
+                    <span class="res-note">
+                      Cant: <span id="res_cumplATqty" style="font-weight: 700; color: #0f172a;">-</span>
+                      <span id="res_cumplATdiff" style="color: #16a34a; font-weight: 700; margin-left: 2px;">· - vs mes ant.</span>
+                      <span style="color: #64748b; margin-left: 2px;">· Obj 78%</span>
+                    </span>
+                  </li>
+
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">⏳</span>
+                    <strong>FUERA TIEMPO (FT):</strong>
+                    <span id="res_cumplFTpct" class="res-val" style="color: #f59e0b;">-</span>
+                    <span class="res-note">
+                      Cant: <span id="res_cumplFTqty" style="font-weight: 700; color: #0f172a;">-</span>
+                      <span id="res_cumplFTdiff" style="color: #16a34a; font-weight: 700; margin-left: 2px;">· - vs mes ant.</span>
+                    </span>
+                  </li>
+
+                  <li id="res_cumplRowNE" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #dc2626; background: #fef2f2;">
+                    <span class="res-ico">🚫</span>
+                    <strong>NO ENTREG. (NE):</strong>
+                    <span id="res_cumplNEpct" class="res-val" style="color: #dc2626;">-</span>
+                    <span class="res-note">
+                      Cant: <span id="res_cumplNEqty" style="font-weight: 700; color: #0f172a;">-</span>
+                    </span>
+                  </li>
+
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">📅</span>
+                    <strong>DEMORA PROM.:</strong>
+                    <span id="res_cumplDemoraAvg" class="res-val" style="color: #ea580c;">-</span>
+                    <span class="res-note">— Prom. período</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </section>
 
-          <!-- ESPACIO RESERVADO PARA 4. SERVICIOS -->
-          <section class="panel" style="border: 2px dashed #cbd5e1; background: #f8fafc; opacity: 0.85;">
-            <div class="panel-body" style="padding: 12px 20px; font-size: 12px; color: #64748b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-              <div>
-                🔜 <strong>Próximo bloque:</strong> 4. SERVICIOS (órdenes cumplidas vs pendientes).
+          <!-- .div5: 4. SERVICIOS (Compacto en tira horizontal de KPIs) -->
+          <section class="panel res-div5">
+            <div class="panel-title res-panel-title">
+              <span>🛠️ 4. SERVICIOS</span>
+              <span id="res_serv_total_badge" style="display: none;">-</span>
+            </div>
+            <div class="panel-body res-panel-body" style="padding: 5px 8px !important;">
+              <div class="res-serv-strip">
+                <div class="res-serv-pill">
+                  <span class="res-serv-lbl">📋 Total</span>
+                  <span id="res_servTotal" class="res-serv-num" style="color: #2563eb;">-</span>
+                </div>
+                <div class="res-serv-pill" style="background: #f0fdf4; border-color: #86efac;">
+                  <span class="res-serv-lbl">🟢 En Curso</span>
+                  <span id="res_servEnCurso" class="res-serv-num" style="color: #16a34a;">-</span>
+                </div>
+                <div class="res-serv-pill">
+                  <span class="res-serv-lbl">🟠 Recep. Total</span>
+                  <span id="res_servTotRecep" class="res-serv-num" style="color: #ea580c;">-</span>
+                </div>
+                <div id="res_servRowVencido" class="res-serv-pill" style="background: #fef2f2; border-color: #fca5a5;">
+                  <span class="res-serv-lbl">🔴 Vencidos</span>
+                  <span id="res_servVencido" class="res-serv-num" style="color: #dc2626;">-</span>
+                </div>
+                <div class="res-serv-pill">
+                  <span class="res-serv-lbl">🟡 Próx. Vencer</span>
+                  <span id="res_servProxVencer" class="res-serv-num" style="color: #d97706;">-</span>
+                </div>
+                <div class="res-serv-pill">
+                  <span class="res-serv-lbl">🟣 Sin Trat./Info</span>
+                  <span id="res_servSinTrat" class="res-serv-num" style="color: #7c3aed;">-</span>
+                  <span id="res_servSinTratNote" style="display: none;"></span>
+                </div>
               </div>
-              <span style="background: #e2e8f0; color: #334155; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Formato de texto limpio</span>
             </div>
           </section>
+
+          <!-- .div6: 5. CONTROL DE PARTIDAS (Compacto en tira horizontal de KPIs) -->
+          <section class="panel res-div6">
+            <div class="panel-title res-panel-title" style="gap: 8px;">
+              <span>📑 5. CONTROL DE PARTIDAS</span>
+              <span id="res_emrf_gc_badge" style="font-size: 9px; font-weight: 800; color: #0f766e; background: #ccfbf1; border: 1px solid #5eead4; padding: 0px 6px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">GC: C01, C07, C02</span>
+            </div>
+            <div class="panel-body res-panel-body" style="padding: 5px 8px !important;">
+              <div class="res-serv-strip">
+                <div class="res-serv-pill">
+                  <span class="res-serv-lbl">📋 Total Partidas</span>
+                  <span id="res_emrfTotal" class="res-serv-num" style="color: #2563eb;">-</span>
+                </div>
+                <div class="res-serv-pill" style="background: #fffbeb; border-color: #fde68a;">
+                  <span class="res-serv-lbl">📦 Falta Factura</span>
+                  <span id="res_emrfFaltaFact" class="res-serv-num" style="color: #d97706;">-</span>
+                </div>
+                <div class="res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
+                  <span class="res-serv-lbl">📄 Falta Recep.</span>
+                  <span id="res_emrfFaltaRecep" class="res-serv-num" style="color: #ea580c;">-</span>
+                </div>
+                <div class="res-serv-pill" style="background: #f0fdf4; border-color: #86efac;">
+                  <span class="res-serv-lbl">🟢 Compensable $0</span>
+                  <span id="res_emrfCompensable" class="res-serv-num" style="color: #16a34a;">-</span>
+                </div>
+                <div id="res_emrfRowVencida" class="res-serv-pill" style="background: #fef2f2; border-color: #fca5a5;">
+                  <span class="res-serv-lbl">🔴 OC Vencidas</span>
+                  <span id="res_emrfVencida" class="res-serv-num" style="color: #dc2626;">-</span>
+                </div>
+                <div class="res-serv-pill">
+                  <span class="res-serv-lbl">🔵 OC Vigentes</span>
+                  <span id="res_emrfVigente" class="res-serv-num" style="color: #0284c7;">-</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- .div4: 6. TIEMPOS / PRIORIDAD (CONTROL) -->
+          <section class="panel res-div4">
+            <div class="panel-title res-panel-title">
+              <span>⏳ 6. TIEMPOS / PRIORIDAD</span>
+            </div>
+            <div class="panel-body res-panel-body">
+              <div class="res-subcard" style="background: #ffffff !important;">
+                <div class="res-subcard-header" style="flex-wrap: wrap; gap: 4px; margin-bottom: 4px !important;">
+                  <span style="display: inline-flex; align-items: center; gap: 4px;">
+                    <span>📊</span>
+                    <span>Porcentajes de Cumplimiento y Promedio de Días</span>
+                  </span>
+                  <span id="res_tiempos_rule_badge" style="font-size: 9px; font-weight: 800; color: #713f12; background: #fef08a; border: 1px solid #eab308; padding: 0px 6px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">
+                    Umbral Poco Tiempo según Obra
+                  </span>
+                </div>
+                <div style="width: 100%; overflow-x: hidden;">
+                  <table class="tiempos-table res-tiempos-compact">
+                    <thead>
+                      <tr>
+                        <th rowspan="3" class="th-row-header">Etiquetas de fila</th>
+                        <th rowspan="2" colspan="4" class="th-top-critico">CRITICO</th>
+                        <th colspan="8" class="th-top-sinprio">SIN PRIORIDAD</th>
+                      </tr>
+                      <tr>
+                        <th colspan="4" class="th-sub-poco">POCO TIEMPO</th>
+                        <th colspan="4" class="th-sub-normal">SIN PRIORIDAD</th>
+                      </tr>
+                      <tr>
+                        <th class="th-col-at">%AT</th>
+                        <th class="th-col-ft">%FT</th>
+                        <th class="th-col-ne">%NE</th>
+                        <th class="th-col-tot">%TOT</th>
+
+                        <th class="th-col-at">%AT</th>
+                        <th class="th-col-ft">%FT</th>
+                        <th class="th-col-ne">%NE</th>
+                        <th class="th-col-tot">%TOT</th>
+
+                        <th class="th-col-at">%AT</th>
+                        <th class="th-col-ft">%FT</th>
+                        <th class="th-col-ne">%NE</th>
+                        <th class="th-col-tot">%TOT</th>
+                      </tr>
+                    </thead>
+                    <tbody id="res_tiempos_tbody_pcts">
+                      <!-- Generado dinámicamente en js/resumen.js -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
     </section>
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261102_140226"></script><script src="js/last-update-sede.js?v=20261102_140226"></script><script src="js/last-update-compras.js?v=20261102_140226"></script><script src="js/last-update-almacen.js?v=20261102_140226"></script><script src="js/last-update.js?v=20261102_140226"></script>
+  <script src="js/last-update-obras.js?v=20261102_140226"></script><script src="js/last-update-sede.js?v=20261102_140226"></script><script src="js/last-update-compras.js?v=20261102_140226"></script><script src="js/last-update-almacen.js?v=20261102_140226"></script><script src="js/last-update.js?v=20261103_131200"></script>
   <script src="js/help.js?v=20261102_140226"></script>
   <script src="js/cache-utils.js?v=20261102_140226"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261102_140226"></script>
-  <script src="js/resumen.js?v=20261102_140226"></script>
-  <script src="js/cumplimiento.js?v=20261102_140226"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261102_140226"></script>
+  <script src="js/demoras.js?v=20261103_131200"></script>
+  <script src="js/resumen.js?v=20261103_131200"></script>
+  <script src="js/cumplimiento.js?v=20261103_131200"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261103_131200"></script>
   <script src="js/analisis-mm.js?v=20261102_140226"></script>
   <script src="js/evolucion.js?v=20261102_140226"></script>
   <script src="js/servicios.js?v=20261102_140226"></script>
@@ -1770,6 +1893,53 @@
       'tiempos': 'Cumplimiento por criticidad y tiempos de entrega',
       'emrf': 'Control de partidas abiertas SAP - Cuenta EM/RF (2101011001)'
     };
+
+    let wasSidebarCollapsedBeforeFs = false;
+    window.syncAppFullscreenUI = function() {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (isFs) {
+        wasSidebarCollapsedBeforeFs = document.body.classList.contains('sidebar-collapsed');
+        document.body.classList.add('is-app-fullscreen', 'sidebar-collapsed');
+      } else {
+        document.body.classList.remove('is-app-fullscreen');
+        if (!wasSidebarCollapsedBeforeFs) {
+          document.body.classList.remove('sidebar-collapsed');
+        }
+      }
+      const topBtn = document.getElementById('btnFullscreenTop');
+      if (topBtn) {
+        const exp = topBtn.querySelector('.fs-icon-expand');
+        const cmp = topBtn.querySelector('.fs-icon-compress');
+        if (exp && cmp) {
+          exp.style.display = isFs ? 'none' : '';
+          cmp.style.display = isFs ? '' : 'none';
+        }
+        topBtn.title = isFs ? 'Salir de pantalla completa (Esc)' : 'Pantalla completa';
+      }
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        if (typeof window.resizeResumenDemoras === 'function') window.resizeResumenDemoras();
+      }, 150);
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        if (typeof window.resizeResumenDemoras === 'function') window.resizeResumenDemoras();
+      }, 320);
+    };
+
+    window.toggleAppFullscreen = function() {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (!isFs) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    };
+
+    document.addEventListener('fullscreenchange', window.syncAppFullscreenUI);
+    document.addEventListener('webkitfullscreenchange', window.syncAppFullscreenUI);
 
     window.toggleBoxFullscreen = function(btn) {
       const panel = btn.closest('.panel');
@@ -1923,6 +2093,9 @@
           if (typeof window.initResumen === 'function') {
             window.initResumen();
           }
+          if (typeof window.syncAllStMultiSelects === 'function') {
+            window.syncAllStMultiSelects();
+          }
           setTimeout(() => {
             if (typeof window.resizeResumenDemoras === 'function') window.resizeResumenDemoras();
           }, 150);
@@ -1972,7 +2145,7 @@
       function isAllOption(opt) {
         const val = (opt.value || '').trim();
         const txt = (opt.textContent || '').trim().toLowerCase();
-        return val === '' || val === '__ALL__' || txt === 'todos' || txt === 'todas';
+        return val === '' || val === '__ALL__' || txt.startsWith('todo') || txt.startsWith('toda');
       }
 
       function createStMultiSelect(sel) {
@@ -2011,6 +2184,22 @@
         const dropdown = document.createElement('div');
         dropdown.className = 'st-ms-dropdown';
 
+        const quickBar = document.createElement('div');
+        quickBar.className = 'st-ms-quickbar';
+        quickBar.style.cssText = 'display:flex; align-items:center; justify-content:space-between; gap:4px; padding:4px 8px; background:#f8fafc; border-bottom:1px solid #e2e8f0; font-size:11px;';
+        const btnAllSpecific = document.createElement('button');
+        btnAllSpecific.type = 'button';
+        btnAllSpecific.textContent = '☑ Marcar todas';
+        btnAllSpecific.title = 'Seleccionar todas las opciones individuales (ideal para luego quitar solo 1 con ×)';
+        btnAllSpecific.style.cssText = 'background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:4px; padding:2px 6px; font-size:10.5px; font-weight:700; cursor:pointer;';
+        const btnInvertSpecific = document.createElement('button');
+        btnInvertSpecific.type = 'button';
+        btnInvertSpecific.textContent = '⇄ Invertir';
+        btnInvertSpecific.title = 'Invertir selección (selecciona todas menos las actuales)';
+        btnInvertSpecific.style.cssText = 'background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-radius:4px; padding:2px 6px; font-size:10.5px; font-weight:700; cursor:pointer;';
+        quickBar.appendChild(btnAllSpecific);
+        quickBar.appendChild(btnInvertSpecific);
+
         const searchWrap = document.createElement('div');
         searchWrap.className = 'st-ms-search-wrap';
         const searchInput = document.createElement('input');
@@ -2022,6 +2211,7 @@
         const optionsList = document.createElement('div');
         optionsList.className = 'st-ms-options';
 
+        dropdown.appendChild(quickBar);
         dropdown.appendChild(searchWrap);
         dropdown.appendChild(optionsList);
 
@@ -2107,7 +2297,7 @@
           if (selectedSpecific.length === 0) {
             const ph = document.createElement('span');
             ph.className = 'st-ms-placeholder';
-            ph.textContent = 'Todos';
+            ph.textContent = allOpt ? (allOpt.textContent || 'Todos') : 'Todos';
             pillsWrap.appendChild(ph);
             clearBtn.style.display = 'none';
           } else {
@@ -2165,6 +2355,37 @@
         }
 
         clearBtn.addEventListener('click', clearAllSelection);
+
+        btnAllSpecific.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const opts = Array.from(sel.options);
+          opts.forEach(o => {
+            o.selected = !isAllOption(o);
+          });
+          triggerSelectChange();
+        });
+
+        btnInvertSpecific.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const opts = Array.from(sel.options);
+          const specificOpts = opts.filter(o => !isAllOption(o));
+          const hadAnySpecific = specificOpts.some(o => o.selected);
+          opts.forEach(o => {
+            if (isAllOption(o)) {
+              o.selected = false;
+            } else {
+              o.selected = hadAnySpecific ? !o.selected : true;
+            }
+          });
+          const remainingSpecific = opts.filter(o => !isAllOption(o) && o.selected);
+          const allOpt = opts.find(isAllOption);
+          if (remainingSpecific.length === 0 && allOpt) {
+            allOpt.selected = true;
+          }
+          triggerSelectChange();
+        });
 
         control.addEventListener('click', (e) => {
           if (e.target.closest('.st-ms-pill-remove') || e.target.closest('.st-ms-clear')) return;

@@ -354,7 +354,7 @@
     setText("cumpl_kpiATpct", fmtPct01(pctAT));
     setText("cumpl_kpiATqty", `Cant: ${fmtInt(t.at)}`);
     const elAT = document.getElementById("cumpl_kpiATpct");
-    if (elAT) elAT.style.color = (isFinite(pctAT) && pctAT >= 0.78) ? "#16a34a" : "#ef4444";
+    if (elAT) elAT.style.setProperty("color", (isFinite(pctAT) && (Math.round(pctAT * 1000) / 10) >= 78) ? "#16a34a" : "#ef4444", "important");
 
     setText("cumpl_kpiFTpct", fmtPct01(pctFT));
     setText("cumpl_kpiFTqty", `Cant: ${fmtInt(t.ft)}`);
@@ -392,7 +392,7 @@
 
     setText("cumpl_kpiATmes", fmtPct01(pctATm));
     const elATm = document.getElementById("cumpl_kpiATmes");
-    if (elATm) elATm.style.color = (isFinite(pctATm) && pctATm >= 0.78) ? "#16a34a" : "#ef4444";
+    if (elATm) elATm.style.setProperty("color", (isFinite(pctATm) && (Math.round(pctATm * 1000) / 10) >= 78) ? "#16a34a" : "#ef4444", "important");
     setText("cumpl_kpiATmesSub", `Cant: ${fmtInt(tm.at)}`);
 
     setText("cumpl_kpiFTmes", fmtPct01(pctFTm));
@@ -705,7 +705,7 @@
             stack: "pct",
             data: pAT.map(v => {
               const val = +(+v).toFixed(4);
-              if (val < 78) {
+              if (Math.round(val) < 78) {
                 return {
                   value: val,
                   itemStyle: {
@@ -744,7 +744,7 @@
                 if (!q) return "";
                 if (pct < 6) return "";
                 const pctRound = Math.round(pct);
-                if (pct < 78) return `{warn|${fmtInt(q)}\n⚠ (${pctRound}%)}`;
+                if (pctRound < 78) return `{warn|${fmtInt(q)}\n⚠ (${pctRound}%)}`;
                 return `${fmtInt(q)}\n(${pctRound}%)`;
               },
               rich: {
@@ -1022,7 +1022,8 @@
               position: "top",
               formatter: (p) => {
                 const v = +p.data || 0;
-                return (v < 78) ? `{warn|⚠ ${_fmtPct(v)}}` : `{ok|${_fmtPct(v)}}`;
+                const vRound1 = Math.round(v * 10) / 10;
+                return (vRound1 < 78) ? `{warn|⚠ ${_fmtPct(v)}}` : `{ok|${_fmtPct(v)}}`;
               },
               rich: {
                 ok: { fontWeight: 900, color: COLORS.green },

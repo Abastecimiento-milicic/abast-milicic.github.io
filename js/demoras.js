@@ -86,17 +86,30 @@
   }
 
   function getDisplayName(name) {
-      if (name === "FECHAENTREGAMUYCERCANA CON PRIORIDAD" || name === "FECHA ENTREGA MUY CERCANA (CON PRIORIDAD)" || name === "FECHA DE ENTREGA MUY CERCANA (CON PRIORIDAD)") {
-          return "FEMC (CON PRIORIDAD)";
+      if (name === "FECHAENTREGAMUYCERCANA CON PRIORIDAD" || 
+          name === "FECHA ENTREGA MUY CERCANA (CON PRIORIDAD)" || 
+          name === "FECHA DE ENTREGA MUY CERCANA (CON PRIORIDAD)" ||
+          name === "FEMC (CON PRIORIDAD)" ||
+          name === "PERIODO CORTO CON PRIORIDAD") {
+          return "PERIODO CORTO (CON PRIORIDAD)";
       }
-      if (name === "FECHAENTREGAMUYCERCANA SIN PRIORIDAD" || name === "FECHA ENTREGA MUY CERCANA (SIN PRIORIDAD)" || name === "FECHA DE ENTREGA MUY CERCANA (SIN PRIORIDAD)") {
-          return "FEMC (SIN PRIORIDAD)";
+      if (name === "FECHAENTREGAMUYCERCANA SIN PRIORIDAD" || 
+          name === "FECHA ENTREGA MUY CERCANA (SIN PRIORIDAD)" || 
+          name === "FECHA DE ENTREGA MUY CERCANA (SIN PRIORIDAD)" ||
+          name === "FEMC (SIN PRIORIDAD)" ||
+          name === "PERIODO CORTO SIN PRIORIDAD") {
+          return "PERIODO CORTO (SIN PRIORIDAD)";
       }
       const normalized = norm(name);
       if (normalized.includes("FECHA") && (normalized.includes("CERCANA") || normalized.includes("MUYCERCANA"))) {
-          if (normalized.includes("CON PRIORIDAD") || normalized.includes("CONPRIORIDAD")) return "FEMC (CON PRIORIDAD)";
-          if (normalized.includes("SIN PRIORIDAD") || normalized.includes("SINPRIORIDAD")) return "FEMC (SIN PRIORIDAD)";
-          return "FEMC";
+          if (normalized.includes("CON PRIORIDAD") || normalized.includes("CONPRIORIDAD")) return "PERIODO CORTO (CON PRIORIDAD)";
+          if (normalized.includes("SIN PRIORIDAD") || normalized.includes("SINPRIORIDAD")) return "PERIODO CORTO (SIN PRIORIDAD)";
+          return "PERIODO CORTO";
+      }
+      if (normalized.startsWith("FEMC") || normalized.startsWith("PERIODO CORTO")) {
+          if (normalized.includes("CON PRIORIDAD") || normalized.includes("CONPRIORIDAD")) return "PERIODO CORTO (CON PRIORIDAD)";
+          if (normalized.includes("SIN PRIORIDAD") || normalized.includes("SINPRIORIDAD")) return "PERIODO CORTO (SIN PRIORIDAD)";
+          return "PERIODO CORTO";
       }
       if (normalized === norm("CADENA DE SUMINISTRO") || normalized === norm("CADENA DE SUMINISTROS")) {
           return "PROYECTO";
@@ -1784,6 +1797,32 @@ PROYECTO = if List.Sum({[LIBERACION SOLPED CS], [COLOCACION OC CS], [LIBERACION 
 
 : areaName === 'PERIODO CORTO' ? `<b>Lógica de Cálculo PERIODO CORTO (Power Query M):</b>
 
+<b>A partir de Octubre 2026:</b>
+FECHAENTREGAMUYCERCANA = let d = Duration.Days([FECHA ENTREGA ESPERADA] - [FECHA DE EMISION NECESIDAD]), c = Text.Trim(Text.From([CLI])) in
+  if d = null then null
+  else if List.Contains({"ZPOE","ZPAS"}, [CLASE DE DOC]) then
+      if c="00223" and d<15 then 1 
+      else if c="00341" and d<20 then 1 
+      else if c="00314" and d<15 then 1 
+      else if c="00365" and d<24 then 1
+      else if c="00372" and d<24 then 1
+      else if c="00374" and d<21 then 1 
+      else if c="00377" and d<=22 then 1 
+      else if c="00378" and d<15 then 1 
+      else if c="00379" and d<12 then 1 else null
+  else if List.Contains({"ZPAN","ZPAI"}, [CLASE DE DOC]) then
+      if c="00223" and d<16 then 1 
+      else if c="00341" and d<16 then 1 
+      else if c="00314" and d<16 then 1 
+      else if c="00365" and d<21 then 1
+      else if c="00372" and d<21 then 1
+      else if c="00374" and d<16 then 1 
+      else if c="00378" and d<16 then 1 
+      else if c="00379" and d<19 then 1 
+      else if c="00377" and d<16 then 1 else null
+  else null
+
+<b>Anterior a Octubre 2026 (Hasta Septiembre 2026):</b>
 FECHAENTREGAMUYCERCANA = let d = Duration.Days([FECHA ENTREGA ESPERADA] - [FECHA DE EMISION NECESIDAD]), c = Text.Trim(Text.From([CLI])) in
   if d = null then null
   else if List.Contains({"ZPOE","ZPAS"}, [CLASE DE DOC]) then
@@ -2377,54 +2416,82 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                     if (fEntregaEsperada && fEmiNec) {
                       const d = daysBetween(fEmiNec, fEntregaEsperada);
                       const c = cli.toUpperCase();
-                      if (["ZPOE","ZPAS"].includes(cd)) {
-                        if (c === "00038" && d <= 12) muyCercana = 1;
-                        else if (c === "00223" && d <= 15) muyCercana = 1;
-                        else if (c === "00357" && d < 5) muyCercana = 1;
-                        else if (c === "00359" && d < 5) muyCercana = 1;
-                        else if (c === "00341" && d <= 20) muyCercana = 1;
-                        else if (c === "00314" && d <= 15) muyCercana = 1;
-                        else if (c === "UTE 363" && d < 14) muyCercana = 1;
-                        else if (c === "00364" && d < 23) muyCercana = 1;
-                        else if (c === "00029MM" && d < 5) muyCercana = 1;
-                        else if (c === "00029MR" && d < 5) muyCercana = 1;
-                        else if (c === "00298" && d < 23) muyCercana = 1;
-                        else if (c === "00365" && d <= 19) muyCercana = 1;
-                        else if (c === "00367" && d < 25) muyCercana = 1;
-                        else if (c === "00369" && d < 16) muyCercana = 1;
-                        else if (c === "00371" && d < 12) muyCercana = 1;
-                        else if (c === "00372" && d <= 19) muyCercana = 1;
-                        else if (c === "00374" && d <= 21) muyCercana = 1;
-                        else if (c === "00375" && d < 14) muyCercana = 1;
-                        else if (c === "00376" && d <= 12) muyCercana = 1;
-                        else if (c === "00368" && d < 13) muyCercana = 1;
-                        else if (c === "00377" && d <= 22) muyCercana = 1;
-                        else if (c === "00378" && d <= 13) muyCercana = 1;
-                        else if (c === "00379" && d <= 12) muyCercana = 1;
-                      } else if (["ZPAN","ZPAI"].includes(cd)) {
-                        if (c === "00038" && d <= 8) muyCercana = 1;
-                        else if (c === "00223" && d <= 12) muyCercana = 1;
-                        else if (c === "00357" && d <= 5) muyCercana = 1;
-                        else if (c === "00359" && d <= 5) muyCercana = 1;
-                        else if (c === "00341" && d <= 17) muyCercana = 1;
-                        else if (c === "00314" && d <= 12) muyCercana = 1;
-                        else if (c === "UTE 363" && d <= 14) muyCercana = 1;
-                        else if (c === "00364" && d <= 19) muyCercana = 1;
-                        else if (c === "00029MM" && d <= 5) muyCercana = 1;
-                        else if (c === "00029MR" && d <= 5) muyCercana = 1;
-                        else if (c === "00298" && d <= 20) muyCercana = 1;
-                        else if (c === "00365" && d <= 16) muyCercana = 1;
-                        else if (c === "00367" && d <= 21) muyCercana = 1;
-                        else if (c === "00369" && d <= 12) muyCercana = 1;
-                        else if (c === "00371" && d <= 8) muyCercana = 1;
-                        else if (c === "00372" && d <= 16) muyCercana = 1;
-                        else if (c === "00374" && d <= 18) muyCercana = 1;
-                        else if (c === "00375" && d <= 11) muyCercana = 1;
-                        else if (c === "00378" && d <= 10) muyCercana = 1;
-                        else if (c === "00376" && d <= 9) muyCercana = 1;
-                        else if (c === "00379" && d <= 9) muyCercana = 1;
-                        else if (c === "00368" && d <= 10) muyCercana = 1;
-                        else if (c === "00377" && d <= 19) muyCercana = 1;
+                      const isAftOct2026 = (fEntregaEsperada >= new Date(2026, 9, 1));
+
+                      if (isAftOct2026) {
+                        // A PARTIR DE OCTUBRE 2026
+                        if (["ZPOE","ZPAS"].includes(cd)) {
+                          if (c === "00223" && d < 15) muyCercana = 1;
+                          else if (c === "00341" && d < 20) muyCercana = 1;
+                          else if (c === "00314" && d < 15) muyCercana = 1;
+                          else if (c === "00365" && d < 24) muyCercana = 1;
+                          else if (c === "00372" && d < 24) muyCercana = 1;
+                          else if (c === "00374" && d < 21) muyCercana = 1;
+                          else if (c === "00377" && d <= 22) muyCercana = 1;
+                          else if (c === "00378" && d < 15) muyCercana = 1;
+                          else if (c === "00379" && d < 12) muyCercana = 1;
+                        } else if (["ZPAN","ZPAI"].includes(cd)) {
+                          if (c === "00223" && d < 16) muyCercana = 1;
+                          else if (c === "00341" && d < 16) muyCercana = 1;
+                          else if (c === "00314" && d < 16) muyCercana = 1;
+                          else if (c === "00365" && d < 21) muyCercana = 1;
+                          else if (c === "00372" && d < 21) muyCercana = 1;
+                          else if (c === "00374" && d < 16) muyCercana = 1;
+                          else if (c === "00378" && d < 16) muyCercana = 1;
+                          else if (c === "00379" && d < 19) muyCercana = 1;
+                          else if (c === "00377" && d < 16) muyCercana = 1;
+                        }
+                      } else {
+                        // ANTERIOR A OCTUBRE 2026 (REGLAS VIGENTES HASTA SEPTIEMBRE 2026)
+                        if (["ZPOE","ZPAS"].includes(cd)) {
+                          if (c === "00038" && d <= 12) muyCercana = 1;
+                          else if (c === "00223" && d <= 15) muyCercana = 1;
+                          else if (c === "00357" && d < 5) muyCercana = 1;
+                          else if (c === "00359" && d < 5) muyCercana = 1;
+                          else if (c === "00341" && d <= 20) muyCercana = 1;
+                          else if (c === "00314" && d <= 15) muyCercana = 1;
+                          else if (c === "UTE 363" && d < 14) muyCercana = 1;
+                          else if (c === "00364" && d < 23) muyCercana = 1;
+                          else if (c === "00029MM" && d < 5) muyCercana = 1;
+                          else if (c === "00029MR" && d < 5) muyCercana = 1;
+                          else if (c === "00298" && d < 23) muyCercana = 1;
+                          else if (c === "00365" && d <= 19) muyCercana = 1;
+                          else if (c === "00367" && d < 25) muyCercana = 1;
+                          else if (c === "00369" && d < 16) muyCercana = 1;
+                          else if (c === "00371" && d < 12) muyCercana = 1;
+                          else if (c === "00372" && d <= 19) muyCercana = 1;
+                          else if (c === "00374" && d <= 21) muyCercana = 1;
+                          else if (c === "00375" && d < 14) muyCercana = 1;
+                          else if (c === "00376" && d <= 12) muyCercana = 1;
+                          else if (c === "00368" && d < 13) muyCercana = 1;
+                          else if (c === "00377" && d <= 22) muyCercana = 1;
+                          else if (c === "00378" && d <= 13) muyCercana = 1;
+                          else if (c === "00379" && d <= 12) muyCercana = 1;
+                        } else if (["ZPAN","ZPAI"].includes(cd)) {
+                          if (c === "00038" && d <= 8) muyCercana = 1;
+                          else if (c === "00223" && d <= 12) muyCercana = 1;
+                          else if (c === "00357" && d <= 5) muyCercana = 1;
+                          else if (c === "00359" && d <= 5) muyCercana = 1;
+                          else if (c === "00341" && d <= 17) muyCercana = 1;
+                          else if (c === "00314" && d <= 12) muyCercana = 1;
+                          else if (c === "UTE 363" && d <= 14) muyCercana = 1;
+                          else if (c === "00364" && d <= 19) muyCercana = 1;
+                          else if (c === "00029MM" && d <= 5) muyCercana = 1;
+                          else if (c === "00029MR" && d <= 5) muyCercana = 1;
+                          else if (c === "00298" && d <= 20) muyCercana = 1;
+                          else if (c === "00365" && d <= 16) muyCercana = 1;
+                          else if (c === "00367" && d <= 21) muyCercana = 1;
+                          else if (c === "00369" && d <= 12) muyCercana = 1;
+                          else if (c === "00371" && d <= 8) muyCercana = 1;
+                          else if (c === "00372" && d <= 16) muyCercana = 1;
+                          else if (c === "00374" && d <= 18) muyCercana = 1;
+                          else if (c === "00375" && d <= 11) muyCercana = 1;
+                          else if (c === "00378" && d <= 10) muyCercana = 1;
+                          else if (c === "00376" && d <= 9) muyCercana = 1;
+                          else if (c === "00379" && d <= 9) muyCercana = 1;
+                          else if (c === "00368" && d <= 10) muyCercana = 1;
+                          else if (c === "00377" && d <= 19) muyCercana = 1;
+                        }
                       }
                     }
                     r["FECHAENTREGAMUYCERCANA"] = muyCercana;
@@ -2639,17 +2706,46 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
           return;
       }
 
+      // Helper normalizador canónico para unificación en resumen
+      function getCanonicalObra(val) {
+          const c = extractCode(val);
+          if (c === "26" || c === "314" || c === "26_314" || c === "00026" || c === "00314" || c === "0026" || c === "0314") return "26_314";
+          if (c === "35" || c === "341" || c === "35_341" || c === "00035" || c === "00341" || c === "0035" || c === "0341") return "35_341";
+          return c;
+      }
+
       // 1. Filtrar registros por Obra y Mes
       let rows = data;
-      if (clientCode && clientCode !== "__ALL__") {
-          const targetCode = extractCode(clientCode);
+
+      // Normalizar clientCode (puede ser array de códigos o string simple)
+      let obraList = [];
+      if (Array.isArray(clientCode)) {
+          obraList = clientCode.filter(c => c && c !== "__ALL__").map(getCanonicalObra);
+      } else if (clientCode && clientCode !== "__ALL__") {
+          obraList = [getCanonicalObra(clientCode)];
+      }
+
+      if (obraList.length > 0) {
+          const obraSet = new Set(obraList);
           rows = rows.filter(r => {
               const val = r[CLIENT_COL] || "";
-              return extractCode(val) === targetCode || extractCode(getCLI(val)) === targetCode;
+              const cVal = getCanonicalObra(val);
+              const cCli = getCanonicalObra(getCLI(val));
+              return obraSet.has(cVal) || obraSet.has(cCli);
           });
       }
-      if (ym && ym !== "__ALL__") {
-          rows = rows.filter(r => getMonthKeyFromRow(r) === ym);
+
+      // Normalizar ym (puede ser array de meses o string simple)
+      let ymList = [];
+      if (Array.isArray(ym)) {
+          ymList = ym.filter(m => m && m !== "__ALL__");
+      } else if (ym && ym !== "__ALL__") {
+          ymList = [ym];
+      }
+
+      if (ymList.length > 0) {
+          const ymSet = new Set(ymList);
+          rows = rows.filter(r => ymSet.has(getMonthKeyFromRow(r)));
       }
 
       // Paleta exacta de la pestaña Demoras
@@ -2711,66 +2807,80 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
                   };
               });
 
+              // Ordenar de menor a mayor para que en barra horizontal el mayor quede arriba
+              const sortedBars = [...dataWithColors].sort((a, b) => a.value - b.value);
+              const yCategories = sortedBars.map(it => getDisplayName(it.name));
+              const barData = sortedBars.map(it => {
+                  const isMax = it.value === maxAreaVal;
+                  const pct = ((it.value / totalAreas) * 100).toFixed(1).replace(".", ",");
+                  return {
+                      value: it.value,
+                      name: it.name,
+                      pctStr: pct,
+                      itemStyle: {
+                          color: isMax ? "#dc3545" : (areaColorByName.get(it.name) || "#2563eb"),
+                          borderRadius: [0, 5, 5, 0]
+                      },
+                      label: {
+                          color: isMax ? "#dc2626" : "#0f172a",
+                          fontWeight: isMax ? "800" : "700"
+                      }
+                  };
+              });
+
               const areasOption = {
                   tooltip: {
-                      trigger: "item",
-                      formatter: (p) => {
-                          const pct = (p.value / totalAreas) * 100;
-                          return `${getDisplayName(p.name)}: <b>${fmtInt(p.value)}</b> (${pct.toFixed(1).replace(".", ",")}%)`;
+                      trigger: "axis",
+                      axisPointer: { type: "shadow" },
+                      formatter: (params) => {
+                          const p = Array.isArray(params) ? params[0] : params;
+                          if (!p) return "";
+                          const pct = ((p.value / totalAreas) * 100).toFixed(1).replace(".", ",");
+                          return `<b>${p.name}</b><br/>Demoras: <b>${fmtInt(p.value)}</b> (${pct}%)`;
                       }
                   },
-                  legend: {
-                      type: "plain",
-                      orient: "horizontal",
-                      bottom: 4,
-                      left: "center",
-                      width: "95%",
-                      itemWidth: 11,
-                      itemHeight: 8,
-                      itemGap: 8,
-                      textStyle: { fontSize: 10, color: "#334155" },
-                      formatter: (name) => {
-                          const it = areaItems.find(x => x.name === name);
-                          const v = it ? it.value : 0;
-                          const pct = (v / totalAreas) * 100;
-                          return `${getDisplayName(name)} (${pct.toFixed(1).replace(".", ",")}%)`;
+                  grid: {
+                      top: 8,
+                      bottom: 8,
+                      left: 6,
+                      right: 88,
+                      containLabel: true
+                  },
+                  xAxis: {
+                      type: "value",
+                      max: maxAreaVal > 0 ? Math.ceil(maxAreaVal * 1.12) : 10,
+                      splitLine: {
+                          show: true,
+                          lineStyle: { type: "dashed", color: "#e2e8f0" }
+                      },
+                      axisLabel: { show: false },
+                      axisTick: { show: false },
+                      axisLine: { show: false }
+                  },
+                  yAxis: {
+                      type: "category",
+                      data: yCategories,
+                      axisTick: { show: false },
+                      axisLine: { lineStyle: { color: "#cbd5e1" } },
+                      axisLabel: {
+                          fontSize: 10.5,
+                          fontWeight: 700,
+                          color: "#1e293b",
+                          margin: 8
                       }
                   },
                   series: [
                       {
-                          name: "% demoras por área",
-                          type: "pie",
-                          radius: ["28%", "48%"],
-                          center: ["50%", "35%"],
-                          avoidLabelOverlap: true,
-                          itemStyle: {
-                              borderColor: "#fff",
-                              borderWidth: 2
-                          },
+                          name: "Demoras por Área",
+                          type: "bar",
+                          barMaxWidth: 22,
+                          data: barData,
                           label: {
                               show: true,
-                              position: "outside",
-                              fontSize: 10,
-                              fontWeight: "600",
-                              color: "#1e293b",
-                              formatter: (p) => `${getDisplayName(p.name)}\n${p.percent.toFixed(1).replace(".", ",")}%`
-                          },
-                          labelLine: {
-                              show: true,
-                              length: 10,
-                              length2: 8,
-                              smooth: true
-                          },
-                          emphasis: {
-                              scale: true,
-                              scaleSize: 5,
-                              label: {
-                                  show: true,
-                                  fontSize: 11,
-                                  fontWeight: "bold"
-                              }
-                          },
-                          data: dataWithColors
+                              position: "right",
+                              fontSize: 10.5,
+                              formatter: (p) => `${fmtInt(p.value)} (${p.data.pctStr}%)`
+                          }
                       }
                   ]
               };

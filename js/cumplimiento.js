@@ -174,7 +174,8 @@
   }
 
   function isCumplOk01(x) {
-    return isFinite(x) && (Math.round(x * 1000) / 10) >= 78;
+    const target = (currentSector === "compras") ? 75 : 78;
+    return isFinite(x) && (Math.round(x * 1000) / 10) >= target;
   }
 
   function safeFilePart(s) {
@@ -369,7 +370,7 @@
     if (gcs.length && GCOC_COL) rows = rows.filter(r => gcs.includes(clean(r[GCOC_COL])));
     
     const cents = getSelValues("centroSelect");
-    if (cents.length && CENTRO_COL) rows = rows.filter(r => cents.includes(clean(r[CENTRO_COL]))); if (currentSector === "compras") { const ops = getSelValues("cumpl_operadorSelect"); if (ops.length && OPERADOR_COL) rows = rows.filter(r => ops.includes(clean(r[OPERADOR_COL]))); const provs = getSelValues("cumpl_proveedorSelect"); if (provs.length && PROVEEDOR_COL) rows = rows.filter(r => provs.includes(clean(r[PROVEEDOR_COL]))); const sa = getSelValues("cumpl_soloAbastSelect"); if (sa.length && SOLO_ABAST_COL) rows = rows.filter(r => { const raw = clean(r[SOLO_ABAST_COL]).toUpperCase(); const mapped = (raw === "1" || raw === "SI" || raw === "SÍ") ? "SI" : "NO"; return sa.includes(mapped); }); }
+    if (cents.length && CENTRO_COL) rows = rows.filter(r => cents.includes(clean(r[CENTRO_COL]))); if (currentSector === "compras") { const ops = getSelValues("cumpl_operadorSelect"); if (ops.length && OPERADOR_COL) rows = rows.filter(r => ops.includes(clean(r[OPERADOR_COL]))); const provs = getSelValues("cumpl_proveedorSelect"); if (provs.length && PROVEEDOR_COL) rows = rows.filter(r => provs.includes(clean(r[PROVEEDOR_COL]))); const sa = getSelValues("cumpl_soloAbastSelect"); if (sa.length && SOLO_ABAST_COL) rows = rows.filter(r => { const raw = clean(r[SOLO_ABAST_COL]).toUpperCase(); let mapped = ""; if (raw === "1" || raw === "ABASTECIMIENTO" || raw === "SI" || raw === "SÍ") { mapped = "Abastecimiento"; } else if (raw === "2" || raw === "EQUIPOS") { mapped = "Equipos"; } return sa.includes(mapped); }); }
     
     return rows;
   }
@@ -404,7 +405,7 @@
     if (sel) sel.disabled = false;
     fillSelect("centroSelect", vals, "Todos");
   }
-  function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["SI", "NO"], "Todos"); }
+  function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["Abastecimiento", "Equipos"], "Todos"); }
   }
 
   function renderClasif2(rowsBase) {
@@ -726,9 +727,14 @@
 
     const lineSegments = [];
 
+    function getTargetCumpl(ym) {
+      if (currentSector === "compras") return 75;
+      const ano = parseInt(ym.substring(0, 4), 10);
+      return (ano >= 2026) ? 78 : 75;
+    }
+
     if (months.length === 1) {
-      const anoActual = parseInt(months[0].substring(0, 4), 10);
-      const hActual = (anoActual >= 2026) ? 78 : 75;
+      const hActual = getTargetCumpl(months[0]);
       lineSegments.push({
         yAxis: hActual,
         label: {
@@ -745,13 +751,11 @@
       });
     } else {
       for (let i = 0; i < months.length - 1; i++) {
-        const anoActual = parseInt(months[i].substring(0, 4), 10);
-        const hActual = (anoActual >= 2026) ? 78 : 75;
+        const hActual = getTargetCumpl(months[i]);
         
         const isLastSegment = (i === months.length - 2);
 
-        const anoSig = parseInt(months[i + 1].substring(0, 4), 10);
-        const hSig = (anoSig >= 2026) ? 78 : 75;
+        const hSig = getTargetCumpl(months[i + 1]);
 
         const showLabelOnHorizontal = isLastSegment && (hActual === hSig);
 
@@ -943,7 +947,8 @@
           stack: "pct",
           data: pAT.map(v => {
             const val = +(+v).toFixed(4);
-            if (Math.round(val) < 78) {
+            const target = (currentSector === "compras") ? 75 : 78;
+            if (Math.round(val) < target) {
               return {
                 value: val,
                 itemStyle: {
@@ -982,7 +987,8 @@
               if (!q) return "";
               if (pct < 6) return "";
               const pctRound = Math.round(pct);
-              if (pctRound < 78) return `{warn|${fmtInt(q)}\n⚠ (${pctRound}%)}`;
+              const target = (currentSector === "compras") ? 75 : 78;
+              if (pctRound < target) return `{warn|${fmtInt(q)}\n⚠ (${pctRound}%)}`;
               return `${fmtInt(q)}\n(${pctRound}%)`;
             },
             rich: {
@@ -1329,7 +1335,8 @@
             formatter: (p) => {
               const v = +p.data || 0;
               const vRound1 = Math.round(v * 10) / 10;
-              return (vRound1 < 78) ? `{warn|⚠ ${_fmtPct(v)}}` : `{ok|${_fmtPct(v)}}`;
+              const target = (currentSector === "compras") ? 75 : 78;
+              return (vRound1 < target) ? `{warn|⚠ ${_fmtPct(v)}}` : `{ok|${_fmtPct(v)}}`;
             },
             rich: {
               ok: { fontWeight: 900, color: COLORS.green },

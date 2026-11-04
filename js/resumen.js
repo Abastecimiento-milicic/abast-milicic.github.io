@@ -265,10 +265,12 @@
 
     try {
       const fetchCSV = async (url) => {
+        const cb = window.CACHE_BUSTER || Date.now();
+        const fullUrl = url.includes("?") ? url : (encodeURI(url) + "?t=" + cb);
         if (typeof window.fetchWithCache === "function") {
-          return await window.fetchWithCache(url);
+          return await window.fetchWithCache(fullUrl);
         }
-        const res = await fetch(url + "?t=" + Date.now());
+        const res = await fetch(fullUrl);
         if (!res.ok) throw new Error(`HTTP ${res.status} al cargar ${url}`);
         return await res.text();
       };

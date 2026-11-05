@@ -1,0 +1,2089 @@
+﻿<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prototipo Ejecutivo 180° — Milicic S.A. | Abastecimiento</title>
+  
+  <!-- Tipografía moderna Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- ECharts 5 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       VARIABLES DE DISEÑO 180° — DESIGN SYSTEM SAAS EJECUTIVO
+       ========================================================================== */
+    :root {
+      /* Paleta Light (Clean SaaS — Dúo Verde Esmeralda & Azul Corporativo) */
+      --bg-app: #f4f7fb;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f0f4f9;
+      --bg-subtle-hover: #e2eaf4;
+      
+      --border-subtle: #e1e7f0;
+      --border-hover: #cbd7e6;
+      --border-focus: #0d9488;
+      
+      --text-main: #0b1528;
+      --text-secondary: #334b69;
+      --text-muted: #7b91ab;
+      --text-inverse: #ffffff;
+      
+      /* Acentos de Marca: SOLO VERDE INSTITUCIONAL ACTUAL (#0d9488 / #0f766e / #14b8a6) */
+      --brand: #0d9488;
+      --brand-hover: #0f766e;
+      --brand-dk: #0f766e;
+      --brand-lt: #14b8a6;
+      --brand-light: #f0fdfa;
+      --brand-border: #99f6e4;
+      
+      /* Gradientes Solo Verde Actual del Reporte (#0f766e -> #14b8a6 -> #0d9488) */
+      --brand-gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #0d9488 100%);
+      --brand-gradient-hover: linear-gradient(135deg, #115e59 0%, #0f766e 50%, #0d9488 100%);
+      --brand-gradient-green: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #0d9488 100%);
+      --brand-gradient-soft: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(20, 184, 166, 0.12) 100%);
+      --brand-gradient-border: linear-gradient(90deg, #0f766e, #14b8a6, #0d9488);
+      
+      /* Estados Semánticos con Verde Actual */
+      --success: #0d9488;
+      --success-bg: #f0fdfa;
+      --success-border: #99f6e4;
+      --success-text: #0f766e;
+
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --warning-border: #fde68a;
+      --warning-text: #b45309;
+
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --danger-text: #b91c1c;
+
+      --info: #3b82f6;
+      --info-bg: #eff6ff;
+      --info-border: #bfdbfe;
+      --info-text: #1d4ed8;
+
+      --purple: #8b5cf6;
+      --purple-bg: #f5f3ff;
+      --purple-border: #ddd6fe;
+      --purple-text: #6d28d9;
+
+      /* Sombras Suaves Multicapa */
+      --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.07), 0 1px 2px -1px rgba(15, 23, 42, 0.07);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.05), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
+
+      /* Radios de curvatura */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-pill: 9999px;
+
+      /* Fuentes */
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --sidebar-width: 290px;
+      --topbar-height: 64px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* MODO OSCURO (SOLO VERDE / TEAL EJECUTIVO) */
+    [data-theme="dark"] {
+      --bg-app: #090e15;
+      --bg-surface: #0f1823;
+      --bg-subtle: #152232;
+      --bg-subtle-hover: #1c2e42;
+      
+      --border-subtle: #1c2c3d;
+      --border-hover: #263c52;
+      --border-focus: #14b8a6;
+      
+      --text-main: #f0fdfa;
+      --text-secondary: #ccfbf1;
+      --text-muted: #5eead4;
+      --text-inverse: #090e15;
+      
+      --brand: #14b8a6;
+      --brand-hover: #2dd4bf;
+      --brand-light: rgba(20, 184, 166, 0.14);
+      --brand-border: rgba(20, 184, 166, 0.35);
+
+      --brand-gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #2dd4bf 100%);
+      --brand-gradient-hover: linear-gradient(135deg, #115e59 0%, #0f766e 50%, #14b8a6 100%);
+      --brand-gradient-soft: linear-gradient(135deg, rgba(20, 184, 166, 0.12) 0%, rgba(45, 212, 191, 0.12) 100%);
+      
+      --success: #2dd4bf;
+      --success-bg: rgba(20, 184, 166, 0.12);
+      --success-border: rgba(20, 184, 166, 0.25);
+      --success-text: #5eead4;
+
+      --warning: #fbbf24;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --warning-border: rgba(245, 158, 11, 0.25);
+      --warning-text: #fcd34d;
+
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-border: rgba(239, 68, 68, 0.25);
+      --danger-text: #fca5a5;
+
+      --info: #60a5fa;
+      --info-bg: rgba(59, 130, 246, 0.12);
+      --info-border: rgba(59, 130, 246, 0.25);
+      --info-text: #93c5fd;
+
+      --purple: #a78bfa;
+      --purple-bg: rgba(139, 92, 246, 0.12);
+      --purple-border: rgba(139, 92, 246, 0.25);
+      --purple-text: #c4b5fd;
+
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 12px 20px -3px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Reset y Estructura */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Banner de Modo Demo / Comparación */
+    .demo-bar {
+      background: linear-gradient(90deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.25), rgba(37, 99, 235, 0.25));
+      color: #6ee7b7;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+    }
+    .demo-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-toggle-theme, .btn-toggle-view {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+    }
+    .btn-toggle-theme:hover, .btn-toggle-view:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ==========================================================================
+       TOPBAR EJECUTIVA MODERNA (Glassmorphism & Clean Header)
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 300;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      border-top: 3px solid transparent;
+      border-image: var(--brand-gradient-border) 1;
+      padding: 0 1.5rem;
+      height: var(--topbar-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-xs);
+      transition: var(--transition);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      background: var(--brand-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25), 0 2px 4px rgba(29, 78, 216, 0.2);
+    }
+    .brand-text-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: var(--brand-light);
+      color: var(--brand);
+      padding: 1px 6px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--brand-border);
+      letter-spacing: 0.05em;
+    }
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Selector de Sector tipo SaaS */
+    .sector-selector {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 3px 10px;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+    .sector-selector:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-subtle-hover);
+    }
+    .sector-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand-gradient);
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Navegación Segmented Control (Pills flotantes) */
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      background: var(--bg-subtle);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      gap: 2px;
+    }
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .nav-tab-btn:hover {
+      color: var(--text-main);
+    }
+    .nav-tab-btn.active {
+      background: var(--brand-gradient);
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(13, 148, 136, 0.22), 0 1px 3px rgba(29, 78, 216, 0.18);
+      font-weight: 700;
+    }
+    .nav-tab-btn.active svg {
+      stroke: #ffffff;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .btn-icon {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-icon:hover {
+      background: var(--bg-subtle-hover);
+      color: var(--text-main);
+      border-color: var(--border-hover);
+    }
+
+    /* ==========================================================================
+       LAYOUT PRINCIPAL CON SIDEBAR INTELIGENTE
+       ========================================================================== */
+    .app-layout {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Sidebar SaaS */
+    .app-sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      flex-shrink: 0;
+      transition: var(--transition);
+      z-index: 200;
+    }
+    .app-sidebar.collapsed {
+      margin-left: calc(-1 * var(--sidebar-width));
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-reset-btn {
+      background: none;
+      border: none;
+      color: var(--brand);
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .sidebar-reset-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Buscador y Quick Pills */
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .filter-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .filter-search-input {
+      width: 100%;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      color: var(--text-main);
+      outline: none;
+      transition: var(--transition);
+    }
+    .filter-search-input:focus {
+      border-color: var(--brand);
+      background: var(--bg-surface);
+      box-shadow: 0 0 0 3px var(--brand-light);
+    }
+
+    .pills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      max-height: 120px;
+      overflow-y: auto;
+      padding: 2px 0;
+    }
+    .filter-pill {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .filter-pill:hover {
+      border-color: var(--border-hover);
+      color: var(--text-main);
+    }
+    .filter-pill.active {
+      background: var(--brand-gradient);
+      color: #ffffff;
+      border-color: transparent;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .toggle-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .toggle-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    .switch-ui {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      background: var(--border-hover);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .switch-ui.active {
+      background: var(--brand);
+    }
+    .switch-ui::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+    .switch-ui.active::after {
+      transform: translateX(16px);
+    }
+
+    /* Botón flotante para expandir sidebar cuando está cerrado */
+    .sidebar-float-trigger {
+      position: fixed;
+      left: 12px;
+      bottom: 20px;
+      z-index: 250;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-md);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .sidebar-float-trigger:hover {
+      color: var(--brand);
+      border-color: var(--brand-border);
+    }
+
+    /* ==========================================================================
+       CONTENIDO PRINCIPAL: BENTO GRID 180°
+       ========================================================================== */
+    .main-workspace {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      max-width: 1750px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Context Banner Ejecutivo */
+    .executive-context-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.25rem;
+      box-shadow: var(--shadow-xs);
+    }
+    .ctx-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ctx-badge {
+      background: var(--brand-light);
+      border: 1px solid var(--brand-border);
+      color: var(--brand);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ctx-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .ctx-highlight {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Bento Grid 2 Columnas Maestras (Proporción Óptima: 2.2fr izq / 3.8fr der) */
+    .bento-master-grid {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.8fr) minmax(520px, 3.2fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1180px) {
+      .bento-master-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .bento-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* TARJETA BENTO EJECUTIVA */
+    .bento-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+    }
+    .bento-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-hover);
+    }
+
+    .bento-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .bento-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bento-icon-wrapper {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bento-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+      text-transform: uppercase;
+    }
+    .bento-action-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Sub-bloques y Métricas de Alto Impacto */
+    .kpi-radial-hero {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Anillo SVG de Progreso Circular */
+    .radial-circle-box {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      flex-shrink: 0;
+    }
+    .radial-circle-box svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+    .radial-circle-bg {
+      fill: none;
+      stroke: var(--border-hover);
+      stroke-width: 6;
+    }
+    .radial-circle-progress {
+      fill: none;
+      stroke: url(#radialGreen);
+      stroke-width: 6.5;
+      stroke-linecap: round;
+      stroke-dasharray: 188.4;
+      stroke-dashoffset: 21.8; /* 88.4% de 188.4 */
+      transition: stroke-dashoffset 1s ease;
+      filter: drop-shadow(0 2px 4px rgba(13, 148, 136, 0.25));
+    }
+    .radial-value-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    .kpi-hero-details {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .kpi-hero-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+    .kpi-hero-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 2px 0 4px 0;
+    }
+    .kpi-hero-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--success-text);
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      padding: 1px 6px;
+      border-radius: var(--radius-pill);
+    }
+    .kpi-hero-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Grid de Micro KPIs */
+    .metrics-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 0.75rem;
+    }
+    .stat-pill-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: var(--transition);
+    }
+    .stat-pill-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-surface);
+    }
+    .stat-pill-card.danger-card {
+      background: var(--danger-bg);
+      border-color: var(--danger-border);
+    }
+    .stat-pill-card.warning-card {
+      background: var(--warning-bg);
+      border-color: var(--warning-border);
+    }
+
+    .stat-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stat-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .stat-pill-card.danger-card .stat-title {
+      color: var(--danger-text);
+      font-weight: 700;
+    }
+    .stat-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+    .stat-pill-card.danger-card .stat-value {
+      color: var(--danger-text);
+    }
+    .stat-hint {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    .stat-pill-card.danger-card .stat-hint {
+      color: var(--danger-text);
+    }
+
+    /* Mini Barra de Progreso Lineal */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 5px;
+      background: var(--border-subtle);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-pill);
+      transition: width 0.6s ease;
+    }
+
+    /* Subcard Cumplimiento Split (12M vs Mes Evaluado) */
+    .cumpl-dual-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    @media (max-width: 768px) {
+      .cumpl-dual-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .cumpl-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .cumpl-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 4px;
+    }
+    .cumpl-box-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .cumpl-hero-num {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .cumpl-num-big {
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+    .cumpl-num-sub {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .cumpl-meta-chip {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    /* Grilla de filas compactas de desglose (AT, FT, NE) */
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      padding: 3px 0;
+      border-bottom: 1px dashed var(--border-subtle);
+    }
+    .breakdown-row:last-child {
+      border-bottom: none;
+    }
+    .breakdown-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .breakdown-val {
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    /* Strip de Servicios y Partidas en Horizontal */
+    .services-dual-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 900px) {
+      .services-dual-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .service-stat-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    .strip-pill {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .strip-lbl {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .strip-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    /* Tabla de Tiempos y Prioridad Moderna */
+    .table-responsive-box {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+    .modern-tiempos-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+      text-align: center;
+    }
+    .modern-tiempos-table th {
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-weight: 700;
+      padding: 6px 8px;
+      border: 1px solid var(--border-subtle);
+      text-transform: uppercase;
+      font-size: 0.68rem;
+    }
+    .modern-tiempos-table td {
+      padding: 6px 8px;
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+    .td-row-name {
+      text-align: left;
+      font-family: var(--font-sans) !important;
+      font-weight: 600;
+      color: var(--text-main);
+      background: var(--bg-surface);
+    }
+    .cell-highlight-ok {
+      background: var(--success-bg);
+      color: var(--success-text);
+      font-weight: 700;
+    }
+    .cell-highlight-warn {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+      font-weight: 700;
+    }
+    .cell-highlight-bad {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      font-weight: 700;
+    }
+
+    /* Caja de Gráficos ECharts */
+    .chart-box-frame {
+      width: 100%;
+      height: 180px;
+      border-radius: var(--radius-md);
+    }
+
+    /* Modal de Comparativa 180° */
+    .comparison-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .comparison-modal-card {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      max-width: 950px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .diff-table th, .diff-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+    }
+    .diff-table th {
+      background: var(--bg-subtle);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BANNER SUPERIOR DE CONTROL DEL PROTOTIPO -->
+  <aside class="demo-bar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="demo-badge">Prototipo 180° · Milicic</span>
+      <span>Vista Previa Interactiva — Rediseño SaaS Ejecutivo</span>
+    </div>
+    <div class="demo-actions">
+      <button class="btn-toggle-theme" onclick="toggleTheme()" title="Alternar entre Clean Light Mode y Dark Command Center">
+        <span id="themeBtnIcon">🌙</span>
+        <span id="themeBtnText">Modo Oscuro</span>
+      </button>
+      <button class="btn-toggle-view" onclick="openComparisonModal()">
+        <span>⚖️</span>
+        <span>Ver Comparativa 180°</span>
+      </button>
+      <button class="btn-toggle-view" onclick="toggleSidebar()" title="Colapsar o expandir barra lateral">
+        <span>📑</span>
+        <span>Sidebar</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- TOPBAR MINIMALISTA FLOTANTE -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-logo-wrap">
+        <div class="brand-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="brand-text-col">
+          <div class="brand-title">
+            MILICIC S.A.
+            <span class="brand-tag">LOGÍSTICA</span>
+          </div>
+          <div class="brand-sub">Panel de Gestión Integral & Abastecimiento</div>
+        </div>
+      </div>
+
+      <!-- Selector de Sector -->
+      <div class="sector-selector" title="Cambiar sector operativo">
+        <span class="sector-dot"></span>
+        <span id="currentSectorLabel">Abastecimiento (Obras)</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+
+    <!-- Pestañas de Navegación Segmented Control -->
+    <nav class="nav-tabs" aria-label="Navegación principal">
+      <button class="nav-tab-btn active" onclick="switchMockTab(this, 'TABLERO')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span>TABLERO</span>
+      </button>
+      <button class="nav-tab-btn" onclick="switchMockTab(this, 'ANÁLISIS MM')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+        <span>ANÁLISIS MM</span>
+      </button>
+      <button class="nav-tab-btn" onclick="switchMockTab(this, 'CUMPLIMIENTO')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        <span>CUMPLIMIENTO</span>
+      </button>
+      <button class="nav-tab-btn" onclick="switchMockTab(this, 'DEMORAS')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+        <span>DEMORAS</span>
+      </button>
+      <button class="nav-tab-btn" onclick="switchMockTab(this, 'SERVICIOS')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span>SERVICIOS</span>
+      </button>
+    </nav>
+
+    <div class="topbar-right">
+      <div class="meta-badge" title="Fecha del último procesamiento de datos">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Actualizado: <strong>04/11/2026</strong></span>
+      </div>
+      <button class="btn-icon" onclick="alert('Descarga de reporte ejecutivo')" title="Exportar reporte ejecutivo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL CON SIDEBAR INTELIGENTE -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR ESTILO SAAS MODERNO -->
+    <aside id="smartSidebar" class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          <span>Filtros de Control</span>
+        </div>
+        <button class="sidebar-reset-btn" onclick="resetMockFilters()">Restablecer</button>
+      </div>
+
+      <!-- Buscador de Obra -->
+      <div class="filter-group">
+        <div class="filter-label">
+          <span>Cliente / Obra:</span>
+          <span style="font-size: 0.65rem; color: var(--brand); cursor: pointer;" onclick="toggleExcludeMode()" id="excludeToggleLabel">Excluir: OFF</span>
+        </div>
+        <input type="text" class="filter-search-input" placeholder="🔍 Filtrar o buscar obra..." oninput="filterObraPills(this.value)">
+        
+        <!-- Quick Selector Pills -->
+        <div class="pills-container" id="obraPillsContainer">
+          <span class="filter-pill active" onclick="selectObra(this, 'ALL')">Todas las Obras</span>
+          <span class="filter-pill" onclick="selectObra(this, '365')">00365 - RIO TINTO</span>
+          <span class="filter-pill" onclick="selectObra(this, '372')">00372 - UTE POSCO II</span>
+          <span class="filter-pill" onclick="selectObra(this, '376')">00376 - VELADERO</span>
+          <span class="filter-pill" onclick="selectObra(this, '377')">00377 - YPF LOOP</span>
+          <span class="filter-pill" onclick="selectObra(this, '378')">00378 - PRINGLES</span>
+          <span class="filter-pill" onclick="selectObra(this, '314')">00314 - OLAVARRIA</span>
+        </div>
+      </div>
+
+      <!-- Filtro de Año -->
+      <div class="filter-group">
+        <div class="filter-label">
+          <span>Año Evaluado:</span>
+        </div>
+        <div style="display: flex; gap: 4px;">
+          <span class="filter-pill active" onclick="togglePill(this)">Todos</span>
+          <span class="filter-pill" onclick="togglePill(this)">2026</span>
+          <span class="filter-pill" onclick="togglePill(this)">2025</span>
+        </div>
+      </div>
+
+      <!-- Filtro Mes Evaluado -->
+      <div class="filter-group">
+        <div class="filter-label">
+          <span>Mes Evaluado:</span>
+        </div>
+        <div class="pills-container">
+          <span class="filter-pill active" onclick="togglePill(this)">Todos</span>
+          <span class="filter-pill" onclick="togglePill(this)">Octubre</span>
+          <span class="filter-pill" onclick="togglePill(this)">Septiembre</span>
+          <span class="filter-pill" onclick="togglePill(this)">Agosto</span>
+          <span class="filter-pill" onclick="togglePill(this)">Julio</span>
+        </div>
+      </div>
+
+      <!-- Interruptor Toggle: Medir Cumplimiento Arriba -->
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <span class="toggle-title">Medición Arriba</span>
+          <span class="toggle-desc">Mina Obras 365 y 372</span>
+        </div>
+        <div class="switch-ui" id="switchArriba" onclick="toggleSwitch(this)"></div>
+      </div>
+
+      <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 0.7rem; color: var(--text-muted);">Configuración Activa:</span>
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);" id="activeConfigSummary">Todas las Obras · Período 2026</span>
+      </div>
+    </aside>
+
+    <!-- BOTÓN FLOTANTE PARA RESTAURAR SIDEBAR SI ESTÁ COLAPSADO -->
+    <button class="sidebar-float-trigger" id="floatTriggerBtn" onclick="toggleSidebar()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      <span>Abrir Filtros</span>
+    </button>
+
+    <!-- ÁREA DE TRABAJO PRINCIPAL: BENTO GRID 180° -->
+    <main class="main-workspace">
+
+      <!-- BANNER DE CONTEXTO EJECUTIVO -->
+      <div class="executive-context-bar">
+        <div class="ctx-left">
+          <span class="ctx-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="bannerObraPill">Todas las Obras</span>
+          </span>
+          <span class="ctx-desc">Mostrando estado consolidado de inventario, logística y cumplimiento de servicios.</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Meta Corporativa AT: <strong style="color: var(--text-main);">78%</strong></span>
+        </div>
+      </div>
+
+      <!-- BENTO MASTER GRID -->
+      <div class="bento-master-grid">
+
+        <!-- ==========================================
+             COLUMNA IZQUIERDA: 1. MM + 3. DEMORAS
+             ========================================== -->
+        <div class="bento-column">
+
+          <!-- 1. ANÁLISIS MM (DISPONIBILIDAD & PLANIFICACIÓN) -->
+          <section class="bento-card">
+            <div class="bento-header">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--brand);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                </div>
+                <h3 class="bento-title">1. Disponibilidad & Materiales</h3>
+              </div>
+              <span class="bento-action-badge">Inventario Activo</span>
+            </div>
+
+            <!-- Radial Hero KPI de Disponibilidad General -->
+            <div class="kpi-radial-hero">
+              <div class="radial-circle-box">
+                <svg viewBox="0 0 70 70">
+                  <defs>
+                    <linearGradient id="radialGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0f766e"/>
+                      <stop offset="50%" stop-color="#0d9488"/>
+                      <stop offset="100%" stop-color="#14b8a6"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
+                  <circle class="radial-circle-progress" cx="35" cy="35" r="30"></circle>
+                </svg>
+                <div class="radial-value-center">88.4%</div>
+              </div>
+              <div class="kpi-hero-details">
+                <span class="kpi-hero-label">Disponibilidad General</span>
+                <div class="kpi-hero-status">
+                  <span class="kpi-hero-tag">En Rango Operativo</span>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">Obj: 90%</span>
+                </div>
+                <span class="kpi-hero-sub"><strong>12,624</strong> de <strong>14,280</strong> items con disponibilidad inmediata.</span>
+              </div>
+            </div>
+
+            <!-- Métricas Secundarias en Grid -->
+            <div class="metrics-card-grid">
+              <!-- Materiales Totales -->
+              <div class="stat-pill-card">
+                <div class="stat-header-row">
+                  <span class="stat-title">Total Materiales</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+                <span class="stat-value">14,280</span>
+                <span class="stat-hint">Registros catalogados</span>
+              </div>
+
+              <!-- Stock Nulo (Alerta ejecutiva) -->
+              <div class="stat-pill-card danger-card">
+                <div class="stat-header-row">
+                  <span class="stat-title">Stock Nulo</span>
+                  <span style="font-size: 0.65rem; background: var(--danger); color: white; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Crítico</span>
+                </div>
+                <span class="stat-value">142</span>
+                <span class="stat-hint">142 sin pedido de compra</span>
+              </div>
+            </div>
+
+            <!-- Desglose de Planificación con barras sutiles -->
+            <div style="background: var(--bg-subtle); border-radius: var(--radius-md); padding: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.75rem;">
+              <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px; display: block;">Clasificación de Planificación</span>
+              
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <span style="color: var(--warning-text); font-weight: 600;">● Menor al Punto de Pedido</span>
+                    <span style="font-weight: 700; font-family: var(--font-mono);">1,280 (9.0%)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 9%; background: var(--warning);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <span style="color: var(--success-text); font-weight: 600;">● Mayor al Punto de Pedido</span>
+                    <span style="font-weight: 700; font-family: var(--font-mono);">11,344 (79.4%)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 79.4%; background: var(--success);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <span style="color: var(--danger-text); font-weight: 600;">● Sobre Stock Máximo</span>
+                    <span style="font-weight: 700; font-family: var(--font-mono);">1,656 (11.6%)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 11.6%; background: #ea580c;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Sparkline de Tendencia de Evolución -->
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Evolución de Stock (Últimos 6 meses)</span>
+                <span style="font-size: 0.68rem; color: var(--success-text); font-weight: 700;">+2.4% vs mayo</span>
+              </div>
+              <div id="chartSparklineMM" style="width: 100%; height: 85px;"></div>
+            </div>
+          </section>
+
+          <!-- 3. DEMORAS Y CAUSAS -->
+          <section class="bento-card">
+            <div class="bento-header">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--danger);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                </div>
+                <h3 class="bento-title">3. Demoras por Área Responsable</h3>
+              </div>
+              <span class="bento-action-badge">Top Fricciones</span>
+            </div>
+
+            <!-- Gráfico de Demoras Horizontal ECharts -->
+            <div id="chartDemorasHorizontal" class="chart-box-frame" style="height: 160px;"></div>
+          </section>
+
+        </div>
+
+        <!-- ==========================================
+             COLUMNA DERECHA: 2. CUMPLIMIENTO + 4. SERVICIOS + 5. PARTIDAS + 6. TIEMPOS
+             ========================================== -->
+        <div class="bento-column">
+
+          <!-- 2. CUMPLIMIENTO DE PEDIDOS (KPI HERO + SPLINE CHART) -->
+          <section class="bento-card">
+            <div class="bento-header">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--success);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h3 class="bento-title">2. Cumplimiento de Pedidos (Nivel de Servicio)</h3>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="cumpl-meta-chip" style="background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border);">
+                  Obj Corporativo: 78%
+                </span>
+              </div>
+            </div>
+
+            <!-- Doble Tarjeta: Acumulado 12M vs Período Evaluado -->
+            <div class="cumpl-dual-container">
+              
+              <!-- 12 Meses Acumulado -->
+              <div class="cumpl-box">
+                <div class="cumpl-box-header">
+                  <span class="cumpl-box-title">Acumulado 12 Meses</span>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">nov25 - oct26</span>
+                </div>
+                
+                <div class="cumpl-hero-num">
+                  <span class="cumpl-num-big" style="color: var(--success);">81.2%</span>
+                  <span class="cumpl-num-sub">A Tiempo (AT)</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--brand);"></span>Pedidos Totales</span>
+                    <span class="breakdown-val">24,850</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
+                    <span class="breakdown-val" style="color: var(--warning-text);">12.5% (3,106)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
+                    <span class="breakdown-val" style="color: var(--danger-text);">6.3% (1,565)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label">Demora Promedio</span>
+                    <span class="breakdown-val">4.6 días</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mensual / Período Evaluado -->
+              <div class="cumpl-box">
+                <div class="cumpl-box-header">
+                  <span class="cumpl-box-title">Período Seleccionado</span>
+                  <span style="font-size: 0.65rem; background: var(--bg-surface); padding: 1px 6px; border-radius: var(--radius-pill); font-weight: 700; color: var(--brand);">Octubre 2026</span>
+                </div>
+
+                <div class="cumpl-hero-num">
+                  <span class="cumpl-num-big" style="color: var(--success);">84.6%</span>
+                  <span class="cumpl-num-sub">A Tiempo (AT)</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--brand);"></span>Pedidos Mensuales</span>
+                    <span class="breakdown-val">2,140</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
+                    <span class="breakdown-val" style="color: var(--warning-text);">10.8% (231)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
+                    <span class="breakdown-val" style="color: var(--danger-text);">4.6% (98)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label">Variación vs Mes Anterior</span>
+                    <span class="breakdown-val" style="color: var(--success-text); font-weight: 800;">+3.4% ↗</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Gráfico Spline de Tendencia Mensual ECharts -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Curva de Evolución Mensual (% AT vs Meta)</span>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.68rem; font-weight: 600;">
+                  <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 3px; background: var(--success); border-radius: 2px;"></span> %AT Real</span>
+                  <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 1px; border-top: 2px dashed #94a3b8;"></span> Meta 78%</span>
+                </div>
+              </div>
+              <div id="chartCumplSpline" class="chart-box-frame" style="height: 145px;"></div>
+            </div>
+          </section>
+
+          <!-- FILA COMBINADA: 4. SERVICIOS + 5. PARTIDAS -->
+          <div class="services-dual-row">
+
+            <!-- 4. SERVICIOS -->
+            <section class="bento-card" style="padding: 0.95rem;">
+              <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--info);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                  </div>
+                  <h3 class="bento-title" style="font-size: 0.8rem;">4. Servicios</h3>
+                </div>
+                <span class="bento-action-badge">424 Activos</span>
+              </div>
+
+              <div class="service-stat-strip">
+                <div class="strip-pill">
+                  <span class="strip-lbl">Total</span>
+                  <span class="strip-val" style="color: var(--brand);">424</span>
+                </div>
+                <div class="strip-pill" style="background: var(--success-bg); border-color: var(--success-border);">
+                  <span class="strip-lbl">En Curso</span>
+                  <span class="strip-val" style="color: var(--success-text);">312</span>
+                </div>
+                <div class="strip-pill" style="background: var(--danger-bg); border-color: var(--danger-border);">
+                  <span class="strip-lbl">Vencidos</span>
+                  <span class="strip-val" style="color: var(--danger-text);">38</span>
+                </div>
+                <div class="strip-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                  <span class="strip-lbl">Próx.</span>
+                  <span class="strip-val" style="color: var(--warning-text);">42</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- 5. CONTROL DE PARTIDAS -->
+            <section class="bento-card" style="padding: 0.95rem;">
+              <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--purple);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  </div>
+                  <h3 class="bento-title" style="font-size: 0.8rem;">5. Control Partidas</h3>
+                </div>
+                <span class="bento-action-badge" style="background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border);">GC: C01, C07, C02</span>
+              </div>
+
+              <div class="service-stat-strip" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="strip-pill">
+                  <span class="strip-lbl">Total</span>
+                  <span class="strip-val" style="color: var(--brand);">1,894</span>
+                </div>
+                <div class="strip-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                  <span class="strip-lbl">Falta Fact.</span>
+                  <span class="strip-val" style="color: var(--warning-text);">412</span>
+                </div>
+                <div class="strip-pill" style="background: var(--danger-bg); border-color: var(--danger-border);">
+                  <span class="strip-lbl">Falta Recep.</span>
+                  <span class="strip-val" style="color: var(--danger-text);">189</span>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- 6. MATRIZ TIEMPOS / PRIORIDAD -->
+          <section class="bento-card">
+            <div class="bento-header" style="margin-bottom: 0.5rem; padding-bottom: 0.4rem;">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--warning);">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3 class="bento-title">6. Tiempos de Entrega & Prioridad de Pedidos</h3>
+              </div>
+              <span class="bento-action-badge" style="background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border);">
+                POCO TIEMPO TODAS LAS OBRAS
+              </span>
+            </div>
+
+            <!-- Tabla Matriz con Micro-Heatmap -->
+            <div class="table-responsive-box">
+              <table class="modern-tiempos-table">
+                <thead>
+                  <tr>
+                    <th rowspan="2" style="text-align: left;">Segmento / Nivel</th>
+                    <th colspan="3" style="background: var(--danger-bg); color: var(--danger-text);">CRÍTICO</th>
+                    <th colspan="3" style="background: var(--warning-bg); color: var(--warning-text);">POCO TIEMPO</th>
+                    <th colspan="3" style="background: var(--bg-subtle);">SIN PRIORIDAD</th>
+                  </tr>
+                  <tr>
+                    <th>%AT</th>
+                    <th>%NE</th>
+                    <th>DÍAS</th>
+                    
+                    <th>%AT</th>
+                    <th>%NE</th>
+                    <th>DÍAS</th>
+
+                    <th>%AT</th>
+                    <th>%NE</th>
+                    <th>DÍAS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-row-name">Repuestos Críticos</td>
+                    <td class="cell-highlight-ok">82.4%</td>
+                    <td class="cell-highlight-bad">4.1%</td>
+                    <td>3.2</td>
+
+                    <td class="cell-highlight-warn">74.1%</td>
+                    <td class="cell-highlight-bad">7.8%</td>
+                    <td>5.4</td>
+
+                    <td class="cell-highlight-ok">86.2%</td>
+                    <td>2.9%</td>
+                    <td>8.1</td>
+                  </tr>
+                  <tr>
+                    <td class="td-row-name">Insumos de Obra</td>
+                    <td class="cell-highlight-ok">88.9%</td>
+                    <td>2.1%</td>
+                    <td>2.8</td>
+
+                    <td class="cell-highlight-ok">79.5%</td>
+                    <td>5.2%</td>
+                    <td>4.9</td>
+
+                    <td class="cell-highlight-ok">89.4%</td>
+                    <td>1.8%</td>
+                    <td>6.7</td>
+                  </tr>
+                  <tr>
+                    <td class="td-row-name">Servicios Subcontratados</td>
+                    <td class="cell-highlight-warn">68.3%</td>
+                    <td class="cell-highlight-bad">11.4%</td>
+                    <td>6.5</td>
+
+                    <td class="cell-highlight-warn">71.0%</td>
+                    <td class="cell-highlight-bad">8.9%</td>
+                    <td>7.1</td>
+
+                    <td class="cell-highlight-ok">84.0%</td>
+                    <td>3.5%</td>
+                    <td>9.2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL DE COMPARATIVA: ANTES VS DESPUÉS (180°) -->
+  <div class="comparison-modal-backdrop" id="compModal">
+    <div class="comparison-modal-card">
+      <div class="modal-head">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.2rem;">⚖️</span>
+          <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);">Matriz de Transformación 180° — Antes vs Después</h2>
+        </div>
+        <button onclick="closeComparisonModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Este prototipo demuestra el cambio cualitativo desde un tablero de operaciones interno con bordes pesados hacia una plataforma ejecutiva de datos con estándares SaaS modernos.
+        </p>
+
+        <table class="diff-table">
+          <thead>
+            <tr>
+              <th style="width: 20%;">Dimensión</th>
+              <th style="width: 40%; color: var(--danger-text);">Diseño Anterior</th>
+              <th style="width: 40%; color: var(--success-text);">Nuevo Diseño 180°</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Iconografía</strong></td>
+              <td>Emojis del sistema sueltos (📦, 🎯, ⏱️, 🛠️, ⏳) que dan aspecto de borrador o prototipo.</td>
+              <td><strong>Iconos SVG vectoriales</strong> estilizados (Lucide), monocromáticos y badges temáticos consistentes.</td>
+            </tr>
+            <tr>
+              <td><strong>2. Bordes y Estructura</strong></td>
+              <td>Bordes toscos de 2px a 3.5px, marcos densos (#94a3b8) y divisiones duras por todos lados.</td>
+              <td><strong>Bordes casi invisibles de 1px (#e2e8f0)</strong> con sutiles sombras multicapa que generan profundidad limpia.</td>
+            </tr>
+            <tr>
+              <td><strong>3. Visualización de KPIs</strong></td>
+              <td>Filas de texto con viñetas ("Disponibilidad: 88%").</td>
+              <td><strong>Componentes visuales</strong>: Anillos de progreso radial SVG, barras lineales de avance y chips con variación porcentual.</td>
+            </tr>
+            <tr>
+              <td><strong>4. Barra Lateral (Filtros)</strong></td>
+              <td>Listas desplegables altas (height: 112px) de selección múltiple estilo Streamlit 2018.</td>
+              <td><strong>Sidebar SaaS inteligente</strong>: Buscador rápido, pills táctiles compactas y toggle switches modernos.</td>
+            </tr>
+            <tr>
+              <td><strong>5. Encabezado & Navegación</strong></td>
+              <td>Gradiente saturado permanente con pestañas cuadradas toscas.</td>
+              <td><strong>Topbar flotante de cristal esmerilado</strong> con control segmentado tipo cápsula (Segmented Control).</td>
+            </tr>
+            <tr>
+              <td><strong>6. Gráficos</strong></td>
+              <td>Ejes y líneas clásicas con tooltip rígido.</td>
+              <td><strong>Curvas suaves (Smooth Splines)</strong> con área sombreada translúcida, crosshairs dinámicos y tooltip de vidrio esmerilado.</td>
+            </tr>
+            <tr>
+              <td><strong>7. Flexibilidad de Temas</strong></td>
+              <td>Solo modo claro con colores fijos.</td>
+              <td><strong>Soporte dual nativo</strong>: Clean SaaS Light Mode y Dark Command Center con solo 1 clic.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
+          <button onclick="closeComparisonModal()" style="background: var(--brand); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; font-size: 0.8rem;">
+            Entendido, volver a la prueba
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS INTERACTIVOS Y CONFIGURACIÓN DE ECHARTS -->
+  <script>
+    let isDarkMode = false;
+    let chartSparkline = null;
+    let chartDemoras = null;
+    let chartCumpl = null;
+
+    // Inicialización de Gráficos al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      initSparkline();
+      initDemorasChart();
+      initCumplChart();
+
+      window.addEventListener('resize', () => {
+        chartSparkline?.resize();
+        chartDemoras?.resize();
+        chartCumpl?.resize();
+      });
+    });
+
+    // 1. Gráfico Sparkline de MM
+    function initSparkline() {
+      const dom = document.getElementById('chartSparklineMM');
+      if (!dom) return;
+      chartSparkline = echarts.init(dom, isDarkMode ? 'dark' : null);
+      
+      const option = {
+        backgroundColor: 'transparent',
+        grid: { left: 4, right: 4, top: 8, bottom: 4, containLabel: false },
+        tooltip: {
+          trigger: 'axis',
+          formatter: '{b}: <strong>{c}%</strong> Disp.',
+          backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+          borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+          textStyle: { color: isDarkMode ? '#f8fafc' : '#0f172a', fontSize: 11 }
+        },
+        xAxis: {
+          type: 'category',
+          show: false,
+          data: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre']
+        },
+        yAxis: { type: 'value', min: 80, max: 95, show: false },
+        series: [{
+          name: 'Disponibilidad',
+          type: 'line',
+          smooth: 0.35,
+          showSymbol: false,
+          data: [84.1, 85.3, 86.0, 85.8, 87.2, 88.4],
+          lineStyle: { width: 2.8, color: '#0d9488' },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(13, 148, 136, 0.45)' },
+              { offset: 0.6, color: 'rgba(20, 184, 166, 0.18)' },
+              { offset: 1, color: 'rgba(13, 148, 136, 0.0)' }
+            ])
+          }
+        }]
+      };
+      chartSparkline.setOption(option);
+    }
+
+    // 2. Gráfico Horizontal de Demoras
+    function initDemorasChart() {
+      const dom = document.getElementById('chartDemorasHorizontal');
+      if (!dom) return;
+      chartDemoras = echarts.init(dom, isDarkMode ? 'dark' : null);
+
+      const option = {
+        backgroundColor: 'transparent',
+        grid: { left: '30%', right: '12%', top: '5%', bottom: '8%' },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+          borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+          textStyle: { color: isDarkMode ? '#f8fafc' : '#0f172a', fontSize: 11 }
+        },
+        xAxis: {
+          type: 'value',
+          show: false
+        },
+        yAxis: {
+          type: 'category',
+          inverse: true,
+          data: ['Transporte / Flete', 'Proveedor Demora', 'Aprobación Técnica', 'Almacén Central', 'Otros'],
+          axisLine: { show: false },
+          axisTick: { show: false },
+          axisLabel: {
+            color: isDarkMode ? '#cbd5e1' : '#475569',
+            fontSize: 11,
+            fontWeight: 600
+          }
+        },
+        series: [{
+          type: 'bar',
+          data: [
+            { value: 142, itemStyle: { color: '#ef4444' } },
+            { value: 98, itemStyle: { color: '#f59e0b' } },
+            { value: 65, itemStyle: { color: '#0f766e' } },
+            { value: 34, itemStyle: { color: '#0d9488' } },
+            { value: 18, itemStyle: { color: '#94a3b8' } }
+          ],
+          barWidth: 12,
+          itemStyle: {
+            borderRadius: [0, 6, 6, 0]
+          },
+          label: {
+            show: true,
+            position: 'right',
+            formatter: '{c}',
+            color: isDarkMode ? '#94a3b8' : '#64748b',
+            fontSize: 11,
+            fontWeight: 700
+          }
+        }]
+      };
+      chartDemoras.setOption(option);
+    }
+
+    // 3. Gráfico de Curva de Cumplimiento (Spline)
+    function initCumplChart() {
+      const dom = document.getElementById('chartCumplSpline');
+      if (!dom) return;
+      chartCumpl = echarts.init(dom, isDarkMode ? 'dark' : null);
+
+      const option = {
+        backgroundColor: 'transparent',
+        grid: { left: '6%', right: '3%', top: '15%', bottom: '15%' },
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+          borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+          textStyle: { color: isDarkMode ? '#f8fafc' : '#0f172a', fontSize: 11 },
+          formatter: function (params) {
+            let res = `<div style="font-weight:700;margin-bottom:3px;">${params[0].name}</div>`;
+            params.forEach(p => {
+              res += `<div>${p.marker} ${p.seriesName}: <strong>${p.value}%</strong></div>`;
+            });
+            return res;
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: ['may26', 'jun26', 'jul26', 'ago26', 'sep26', 'oct26'],
+          axisLine: { lineStyle: { color: isDarkMode ? '#334155' : '#e2e8f0' } },
+          axisTick: { show: false },
+          axisLabel: { color: isDarkMode ? '#94a3b8' : '#64748b', fontSize: 10, fontWeight: 600 }
+        },
+        yAxis: {
+          type: 'value',
+          min: 65,
+          max: 95,
+          interval: 10,
+          splitLine: { lineStyle: { color: isDarkMode ? 'rgba(255,255,255,0.06)' : '#f1f5f9' } },
+          axisLabel: { formatter: '{value}%', color: isDarkMode ? '#94a3b8' : '#64748b', fontSize: 10 }
+        },
+        series: [
+          {
+            name: '% A Tiempo',
+            type: 'line',
+            smooth: 0.35,
+            data: [76.5, 78.2, 77.9, 80.4, 81.2, 84.6],
+            lineStyle: { width: 3.2, color: '#0d9488' },
+            itemStyle: { color: '#0f766e', borderWidth: 2, borderColor: '#14b8a6' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(13, 148, 136, 0.40)' },
+                { offset: 0.5, color: 'rgba(20, 184, 166, 0.18)' },
+                { offset: 1, color: 'rgba(13, 148, 136, 0.0)' }
+              ])
+            },
+            markLine: {
+              symbol: ['none', 'none'],
+              silent: true,
+              data: [{
+                yAxis: 78,
+                label: { show: true, formatter: 'Meta 78%', position: 'insideEndTop', color: '#0f766e', fontSize: 10, fontWeight: 700 },
+                lineStyle: { type: 'dashed', color: '#0d9488', width: 1.5 }
+              }]
+            }
+          }
+        ]
+      };
+      chartCumpl.setOption(option);
+    }
+
+    // Toggle de Modo Oscuro / Claro
+    function toggleTheme() {
+      isDarkMode = !isDarkMode;
+      document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+      
+      const icon = document.getElementById('themeBtnIcon');
+      const text = document.getElementById('themeBtnText');
+      if (isDarkMode) {
+        icon.textContent = '☀️';
+        text.textContent = 'Modo Claro';
+      } else {
+        icon.textContent = '🌙';
+        text.textContent = 'Modo Oscuro';
+      }
+
+      // Reinicializar los charts con el tema correspondiente
+      chartSparkline?.dispose();
+      chartDemoras?.dispose();
+      chartCumpl?.dispose();
+      initSparkline();
+      initDemorasChart();
+      initCumplChart();
+    }
+
+    // Toggle Sidebar
+    function toggleSidebar() {
+      const sb = document.getElementById('smartSidebar');
+      const floatBtn = document.getElementById('floatTriggerBtn');
+      sb.classList.toggle('collapsed');
+      
+      if (sb.classList.contains('collapsed')) {
+        floatBtn.style.display = 'inline-flex';
+      } else {
+        floatBtn.style.display = 'none';
+      }
+
+      setTimeout(() => {
+        chartSparkline?.resize();
+        chartDemoras?.resize();
+        chartCumpl?.resize();
+      }, 250);
+    }
+
+    // Simulación de Selección de Obra
+    function selectObra(el, code) {
+      document.querySelectorAll('#obraPillsContainer .filter-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+
+      const pillLabel = el.textContent;
+      document.getElementById('bannerObraPill').textContent = pillLabel;
+      document.getElementById('activeConfigSummary').textContent = `${pillLabel} · Período 2026`;
+
+      // Simulación de actualización interactiva de números
+      if (code === '365') {
+        updateStatsMock('91.2%', '3,840', '12', '86.4%', '+4.1%');
+      } else if (code === '372') {
+        updateStatsMock('84.0%', '4,120', '38', '77.2%', '-1.2%');
+      } else {
+        updateStatsMock('88.4%', '14,280', '142', '84.6%', '+3.4%');
+      }
+    }
+
+    function updateStatsMock(dispPct, totMat, nulo, cumplPct, diff) {
+      document.querySelector('.radial-value-center').textContent = dispPct;
+      document.querySelectorAll('.stat-value')[0].textContent = totMat;
+      document.querySelectorAll('.stat-value')[1].textContent = nulo;
+      document.querySelectorAll('.cumpl-num-big')[1].textContent = cumplPct;
+      document.querySelectorAll('.breakdown-val')[7].textContent = diff + ' ↗';
+    }
+
+    function togglePill(el) {
+      const parent = el.parentElement;
+      parent.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function toggleSwitch(el) {
+      el.classList.toggle('active');
+      const isActive = el.classList.contains('active');
+      document.getElementById('activeConfigSummary').textContent = isActive 
+        ? 'Medición Arriba (Mina) Activada' 
+        : 'Todas las Obras · Período 2026';
+    }
+
+    function toggleExcludeMode() {
+      const lbl = document.getElementById('excludeToggleLabel');
+      if (lbl.textContent.includes('OFF')) {
+        lbl.textContent = 'Excluir: ON';
+        lbl.style.color = 'var(--danger)';
+      } else {
+        lbl.textContent = 'Excluir: OFF';
+        lbl.style.color = 'var(--brand)';
+      }
+    }
+
+    function resetMockFilters() {
+      document.querySelectorAll('.filter-pill').forEach((p, idx) => {
+        if (idx === 0) p.classList.add('active');
+        else p.classList.remove('active');
+      });
+      document.getElementById('switchArriba').classList.remove('active');
+      document.getElementById('bannerObraPill').textContent = 'Todas las Obras';
+      updateStatsMock('88.4%', '14,280', '142', '84.6%', '+3.4%');
+    }
+
+    function filterObraPills(val) {
+      const text = val.toLowerCase();
+      document.querySelectorAll('#obraPillsContainer .filter-pill').forEach(pill => {
+        if (pill.textContent.toLowerCase().includes(text) || pill.textContent.includes('Todas')) {
+          pill.style.display = 'inline-flex';
+        } else {
+          pill.style.display = 'none';
+        }
+      });
+    }
+
+    function switchMockTab(btn, tabName) {
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    // Modal de Comparativa
+    function openComparisonModal() {
+      document.getElementById('compModal').style.display = 'flex';
+    }
+    function closeComparisonModal() {
+      document.getElementById('compModal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

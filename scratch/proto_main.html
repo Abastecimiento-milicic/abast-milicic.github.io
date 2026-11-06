@@ -1,0 +1,402 @@
+<main class="main-workspace">
+
+      <!-- BANNER DE CONTEXTO EJECUTIVO -->
+      <div class="executive-context-bar">
+        <div class="ctx-left">
+          <span class="ctx-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="bannerObraPill">Todas las Obras</span>
+          </span>
+          <span class="ctx-desc">Mostrando estado consolidado de inventario, logística y cumplimiento de servicios.</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Meta Corporativa AT: <strong style="color: var(--text-main);">78%</strong></span>
+        </div>
+      </div>
+
+      <!-- BENTO MASTER GRID -->
+      <div class="bento-master-grid">
+
+        <!-- ==========================================
+             COLUMNA IZQUIERDA: 1. MM + 3. DEMORAS
+             ========================================== -->
+        <div class="bento-column">
+
+          <!-- 1. ANÁLISIS MM (DISPONIBILIDAD & PLANIFICACIÓN) -->
+          <section class="bento-card">
+            <div class="bento-header">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--brand);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                </div>
+                <h3 class="bento-title">1. Disponibilidad & Materiales</h3>
+              </div>
+              <span class="bento-action-badge">Inventario Activo</span>
+            </div>
+
+            <!-- Radial Hero KPI de Disponibilidad General -->
+            <div class="kpi-radial-hero">
+              <div class="radial-circle-box">
+                <svg viewBox="0 0 70 70">
+                  <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
+                  <circle class="radial-circle-progress" cx="35" cy="35" r="30"></circle>
+                </svg>
+                <div class="radial-value-center">88.4%</div>
+              </div>
+              <div class="kpi-hero-details">
+                <span class="kpi-hero-label">Disponibilidad General</span>
+                <div class="kpi-hero-status">
+                  <span class="kpi-hero-tag">En Rango Operativo</span>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">Obj: 90%</span>
+                </div>
+                <span class="kpi-hero-sub"><strong>12,624</strong> de <strong>14,280</strong> items con disponibilidad inmediata.</span>
+              </div>
+            </div>
+
+            <!-- Métricas Secundarias en Grid -->
+            <div class="metrics-card-grid">
+              <!-- Materiales Totales -->
+              <div class="stat-pill-card">
+                <div class="stat-header-row">
+                  <span class="stat-title">Total Materiales</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+                <span class="stat-value">14,280</span>
+                <span class="stat-hint">Registros catalogados</span>
+              </div>
+
+              <!-- Stock Nulo (Alerta ejecutiva) -->
+              <div class="stat-pill-card danger-card">
+                <div class="stat-header-row">
+                  <span class="stat-title">Stock Nulo</span>
+                  <span style="font-size: 0.65rem; background: var(--danger); color: white; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Crítico</span>
+                </div>
+                <span class="stat-value">142</span>
+                <span class="stat-hint">142 sin pedido de compra</span>
+              </div>
+            </div>
+
+            <!-- Desglose de Planificación con barras sutiles -->
+            <div style="background: var(--bg-subtle); border-radius: var(--radius-md); padding: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.75rem;">
+              <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px; display: block;">Clasificación de Planificación</span>
+              
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <span style="color: var(--warning-text); font-weight: 600;">● Menor al Punto de Pedido</span>
+                    <span style="font-weight: 700; font-family: var(--font-mono);">1,280 (9.0%)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 9%; background: var(--warning);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <span style="color: var(--success-text); font-weight: 600;">● Mayor al Punto de Pedido</span>
+                    <span style="font-weight: 700; font-family: var(--font-mono);">11,344 (79.4%)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 79.4%; background: var(--success);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <span style="color: var(--danger-text); font-weight: 600;">● Sobre Stock Máximo</span>
+                    <span style="font-weight: 700; font-family: var(--font-mono);">1,656 (11.6%)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 11.6%; background: #ea580c;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Sparkline de Tendencia de Evolución -->
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Evolución de Stock (Últimos 6 meses)</span>
+                <span style="font-size: 0.68rem; color: var(--success-text); font-weight: 700;">+2.4% vs mayo</span>
+              </div>
+              <div id="chartSparklineMM" style="width: 100%; height: 85px;"></div>
+            </div>
+          </section>
+
+          <!-- 3. DEMORAS Y CAUSAS -->
+          <section class="bento-card">
+            <div class="bento-header">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--danger);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                </div>
+                <h3 class="bento-title">3. Demoras por Área Responsable</h3>
+              </div>
+              <span class="bento-action-badge">Top Fricciones</span>
+            </div>
+
+            <!-- Gráfico de Demoras Horizontal ECharts -->
+            <div id="chartDemorasHorizontal" class="chart-box-frame" style="height: 160px;"></div>
+          </section>
+
+        </div>
+
+        <!-- ==========================================
+             COLUMNA DERECHA: 2. CUMPLIMIENTO + 4. SERVICIOS + 5. PARTIDAS + 6. TIEMPOS
+             ========================================== -->
+        <div class="bento-column">
+
+          <!-- 2. CUMPLIMIENTO DE PEDIDOS (KPI HERO + SPLINE CHART) -->
+          <section class="bento-card">
+            <div class="bento-header">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--success);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h3 class="bento-title">2. Cumplimiento de Pedidos (Nivel de Servicio)</h3>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="cumpl-meta-chip" style="background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border);">
+                  Obj Corporativo: 78%
+                </span>
+              </div>
+            </div>
+
+            <!-- Doble Tarjeta: Acumulado 12M vs Período Evaluado -->
+            <div class="cumpl-dual-container">
+              
+              <!-- 12 Meses Acumulado -->
+              <div class="cumpl-box">
+                <div class="cumpl-box-header">
+                  <span class="cumpl-box-title">Acumulado 12 Meses</span>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">nov25 - oct26</span>
+                </div>
+                
+                <div class="cumpl-hero-num">
+                  <span class="cumpl-num-big" style="color: var(--success);">81.2%</span>
+                  <span class="cumpl-num-sub">A Tiempo (AT)</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--brand);"></span>Pedidos Totales</span>
+                    <span class="breakdown-val">24,850</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
+                    <span class="breakdown-val" style="color: var(--warning-text);">12.5% (3,106)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
+                    <span class="breakdown-val" style="color: var(--danger-text);">6.3% (1,565)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label">Demora Promedio</span>
+                    <span class="breakdown-val">4.6 días</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mensual / Período Evaluado -->
+              <div class="cumpl-box">
+                <div class="cumpl-box-header">
+                  <span class="cumpl-box-title">Período Seleccionado</span>
+                  <span style="font-size: 0.65rem; background: var(--bg-surface); padding: 1px 6px; border-radius: var(--radius-pill); font-weight: 700; color: var(--brand);">Octubre 2026</span>
+                </div>
+
+                <div class="cumpl-hero-num">
+                  <span class="cumpl-num-big" style="color: var(--success);">84.6%</span>
+                  <span class="cumpl-num-sub">A Tiempo (AT)</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--brand);"></span>Pedidos Mensuales</span>
+                    <span class="breakdown-val">2,140</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
+                    <span class="breakdown-val" style="color: var(--warning-text);">10.8% (231)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
+                    <span class="breakdown-val" style="color: var(--danger-text);">4.6% (98)</span>
+                  </div>
+                  <div class="breakdown-row">
+                    <span class="breakdown-label">Variación vs Mes Anterior</span>
+                    <span class="breakdown-val" style="color: var(--success-text); font-weight: 800;">+3.4% ↗</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Gráfico Spline de Tendencia Mensual ECharts -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Curva de Evolución Mensual (% AT vs Meta)</span>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.68rem; font-weight: 600;">
+                  <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 3px; background: var(--success); border-radius: 2px;"></span> %AT Real</span>
+                  <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 1px; border-top: 2px dashed #94a3b8;"></span> Meta 78%</span>
+                </div>
+              </div>
+              <div id="chartCumplSpline" class="chart-box-frame" style="height: 145px;"></div>
+            </div>
+          </section>
+
+          <!-- FILA COMBINADA: 4. SERVICIOS + 5. PARTIDAS -->
+          <div class="services-dual-row">
+
+            <!-- 4. SERVICIOS -->
+            <section class="bento-card" style="padding: 0.95rem;">
+              <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--info);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                  </div>
+                  <h3 class="bento-title" style="font-size: 0.8rem;">4. Servicios</h3>
+                </div>
+                <span class="bento-action-badge">424 Activos</span>
+              </div>
+
+              <div class="service-stat-strip">
+                <div class="strip-pill">
+                  <span class="strip-lbl">Total</span>
+                  <span class="strip-val" style="color: var(--brand);">424</span>
+                </div>
+                <div class="strip-pill" style="background: var(--success-bg); border-color: var(--success-border);">
+                  <span class="strip-lbl">En Curso</span>
+                  <span class="strip-val" style="color: var(--success-text);">312</span>
+                </div>
+                <div class="strip-pill" style="background: var(--danger-bg); border-color: var(--danger-border);">
+                  <span class="strip-lbl">Vencidos</span>
+                  <span class="strip-val" style="color: var(--danger-text);">38</span>
+                </div>
+                <div class="strip-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                  <span class="strip-lbl">Próx.</span>
+                  <span class="strip-val" style="color: var(--warning-text);">42</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- 5. CONTROL DE PARTIDAS -->
+            <section class="bento-card" style="padding: 0.95rem;">
+              <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--purple);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  </div>
+                  <h3 class="bento-title" style="font-size: 0.8rem;">5. Control Partidas</h3>
+                </div>
+                <span class="bento-action-badge" style="background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border);">GC: C01, C07, C02</span>
+              </div>
+
+              <div class="service-stat-strip" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="strip-pill">
+                  <span class="strip-lbl">Total</span>
+                  <span class="strip-val" style="color: var(--brand);">1,894</span>
+                </div>
+                <div class="strip-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                  <span class="strip-lbl">Falta Fact.</span>
+                  <span class="strip-val" style="color: var(--warning-text);">412</span>
+                </div>
+                <div class="strip-pill" style="background: var(--danger-bg); border-color: var(--danger-border);">
+                  <span class="strip-lbl">Falta Recep.</span>
+                  <span class="strip-val" style="color: var(--danger-text);">189</span>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- 6. MATRIZ TIEMPOS / PRIORIDAD -->
+          <section class="bento-card">
+            <div class="bento-header" style="margin-bottom: 0.5rem; padding-bottom: 0.4rem;">
+              <div class="bento-title-group">
+                <div class="bento-icon-wrapper" style="color: var(--warning);">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3 class="bento-title">6. Tiempos de Entrega & Prioridad de Pedidos</h3>
+              </div>
+              <span class="bento-action-badge" style="background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border);">
+                POCO TIEMPO TODAS LAS OBRAS
+              </span>
+            </div>
+
+            <!-- Tabla Matriz con Micro-Heatmap -->
+            <div class="table-responsive-box">
+              <table class="modern-tiempos-table">
+                <thead>
+                  <tr>
+                    <th rowspan="2" style="text-align: left;">Segmento / Nivel</th>
+                    <th colspan="3" style="background: var(--danger-bg); color: var(--danger-text);">CRÍTICO</th>
+                    <th colspan="3" style="background: var(--warning-bg); color: var(--warning-text);">POCO TIEMPO</th>
+                    <th colspan="3" style="background: var(--bg-subtle);">SIN PRIORIDAD</th>
+                  </tr>
+                  <tr>
+                    <th>%AT</th>
+                    <th>%NE</th>
+                    <th>DÍAS</th>
+                    
+                    <th>%AT</th>
+                    <th>%NE</th>
+                    <th>DÍAS</th>
+
+                    <th>%AT</th>
+                    <th>%NE</th>
+                    <th>DÍAS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-row-name">Repuestos Críticos</td>
+                    <td class="cell-highlight-ok">82.4%</td>
+                    <td class="cell-highlight-bad">4.1%</td>
+                    <td>3.2</td>
+
+                    <td class="cell-highlight-warn">74.1%</td>
+                    <td class="cell-highlight-bad">7.8%</td>
+                    <td>5.4</td>
+
+                    <td class="cell-highlight-ok">86.2%</td>
+                    <td>2.9%</td>
+                    <td>8.1</td>
+                  </tr>
+                  <tr>
+                    <td class="td-row-name">Insumos de Obra</td>
+                    <td class="cell-highlight-ok">88.9%</td>
+                    <td>2.1%</td>
+                    <td>2.8</td>
+
+                    <td class="cell-highlight-ok">79.5%</td>
+                    <td>5.2%</td>
+                    <td>4.9</td>
+
+                    <td class="cell-highlight-ok">89.4%</td>
+                    <td>1.8%</td>
+                    <td>6.7</td>
+                  </tr>
+                  <tr>
+                    <td class="td-row-name">Servicios Subcontratados</td>
+                    <td class="cell-highlight-warn">68.3%</td>
+                    <td class="cell-highlight-bad">11.4%</td>
+                    <td>6.5</td>
+
+                    <td class="cell-highlight-warn">71.0%</td>
+                    <td class="cell-highlight-bad">8.9%</td>
+                    <td>7.1</td>
+
+                    <td class="cell-highlight-ok">84.0%</td>
+                    <td>3.5%</td>
+                    <td>9.2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+
+    </main>

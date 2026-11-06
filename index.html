@@ -15,12 +15,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261105_145936" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261105_145936" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261105_145936" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261105_145936" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261105_145936" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261105_145936" />
+  <link rel="stylesheet" href="css/base.css?v=20261106_160743" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261106_160743" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261106_160743" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261106_160743" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261106_160743" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261106_160743" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -297,12 +297,13 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
-
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
-          <div class="st-filters-actions">
-            <button id="cumpl_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="cumpl_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros — Cumplimiento', `
               <h4>Cliente / Obra</h4>
               <p>Filtrá los pedidos por el nombre de la obra o cliente. Podés seleccionar varios con <strong>Ctrl + clic</strong>.</p>
@@ -360,14 +361,16 @@
 
           <hr class="st-divider" />
 
-          <!-- Botón Medir Cumplimiento Arriba -->
-          <div id="cumpl_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
-            <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
-              🏔️ Medir cumplimiento arriba
-            </button>
-            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
-              Obras 365 y 372 (año 2026)
+          <!-- Interruptor Toggle: Medir Cumplimiento Arriba -->
+          <div id="cumpl_arribaWrap" style="width: 100%;">
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <span class="toggle-title">Medición Arriba</span>
+                <span class="toggle-desc">Mina Obras 365 y 372 (2026)</span>
+              </div>
+              <div class="switch-ui" id="cumpl_switchArriba" onclick="window.toggleCumplArribaSwitch()" title="Alternar entre Base y Mina"></div>
             </div>
+            <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="display: none;" title="Alternar entre Base y Mina"></button>
           </div>
 
           <!-- Tarjeta Pedidos Incompletos -->
@@ -684,11 +687,13 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
-
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
-          <div class="st-filters-actions">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="mm_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetMMFilters()" title="Restablecer filtros">Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros y Disponibilidad — Análisis MM', `
               <h4>Cliente (Almacén)</h4>
               <p>Seleccioná uno o varios almacenes para filtrar.</p>
@@ -869,10 +874,12 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
-
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <button id="dem_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetDemorasFilters()" title="Restablecer filtros">Restablecer</button>
         </div>
 
         <div class="st-filters-stack">
@@ -1027,55 +1034,82 @@
         <div class="loading-text">Cargando servicios...</div>
       </div>
 
-      <div class="topbar-badge" style="margin-bottom: 14px; font-size: 0.82rem; font-weight: 500; line-height: 1.45; display: block; padding: 8px 14px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background-color: #ea580c; color: #fff;">
-        ℹ️ Este reporte contempla las VA tipo <strong>ZPAN</strong> y <strong>ZPAI</strong> de clientes (obras) cuyo GC es <strong>24, 25, 26, 16 ó 04</strong>, y posiciones con Tipo de Ítem <strong>"SERVICIOS"</strong> (aun si pertenecen a otro GC). No se muestran los servicios ya finalizados (sin cantidades pendientes de recepción y con fecha vencida).
+      <!-- Banner Informativo Estilo SaaS -->
+      <div class="serv-notice-banner">
+        <div class="serv-notice-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="serv-notice-text">
+          Este reporte contempla las VA tipo <strong>ZPAN</strong> y <strong>ZPAI</strong> de clientes (obras) cuyo GC es <strong>24, 25, 26, 16 ó 04</strong>, y posiciones con Tipo de Ítem <strong>"SERVICIOS"</strong> (aun si pertenecen a otro GC). No se muestran los servicios ya finalizados (sin cantidades pendientes de recepción y con fecha vencida).
+        </div>
       </div>
 
-      <aside class="st-sidebar">
+      <aside class="st-sidebar app-sidebar">
         <div class="st-sidebar-toprow">
           <div class="st-sector-switcher">
             <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
               <option value="abastecimiento">🏗️ OBRAS</option>
-              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
+              <option value="sede">🏢 SEDE</option>
+              <option value="compras">🛒 COMPRAS</option>
+              <option value="almacen">🏭 ALMACEN</option>
             </select>
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
 
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <button type="button" class="sidebar-reset-btn" onclick="window.resetServiciosFilters()" title="Restablecer filtros">Restablecer</button>
         </div>
 
-        <div class="st-filters-stack">
-          <div class="filter"><label>Cliente:</label><select id="serv_clienteSelect" multiple class="multi-select"></select></div>
-          <div class="filter"><label>Período:</label><select id="serv_clasif2Select" multiple class="multi-select"></select></div>
-          <div class="filter"><label>Estado:</label><select id="serv_gcocSelect" multiple class="multi-select"></select></div>
-          <div class="filter"><label>Grupo de Compra:</label><select id="serv_grupoCompraSelect" multiple class="multi-select"></select></div>
-          <div class="filter"><label>Estado del Ítem:</label><select id="serv_estadoItemSelect" multiple class="multi-select"></select></div>
+        <div class="st-filters-stack" style="margin-top: 10px;">
+          <div class="filter"><label>Cliente / Obra:</label><select id="serv_clienteSelect" multiple class="multi-select" size="5"></select></div>
+          <div class="filter"><label>Período de Certificación:</label><select id="serv_clasif2Select" multiple class="multi-select" size="4"></select></div>
+          <div class="filter"><label>Estado del Servicio:</label><select id="serv_gcocSelect" multiple class="multi-select" size="4"></select></div>
+          <div class="filter"><label>Grupo de Compra:</label><select id="serv_grupoCompraSelect" multiple class="multi-select" size="4"></select></div>
+          <div class="filter"><label>Estado del Ítem:</label><select id="serv_estadoItemSelect" multiple class="multi-select" size="4"></select></div>
 
           <hr class="st-divider" />
 
-          <div class="filter-kpi" style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="kpi-mini-box">
-              <span id="serv_kpiTotal" class="kpi-mini-value">0</span>
-              <span class="kpi-mini-label">Servicios Seleccionados</span>
+          <div class="serv-kpi-card">
+            <div class="serv-kpi-inner">
+              <span class="serv-kpi-label">SERVICIOS SELECCIONADOS</span>
+              <span id="serv_kpiTotal" class="serv-kpi-value">0</span>
             </div>
-            <button id="serv_btnDownloadSelection" class="btn" style="width: 100%;">⬇ Descargar Selección</button>
+            <button id="serv_btnDownloadSelection" class="btn btn-serv-download" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Descargar Selección</span>
+            </button>
           </div>
         </div>
       </aside>
 
-      <section class="panel">
-        <div class="panel-title">RESUMEN DE PEDIDOS POR ESTADO<span id="serv_activeFiltersSummary" class="st-active-filters-summary"></span></div>
-        <div class="panel-body" style="padding: 20px; overflow-x: auto;">
+      <section class="panel serv-table-panel">
+        <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>RESUMEN DE PEDIDOS POR ESTADO</span>
+            <span id="serv_activeFiltersSummary" class="st-active-filters-summary"></span>
+          </div>
+        </div>
+        <div class="panel-body" style="padding: 18px; overflow-x: auto;">
           <table id="serv_tablaResumen" class="serv-resumen-table">
             <thead>
               <tr>
                 <th class="sortable" data-sort="estadoItem" title="Ordenar por Estado Item">ESTADO ITEM <span id="serv_sort_estadoItem">↕</span></th>
-                <th class="sortable" data-sort="estadoServicio" title="Ordenar por Estado Servicio">Estado Servicio <span id="serv_sort_estadoServicio">↕</span></th>
+                <th class="sortable" data-sort="estadoServicio" title="Ordenar por Estado Servicio">ESTADO SERVICIO <span id="serv_sort_estadoServicio">↕</span></th>
                 <th class="sortable" data-sort="count" title="Ordenar por Cantidad" style="text-align: right;">CANTIDAD DE PEDIDOS <span id="serv_sort_count">▼</span></th>
-                <th style="text-align: center; width: 130px;">ACCIONES</th>
+                <th style="text-align: center; width: 140px;">ACCIONES</th>
               </tr>
             </thead>
             <tbody id="serv_resumenBody"></tbody>
@@ -1097,10 +1131,13 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
 
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <button id="tiempos_btnReset" class="sidebar-reset-btn" onclick="window.resetTiemposFilters()" title="Restablecer filtros">Restablecer</button>
         </div>
 
         <div class="st-filters-stack">
@@ -1293,7 +1330,16 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="emrf_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
+            <button id="emrf_btnHelp" class="help-btn" title="Ayuda y Guía Operativa de la Cuenta EM/RF">ℹ</button>
+          </div>
+        </div>
 
         <!-- 1. Base de Datos / Sociedad (como en Streamlit) -->
         <div class="st-field-group" style="margin-top: 4px;">
@@ -1311,13 +1357,7 @@
 
         <hr class="st-divider" />
 
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
-          <div class="st-filters-actions">
-            <button id="emrf_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
-            <button id="emrf_btnHelp" class="help-btn" title="Ayuda y Guía Operativa de la Cuenta EM/RF">ℹ</button>
-          </div>
-        </div>
+
 
         <div class="st-filters-stack">
           <!-- Búsqueda rápida por Pedido o Proveedor -->
@@ -1427,8 +1467,8 @@
 
       <div id="resumen_msg"></div>
 
-      <!-- Barra Lateral Izquierda Estilo Streamlit (Panel de Control) -->
-      <aside class="st-sidebar">
+      <!-- Barra Lateral Izquierda (Panel de Control - Estilo Prototipo) -->
+      <aside class="st-sidebar app-sidebar" id="smartSidebar">
         <div class="st-sidebar-toprow">
           <div class="st-sector-switcher">
             <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
@@ -1440,443 +1480,471 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
 
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
-          <div class="st-filters-actions">
-            <button id="resumen_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="resumen_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros — Resumen Ejecutivo', `
               <h4>Cliente / Obra</h4>
-              <p>Filtrá el resumen por obra o almacén para visualizar el estado de stock y el cumplimiento de pedidos correspondiente.</p>
-              <h4>Mes Evaluado</h4>
-              <p>Seleccioná el mes a evaluar en el bloque de rendimiento mensual de cumplimiento.</p>
-              <div class=&quot;hm-tip&quot;>💡 Podés restablecer a todas las obras con el botón Limpiar.</div>
+              <p>Filtrá el resumen por obra o almacén seleccionando las pastillas de obras.</p>
+              <h4>Año y Mes Evaluado</h4>
+              <p>Seleccioná el período para analizar el rendimiento de cumplimiento.</p>
+              <div class=&quot;hm-tip&quot;>💡 Podés restablecer con el botón Restablecer.</div>
             `)" title="Ayuda sobre los filtros">ℹ</button>
           </div>
         </div>
 
-        <div class="st-filters-stack">
-          <div class="filter" id="resumen_obraFilterWrap">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%;">
-              <label style="margin-bottom: 0;">Cliente / Obra:</label>
-              <button type="button" id="resumen_btnExcludeObra" class="res-exclude-toggle-btn" title="Activar para EXCLUIR las obras seleccionadas en lugar de incluirlas">
-                🚫 Excluir: OFF
-              </button>
-            </div>
-            <select id="resumen_obraSelect" multiple size="6" class="multi-select">
-              <option value="__ALL__">Todas las Obras</option>
-            </select>
-            <div id="resumen_obraHint" class="hint">Elegí obras o activá «Excluir» para omitir una</div>
+        <!-- Buscador y Pastillas de Obra -->
+        <div class="filter-group" id="resumen_obraFilterWrap">
+          <div class="filter-label">
+            <span>Cliente / Obra:</span>
+            <span style="font-size: 0.68rem; color: #0f766e; cursor: pointer; font-weight: 700;" onclick="window.toggleResumenExcludeObra()" id="resumen_btnExcludeObra">Excluir: OFF</span>
           </div>
-
-          <div class="filter">
-            <label>Año:</label>
-            <select id="resumen_anioSelect" multiple size="4" class="multi-select">
-              <option value="__ALL__">Todos los Años</option>
-            </select>
-            <div class="hint">Filtrar por año de entrega</div>
+          <input type="text" id="resumen_obraQuickSearch" class="filter-search-input" placeholder="🔍 Filtrar o buscar obra..." oninput="window.filterResumenObraPills(this.value)" autocomplete="off">
+          
+          <div class="pills-container" id="obraPillsContainer">
+            <span class="filter-pill active" data-val="__ALL__" onclick="window.selectResumenObraPill(this, '__ALL__')">Todas las Obras</span>
           </div>
-
-          <div class="filter">
-            <label>Mes Evaluado:</label>
-            <select id="resumen_mesCumplSelect" multiple size="6" class="multi-select">
-              <option value="__ALL__">Todos los Meses</option>
-            </select>
-            <div class="hint">Período para rendimiento mensual</div>
-          </div>
-
-          <div class="filter">
-            <label>Grupo de Compras (Partidas):</label>
-            <select id="resumen_gcEmrfSelect" multiple size="5" class="multi-select">
-              <option value="__ALL__">Todos los Grupos</option>
-              <option value="C01" selected>C01</option>
-              <option value="C07" selected>C07</option>
-              <option value="C02" selected>C02</option>
-            </select>
-            <div class="hint">Solo afecta a Control de Partidas</div>
-          </div>
-
-          <hr class="st-divider" />
-
-          <!-- Botón Medir Cumplimiento Arriba en Resumen -->
-          <div id="resumen_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
-            <button id="resumen_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
-              🏔️ Medir cumplimiento arriba
-            </button>
-            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
-              Obras 365 y 372 (año 2026)
-            </div>
-          </div>
+          <!-- Select oculto para sincronización con lógica existente -->
+          <select id="resumen_obraSelect" multiple style="display: none;">
+            <option value="__ALL__" selected>Todas las Obras</option>
+          </select>
+          <div id="resumen_obraHint" class="hint" style="display: none;">Elegí obras o activá «Excluir» para omitir</div>
         </div>
+
+        <!-- Filtro de Año con Pastillas -->
+        <div class="filter-group">
+          <div class="filter-label">
+            <span>Año Evaluado:</span>
+          </div>
+          <div class="pills-container" id="anioPillsContainer">
+            <span class="filter-pill active" data-val="__ALL__" onclick="window.selectResumenAnioPill(this, '__ALL__')">Todos</span>
+          </div>
+          <select id="resumen_anioSelect" multiple style="display: none;">
+            <option value="__ALL__" selected>Todos los Años</option>
+          </select>
+        </div>
+
+        <!-- Filtro Mes Evaluado con Pastillas -->
+        <div class="filter-group">
+          <div class="filter-label">
+            <span>Mes Evaluado:</span>
+          </div>
+          <div class="pills-container" id="mesPillsContainer">
+            <span class="filter-pill active" data-val="__ALL__" onclick="window.selectResumenMesPill(this, '__ALL__')">Todos</span>
+          </div>
+          <select id="resumen_mesCumplSelect" multiple style="display: none;">
+            <option value="__ALL__" selected>Todos los Meses</option>
+          </select>
+        </div>
+
+        <!-- Grupo de Compras (Partidas) con Pastillas -->
+        <div class="filter-group">
+          <div class="filter-label">
+            <span>Grupo de Compras (Partidas):</span>
+          </div>
+          <div class="pills-container" id="gcEmrfPillsContainer">
+            <span class="filter-pill" data-val="__ALL__" onclick="window.selectResumenGcPill(this, '__ALL__')">Todos</span>
+            <span class="filter-pill active" data-val="C01" onclick="window.selectResumenGcPill(this, 'C01')">C01</span>
+            <span class="filter-pill active" data-val="C07" onclick="window.selectResumenGcPill(this, 'C07')">C07</span>
+            <span class="filter-pill active" data-val="C02" onclick="window.selectResumenGcPill(this, 'C02')">C02</span>
+          </div>
+          <select id="resumen_gcEmrfSelect" multiple style="display: none;">
+            <option value="__ALL__">Todos los Grupos</option>
+            <option value="C01" selected>C01</option>
+            <option value="C07" selected>C07</option>
+            <option value="C02" selected>C02</option>
+          </select>
+        </div>
+
+        <!-- Interruptor Toggle: Medir Cumplimiento Arriba -->
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-title">Medición Arriba</span>
+            <span class="toggle-desc">Mina Obras 365 y 372</span>
+          </div>
+          <div class="switch-ui" id="switchArriba" onclick="window.toggleResumenArribaSwitch()" title="Alternar entre Base y Mina"></div>
+        </div>
+        <button id="resumen_btnArriba" style="display: none;" type="button"></button>
       </aside>
 
-      <!-- GRILLA EJECUTIVA 5 BLOQUES COMPACTA EN 1 PANTALLA (Izquierda 2fr: div1 + div2 | Derecha 3fr: div3 + div4 + div5) -->
-      <div class="res-bento-grid">
+      <!-- ÁREA DE TRABAJO BENTO GRID (Basado 100% en Prototipo) -->
+      <div class="main-workspace">
+        <!-- Span oculto para compatibilidad con scripts existentes -->
+        <span id="resumen_lblObra" style="display: none;">Todas las Obras</span>
 
-        <!-- COLUMNA IZQUIERDA (2fr): .div1 (ANÁLISIS MM) + .div2 (DEMORAS) -->
-        <div class="res-col-left">
+        <!-- BENTO MASTER GRID -->
+        <div class="bento-master-grid">
 
-          <!-- .div1: 1. ANÁLISIS MM -->
-          <section class="panel res-div1">
-            <div class="panel-title res-panel-title">
-              <span>📦 1. ANÁLISIS MM — DISPONIBILIDAD Y PLANIFICACIÓN</span>
-            </div>
+          <!-- COLUMNA IZQUIERDA: 1. MM + 3. DEMORAS -->
+          <div class="bento-column">
 
-            <div class="panel-body res-panel-body" style="display: flex; flex-direction: column; gap: 5px;">
-              <!-- 1.1 Disponibilidad General -->
-              <div class="res-subcard">
-                <div class="res-subcard-header">
-                  <span>Disponibilidad:</span>
+            <!-- 1. DISPONIBILIDAD & PLANIFICACIÓN MM -->
+            <section class="bento-card res-div1">
+              <div class="bento-header">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                  </div>
+                  <h3 class="bento-title">1. Disponibilidad & Materiales</h3>
                 </div>
-                <ul class="res-metric-list">
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📦</span>
-                    <strong>Materiales:</strong>
-                    <span id="res_txtTotal" class="res-val" style="color: #2563eb;">-</span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">✅</span>
-                    <strong>Disponible:</strong>
-                    <span id="res_txtDisp" class="res-val" style="color: #16a34a;">-</span>
-                  </li>
-
-                  <li id="res_rowDispPct" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                    <span class="res-ico">📈</span>
-                    <strong>Disp. (%):</strong>
-                    <span id="res_txtPct" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">· Obj 90%</span>
-                  </li>
-                </ul>
+                <span class="bento-action-badge">Inventario Activo</span>
               </div>
 
-              <!-- 1.2 Clasificación por Estado de Planificación + Mini Gráfico Tendencia Evolución MM abajo a la derecha -->
-              <div class="res-subcard">
-                <div class="res-subcard-header">
-                  <span>Clasificación:</span>
+              <!-- Radial Hero KPI de Disponibilidad General -->
+              <div class="kpi-radial-hero">
+                <div class="radial-circle-box">
+                  <svg viewBox="0 0 70 70">
+                    <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
+                    <circle class="radial-circle-progress" id="res_radial_circle" cx="35" cy="35" r="30"></circle>
+                  </svg>
+                  <div class="radial-value-center" id="res_txtPct">-</div>
                 </div>
-                <ul class="res-metric-list" style="margin-bottom: 4px !important;">
-                  <li id="res_rowStockNulo" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 1.5px solid #dc2626; background: #fef2f2;">
-                    <div style="display: flex; align-items: center;">
-                      <span class="res-ico">🔴</span>
-                      <strong>Stock Nulo:</strong>
+                <div class="kpi-hero-details">
+                  <span class="kpi-hero-label">Disponibilidad General</span>
+                  <div class="kpi-hero-status">
+                    <span class="kpi-hero-tag" id="res_tagDispStatus">En Rango</span>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">Obj: 90%</span>
+                  </div>
+                  <span class="kpi-hero-sub"><strong id="res_txtDisp">-</strong> de <strong id="res_txtTotal">-</strong> materiales con disponibilidad inmediata.</span>
+                </div>
+              </div>
+
+              <!-- Métricas Secundarias en Grid -->
+              <div class="metrics-card-grid">
+                <div class="stat-pill-card">
+                  <div class="stat-header-row">
+                    <span class="stat-title">Total Materiales</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  </div>
+                  <span class="stat-value" id="res_txtTotal_card">-</span>
+                  <span class="stat-hint">Ítems catalogados</span>
+                </div>
+
+                <div class="stat-pill-card danger-card">
+                  <div class="stat-header-row">
+                    <span class="stat-title">Stock Nulo</span>
+                    <span style="font-size: 0.65rem; background: #dc2626; color: white; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Crítico</span>
+                  </div>
+                  <span class="stat-value" id="res_txtNulo">-</span>
+                  <div id="res_wrapNulo" style="width: 100%;">
+                    <span class="stat-hint" id="res_txtNulo_sub">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Desglose de Planificación con barras sutiles -->
+              <div style="background: var(--bg-subtle); border-radius: var(--radius-md); padding: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.75rem;">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px; display: block;">Clasificación de Planificación</span>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                      <span style="color: var(--warning-text); font-weight: 600;">● Menor al Punto de Pedido</span>
+                      <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMenorPP">-</span>
                     </div>
-                    <div id="res_wrapNulo" style="width: 100%; padding-left: 12px;">
-                      <span id="res_txtNulo" class="res-val" style="color: #dc2626;">-</span>
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" id="res_barMenorPP" style="width: 0%; background: var(--warning);"></div>
                     </div>
-                  </li>
-                </ul>
+                  </div>
 
-                <div class="res-mm-bottom-grid">
-                  <ul class="res-metric-list">
-                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                      <span class="res-ico">🟡</span>
-                      <strong>Menor al PP:</strong>
-                      <span id="res_txtMenorPP" class="res-val" style="color: #d97706;">-</span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                      <span class="res-ico">🟢</span>
-                      <strong>Mayor al PP:</strong>
-                      <span id="res_txtMayorPP" class="res-val" style="color: #16a34a;">-</span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                      <span class="res-ico">🟠</span>
-                      <strong>Mayor a Stock Máx:</strong>
-                      <span id="res_txtMayorMax" class="res-val" style="color: #ea580c;">-</span>
-                    </li>
-                  </ul>
-
-                  <div class="res-subcard res-mini-chart-card">
-                    <div class="res-subcard-header">
-                      <span>📈 Tendencia Evolución</span>
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                      <span style="color: var(--success-text); font-weight: 600;">● Mayor al Punto de Pedido</span>
+                      <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMayorPP">-</span>
                     </div>
-                    <div id="res_chartEvolMM" class="res-mini-trend-box"></div>
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" id="res_barMayorPP" style="width: 0%; background: var(--success);"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                      <span style="color: #ea580c; font-weight: 600;">● Sobre Stock Máximo</span>
+                      <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMayorMax">-</span>
+                    </div>
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" id="res_barMayorMax" style="width: 0%; background: #ea580c;"></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
 
-          <!-- .div2: 3. DEMORAS -->
-          <section class="panel res-div2">
-            <div class="panel-title res-panel-title">
-              <span>⏱️ 3. DEMORAS</span>
-            </div>
-            <div class="panel-body res-panel-body" style="display: flex; flex-direction: column; flex: 1;">
-              <div class="res-subcard" style="display: flex; flex-direction: column; flex: 1;">
-                <div class="res-subcard-header">
-                  <span>Demora por Área</span>
-                  <span id="res_lblTotalAreas">-</span>
+              <!-- Sparkline MM -->
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Evolución de Stock</span>
+                  <span style="font-size: 0.68rem; color: #0f766e; font-weight: 700;">Tendencia</span>
                 </div>
-                <div id="res_chartAreas" style="width: 100%; height: 155px; min-height: 145px; flex: 1;"></div>
-              </div>
-            </div>
-          </section>
-
-        </div>
-
-        <!-- COLUMNA DERECHA (3fr): .div3 (CUMPLIMIENTO) + .div4 (TIEMPOS/PRIORIDAD) + .div5 (SERVICIOS) -->
-        <div class="res-col-right">
-
-          <!-- .div3: 2. CUMPLIMIENTO (Compacto en 2 columnas) -->
-          <section class="panel res-div3">
-            <div class="panel-title res-panel-title">
-              <span>🎯 2. CUMPLIMIENTO</span>
-            </div>
-
-            <div class="panel-body res-panel-body" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; align-items: start;">
-              <!-- 2.1 Acumulado Últimos 12 Meses -->
-              <div class="res-subcard">
-                <div class="res-subcard-header">
-                  <span id="res_cumplAcumTitle">Acumulado 12 Meses:</span>
-                  <span id="res_cumplAcumRango" style="font-size: 9.5px; font-weight: 800; color: #1d4ed8; text-transform: none; border: 1px solid #2563eb; background: #eff6ff; padding: 0px 4px; border-radius: 3px; display: none;"></span>
-                </div>
-                <ul class="res-metric-list">
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📦</span>
-                    <strong>COMPROMETIDOS:</strong>
-                    <span id="res_cumplAcumComprometidos" class="res-val" style="color: #2563eb;">-</span>
-                    <span class="res-note">— Total 12M</span>
-                  </li>
-
-                  <li id="res_cumplAcumRowAT" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                    <span class="res-ico">✅</span>
-                    <strong>A TIEMPO (AT):</strong>
-                    <span id="res_cumplAcumATpct" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplAcumATqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      <span style="color: #64748b; margin-left: 2px;">· Obj 78%</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">⏳</span>
-                    <strong>FUERA TIEMPO (FT):</strong>
-                    <span id="res_cumplAcumFTpct" class="res-val" style="color: #f59e0b;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplAcumFTqty" style="font-weight: 700; color: #0f172a;">-</span>
-                    </span>
-                  </li>
-
-                  <li id="res_cumplAcumRowNE" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #dc2626; background: #fef2f2;">
-                    <span class="res-ico">🚫</span>
-                    <strong>NO ENTREG. (NE):</strong>
-                    <span id="res_cumplAcumNEpct" class="res-val" style="color: #dc2626;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplAcumNEqty" style="font-weight: 700; color: #0f172a;">-</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📅</span>
-                    <strong>DEMORA PROM.:</strong>
-                    <span id="res_cumplAcumDemoraAvg" class="res-val" style="color: #ea580c;">-</span>
-                    <span class="res-note">— Prom. 12M</span>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- 2.2 Rendimiento Mensual -->
-              <div class="res-subcard">
-                <div class="res-subcard-header" style="gap: 6px;">
-                  <span>Período:</span>
-                  <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado">
-                    <span class="res-inline-mes-ico">📅</span>
-                    <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" aria-label="Seleccionar mes evaluado de cumplimiento">
-                      <option value="__ALL__">Todos los Meses</option>
-                    </select>
-                  </label>
-                  <span id="res_cumplMesLabel" style="display: none;"></span>
-                </div>
-                <ul class="res-metric-list">
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📦</span>
-                    <strong>COMPROMETIDOS:</strong>
-                    <span id="res_cumplComprometidos" class="res-val" style="color: #2563eb;">-</span>
-                    <span class="res-note">— Total período</span>
-                  </li>
-
-                  <li id="res_cumplRowAT" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                    <span class="res-ico">✅</span>
-                    <strong>A TIEMPO (AT):</strong>
-                    <span id="res_cumplATpct" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplATqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      <span id="res_cumplATdiff" style="color: #16a34a; font-weight: 700; margin-left: 2px;">· - vs mes ant.</span>
-                      <span style="color: #64748b; margin-left: 2px;">· Obj 78%</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">⏳</span>
-                    <strong>FUERA TIEMPO (FT):</strong>
-                    <span id="res_cumplFTpct" class="res-val" style="color: #f59e0b;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplFTqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      <span id="res_cumplFTdiff" style="color: #16a34a; font-weight: 700; margin-left: 2px;">· - vs mes ant.</span>
-                    </span>
-                  </li>
-
-                  <li id="res_cumplRowNE" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #dc2626; background: #fef2f2;">
-                    <span class="res-ico">🚫</span>
-                    <strong>NO ENTREG. (NE):</strong>
-                    <span id="res_cumplNEpct" class="res-val" style="color: #dc2626;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplNEqty" style="font-weight: 700; color: #0f172a;">-</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📅</span>
-                    <strong>DEMORA PROM.:</strong>
-                    <span id="res_cumplDemoraAvg" class="res-val" style="color: #ea580c;">-</span>
-                    <span class="res-note">— Prom. período</span>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- 2.3 Mini Gráfico Tendencia de Cumplimiento -->
-              <div class="res-subcard res-mini-chart-card">
-                <div class="res-subcard-header" style="flex-wrap: wrap; gap: 4px;">
-                  <span>📈 Tendencia</span>
-                  <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 800; text-transform: none;">
-                    <span style="color: #16a34a;">● %AT</span>
-                    <span style="color: #7c3aed;">● %AT Acum</span>
-                    <span style="color: #f59e0b;">● %FT</span>
-                  </span>
-                </div>
-                <div id="res_chartTendenciaCumpl" class="res-mini-trend-box"></div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Fila combinada: 4. SERVICIOS (izq) y 5. CONTROL DE PARTIDAS (der) -->
-          <div class="res-row-serv-emrf">
-            <!-- .div5: 4. SERVICIOS (Compacto en tira horizontal de KPIs) -->
-            <section class="panel res-div5">
-              <div class="panel-title res-panel-title">
-                <span>🛠️ 4. SERVICIOS</span>
-                <span id="res_serv_total_badge" style="display: none;">-</span>
-              </div>
-              <div class="panel-body res-panel-body" style="padding: 5px 6px !important;">
-                <div class="res-serv-strip">
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
-                    <span class="res-serv-lbl">📋 Total</span>
-                    <span id="res_servTotal" class="res-serv-num" style="color: #2563eb;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: #f0fdf4; border-color: #86efac;">
-                    <span class="res-serv-lbl">🟢 En Curso</span>
-                    <span id="res_servEnCurso" class="res-serv-num" style="color: #16a34a;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL">
-                    <span class="res-serv-lbl">🟠 Recep.</span>
-                    <span id="res_servTotRecep" class="res-serv-num" style="color: #ea580c;">-</span>
-                  </div>
-                  <div id="res_servRowVencido" class="res-serv-pill res-has-tooltip" data-serv-cat="VENCIDOS" style="background: #fef2f2; border-color: #fca5a5;">
-                    <span class="res-serv-lbl">🔴 Vencidos</span>
-                    <span id="res_servVencido" class="res-serv-num" style="color: #dc2626;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER">
-                    <span class="res-serv-lbl">🟡 Próx.</span>
-                    <span id="res_servProxVencer" class="res-serv-num" style="color: #d97706;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO">
-                    <span class="res-serv-lbl">🟣 Sin Trat.</span>
-                    <span id="res_servSinTrat" class="res-serv-num" style="color: #7c3aed;">-</span>
-                    <span id="res_servSinTratNote" style="display: none;"></span>
-                  </div>
-                </div>
+                <div id="res_chartEvolMM" style="width: 100%; height: 85px;"></div>
               </div>
             </section>
 
-            <!-- .div6: 5. CONTROL DE PARTIDAS (3 tarjetas + filtro inline de Vencimiento OC) -->
-            <section class="panel res-div6">
-              <div class="panel-title res-panel-title" style="gap: 5px; flex-wrap: wrap;">
-                <span>📑 5. PARTIDAS</span>
-                <span id="res_emrf_gc_badge" style="font-size: 8.5px; font-weight: 800; color: #0f766e; background: #ccfbf1; border: 1px solid #5eead4; padding: 0px 5px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">GC: C01, C07, C02</span>
-                <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar partidas por estado de vencimiento de OC">
-                  <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" aria-label="Filtrar OC vencidas, no vencidas o todas">
-                    <option value="VENCIDA" selected>🔴 OC VENCIDAS</option>
-                    <option value="NO_VENCIDA">🔵 OC NO VENCIDAS</option>
-                    <option value="__ALL__">📋 TODAS LAS OC</option>
-                  </select>
-                </label>
-              </div>
-              <div class="panel-body res-panel-body" style="padding: 5px 6px !important;">
-                <div class="res-serv-strip res-emrf-strip-3">
-                  <div class="res-serv-pill">
-                    <span class="res-serv-lbl">📋 Total</span>
-                    <span id="res_emrfTotal" class="res-serv-num" style="color: #2563eb;">-</span>
+            <!-- 3. DEMORAS -->
+            <section class="bento-card res-div2">
+              <div class="bento-header">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--danger);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
                   </div>
-                  <div class="res-serv-pill" style="background: #fffbeb; border-color: #fde68a;">
-                    <span class="res-serv-lbl">📦 Falta Fact.</span>
-                    <span id="res_emrfFaltaFact" class="res-serv-num" style="color: #d97706;">-</span>
-                  </div>
-                  <div class="res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
-                    <span class="res-serv-lbl">📄 Falta Recep.</span>
-                    <span id="res_emrfFaltaRecep" class="res-serv-num" style="color: #ea580c;">-</span>
-                  </div>
+                  <h3 class="bento-title">3. Demoras por Área Responsable</h3>
                 </div>
+                <span class="bento-action-badge" id="res_lblTotalAreas">-</span>
               </div>
+              <div id="res_chartAreas" class="chart-box-frame" style="height: 160px; width: 100%;"></div>
             </section>
+
           </div>
 
-          <!-- .div4: 6. TIEMPOS / PRIORIDAD (CONTROL) -->
-          <section class="panel res-div4">
-            <div class="panel-title res-panel-title">
-              <span>⏳ 6. TIEMPOS / PRIORIDAD</span>
-            </div>
-            <div class="panel-body res-panel-body">
-              <div class="res-subcard" style="background: #ffffff !important;">
-                <div class="res-subcard-header" style="flex-wrap: wrap; gap: 4px; margin-bottom: 4px !important;">
-                  <span style="display: inline-flex; align-items: center; gap: 4px;">
-                    <span>📊</span>
-                    <span>Porcentajes de Cumplimiento y Promedio de Días</span>
-                  </span>
-                  <span id="res_tiempos_rule_badge" style="font-size: 9px; font-weight: 800; color: #713f12; background: #fef08a; border: 1px solid #eab308; padding: 0px 6px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">
-                    POCO TIEMPO TODAS LAS OBRAS
-                  </span>
-                </div>
-                <div style="width: 100%; overflow-x: hidden;">
-                  <table class="tiempos-table res-tiempos-compact">
-                    <thead>
-                      <tr>
-                        <th rowspan="3" class="th-row-header">Etiquetas de fila</th>
-                        <th rowspan="2" colspan="4" class="th-top-critico">CRITICO</th>
-                        <th colspan="8" class="th-top-sinprio">SIN PRIORIDAD</th>
-                      </tr>
-                      <tr>
-                        <th colspan="4" class="th-sub-poco">POCO TIEMPO</th>
-                        <th colspan="4" class="th-sub-normal">SIN PRIORIDAD</th>
-                      </tr>
-                      <tr>
-                        <th class="th-col-at">%AT</th>
-                        <th class="th-col-ft">%FT</th>
-                        <th class="th-col-ne">%NE</th>
-                        <th class="th-col-tot">%TOT</th>
+          <!-- COLUMNA DERECHA: 2. CUMPLIMIENTO + 4. SERVICIOS + 5. PARTIDAS + 6. TIEMPOS -->
+          <div class="bento-column">
 
-                        <th class="th-col-at">%AT</th>
-                        <th class="th-col-ft">%FT</th>
-                        <th class="th-col-ne">%NE</th>
-                        <th class="th-col-tot">%TOT</th>
-
-                        <th class="th-col-at">%AT</th>
-                        <th class="th-col-ft">%FT</th>
-                        <th class="th-col-ne">%NE</th>
-                        <th class="th-col-tot">%TOT</th>
-                      </tr>
-                    </thead>
-                    <tbody id="res_tiempos_tbody_pcts">
-                      <!-- Generado dinámicamente en js/resumen.js -->
-                    </tbody>
-                  </table>
+            <!-- 2. CUMPLIMIENTO -->
+            <section class="bento-card res-div3" style="height: auto !important; min-height: auto !important;">
+              <div class="bento-header">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--success);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                  </div>
+                  <h3 class="bento-title">2. Cumplimiento de Pedidos (Nivel de Servicio)</h3>
                 </div>
+                <span class="cumpl-meta-chip" style="background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border);">
+                  Obj: 78%
+                </span>
               </div>
+
+              <!-- Doble Tarjeta: Acumulado 12M vs Período Evaluado -->
+              <div class="cumpl-dual-container">
+                
+                <!-- 12 Meses Acumulado -->
+                <div class="cumpl-box">
+                  <div class="cumpl-box-header">
+                    <span class="cumpl-box-title" id="res_cumplAcumTitle">Acumulado 12 Meses</span>
+                    <span id="res_cumplAcumRango" style="font-size: 0.65rem; color: var(--text-muted);">-</span>
+                  </div>
+                  
+                  <div class="cumpl-hero-num">
+                    <span class="cumpl-num-big" id="res_cumplAcumATpct" style="color: var(--success);">-</span>
+                    <span class="cumpl-num-sub">A Tiempo (AT)</span>
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <div class="breakdown-row">
+                      <span class="breakdown-label"><span class="status-dot" style="background: var(--brand);"></span>Comprometidos</span>
+                      <span class="breakdown-val" id="res_cumplAcumComprometidos">-</span>
+                    </div>
+                    <div class="breakdown-row">
+                      <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
+                      <span class="breakdown-val" style="color: var(--warning-text);">
+                        <span id="res_cumplAcumFTpct">-</span> (<span id="res_cumplAcumFTqty">-</span>)
+                      </span>
+                    </div>
+                    <div class="breakdown-row">
+                      <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
+                      <span class="breakdown-val" style="color: var(--danger-text);">
+                        <span id="res_cumplAcumNEpct">-</span> (<span id="res_cumplAcumNEqty">-</span>)
+                      </span>
+                    </div>
+                    <div class="breakdown-row">
+                      <span class="breakdown-label">Demora Promedio</span>
+                      <span class="breakdown-val" id="res_cumplAcumDemoraAvg">-</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Período Evaluado -->
+                <div class="cumpl-box">
+                  <div class="cumpl-box-header">
+                    <span class="cumpl-box-title">Período Seleccionado</span>
+                    <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado" style="cursor: pointer;">
+                      <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1px 6px; border-radius: var(--radius-pill); font-size: 0.68rem; font-weight: 700; color: var(--brand); cursor: pointer;">
+                        <option value="__ALL__">Todos los Meses</option>
+                      </select>
+                    </label>
+                    <span id="res_cumplMesLabel" style="display: none;"></span>
+                  </div>
+
+                  <div class="cumpl-hero-num">
+                    <span class="cumpl-num-big" id="res_cumplATpct" style="color: var(--success);">-</span>
+                    <span class="cumpl-num-sub">A Tiempo (AT)</span>
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <div class="breakdown-row">
+                      <span class="breakdown-label"><span class="status-dot" style="background: var(--brand);"></span>Comprometidos</span>
+                      <span class="breakdown-val" id="res_cumplComprometidos">-</span>
+                    </div>
+                    <div class="breakdown-row">
+                      <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
+                      <span class="breakdown-val" style="color: var(--warning-text);">
+                        <span id="res_cumplFTpct">-</span> (<span id="res_cumplFTqty">-</span>)
+                      </span>
+                    </div>
+                    <div class="breakdown-row">
+                      <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
+                      <span class="breakdown-val" style="color: var(--danger-text);">
+                        <span id="res_cumplNEpct">-</span> (<span id="res_cumplNEqty">-</span>)
+                      </span>
+                    </div>
+                    <div class="breakdown-row">
+                      <span class="breakdown-label">Variación vs Mes Anterior</span>
+                      <span class="breakdown-val" id="res_cumplATdiff" style="color: var(--success-text); font-weight: 800;">-</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Spline Chart Cumplimiento -->
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Curva de Evolución Mensual</span>
+                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.68rem; font-weight: 600;">
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 3px; background: #0f766e; border-radius: 2px;"></span> %AT</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 1px; border-top: 2px dashed #94a3b8;"></span> Meta 78%</span>
+                  </div>
+                </div>
+                <div id="res_chartTendenciaCumpl" class="chart-box-frame" style="height: 145px; width: 100%;"></div>
+              </div>
+            </section>
+
+            <!-- SERVICIOS + PARTIDAS -->
+            <div class="services-dual-row res-row-serv-emrf">
+              
+              <!-- 4. SERVICIOS -->
+              <section class="bento-card res-div5" style="padding: 0.95rem;">
+                <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                  <div class="bento-title-group">
+                    <div class="bento-icon-wrapper" style="color: var(--brand);">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <h3 class="bento-title" style="font-size: 0.8rem;">4. Servicios</h3>
+                  </div>
+                  <span class="bento-action-badge" id="res_serv_total_badge">Activos</span>
+                </div>
+
+                <div class="service-stat-strip res-serv-strip">
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
+                    <span class="strip-lbl res-serv-lbl">Total</span>
+                    <span class="strip-val res-serv-num" id="res_servTotal" style="color: var(--brand);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: var(--success-bg); border-color: var(--success-border);">
+                    <span class="strip-lbl res-serv-lbl">En Curso</span>
+                    <span class="strip-val res-serv-num" id="res_servEnCurso" style="color: var(--success-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" id="res_servRowVencido" data-serv-cat="VENCIDOS" style="background: var(--danger-bg); border-color: var(--danger-border);">
+                    <span class="strip-lbl res-serv-lbl">Vencidos</span>
+                    <span class="strip-val res-serv-num" id="res_servVencido" style="color: var(--danger-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                    <span class="strip-lbl res-serv-lbl">Próx.</span>
+                    <span class="strip-val res-serv-num" id="res_servProxVencer" style="color: var(--warning-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL" style="display: none;">
+                    <span id="res_servTotRecep">0</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO" style="display: none;">
+                    <span id="res_servSinTrat">0</span>
+                    <span id="res_servSinTratNote"></span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- 5. CONTROL PARTIDAS -->
+              <section class="bento-card res-div6" style="padding: 0.95rem;">
+                <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                  <div class="bento-title-group">
+                    <div class="bento-icon-wrapper" style="color: var(--purple);">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <h3 class="bento-title" style="font-size: 0.8rem;">5. Control Partidas</h3>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <span class="bento-action-badge" id="res_emrf_gc_badge" style="background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border);">GC: C01, C07, C02</span>
+                    <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar OC" style="margin: 0;">
+                      <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" style="font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
+                        <option value="VENCIDA" selected>🔴 VENCIDAS</option>
+                        <option value="NO_VENCIDA">🔵 NO VENCIDAS</option>
+                        <option value="__ALL__">📋 TODAS</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="service-stat-strip res-serv-strip res-emrf-strip-3" style="grid-template-columns: repeat(3, 1fr);">
+                  <div class="strip-pill res-serv-pill">
+                    <span class="strip-lbl res-serv-lbl">Total</span>
+                    <span class="strip-val res-serv-num" id="res_emrfTotal" style="color: var(--brand);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                    <span class="strip-lbl res-serv-lbl">Falta Fact.</span>
+                    <span class="strip-val res-serv-num" id="res_emrfFaltaFact" style="color: var(--warning-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
+                    <span class="strip-lbl res-serv-lbl">Falta Recep.</span>
+                    <span class="strip-val res-serv-num" id="res_emrfFaltaRecep" style="color: #ea580c;">-</span>
+                  </div>
+                </div>
+              </section>
+
             </div>
-          </section>
+
+            <!-- 6. TIEMPOS / PRIORIDAD -->
+            <section class="bento-card res-div4">
+              <div class="bento-header" style="margin-bottom: 0.5rem; padding-bottom: 0.4rem;">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--warning);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </div>
+                  <h3 class="bento-title">6. Tiempos de Entrega & Prioridad de Pedidos</h3>
+                </div>
+                <span class="bento-action-badge" id="res_tiempos_rule_badge" style="background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border);">
+                  POCO TIEMPO TODAS LAS OBRAS
+                </span>
+              </div>
+
+              <!-- Tabla Matriz con Micro-Heatmap -->
+              <div class="table-responsive-box" style="width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <table class="modern-tiempos-table tiempos-table res-tiempos-compact">
+                  <thead>
+                    <tr>
+                      <th rowspan="3" class="th-row-header" style="text-align: left;">Etiquetas de fila</th>
+                      <th rowspan="2" colspan="4" class="th-top-critico" style="background: var(--danger-bg); color: var(--danger-text);">CRITICO</th>
+                      <th colspan="8" class="th-top-sinprio">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th colspan="4" class="th-sub-poco" style="background: var(--warning-bg); color: var(--warning-text);">POCO TIEMPO</th>
+                      <th colspan="4" class="th-sub-normal">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+                    </tr>
+                  </thead>
+                  <tbody id="res_tiempos_tbody_pcts">
+                    <!-- Generado dinámicamente en js/resumen.js -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+          </div>
 
         </div>
 
@@ -1885,20 +1953,20 @@
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261105_145936"></script><script src="js/last-update-sede.js?v=20261105_145936"></script><script src="js/last-update-compras.js?v=20261105_145936"></script><script src="js/last-update-almacen.js?v=20261105_145936"></script><script src="js/last-update.js?v=20261105_145936"></script>
-  <script src="js/help.js?v=20261105_145936"></script>
-  <script src="js/cache-utils.js?v=20261105_145936"></script>
+  <script src="js/last-update-obras.js?v=20261106_160743"></script><script src="js/last-update-sede.js?v=20261106_160743"></script><script src="js/last-update-compras.js?v=20261106_160743"></script><script src="js/last-update-almacen.js?v=20261106_160743"></script><script src="js/last-update.js?v=20261106_160743"></script>
+  <script src="js/help.js?v=20261106_160743"></script>
+  <script src="js/cache-utils.js?v=20261106_160743"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261105_145936"></script>
-  <script src="js/resumen.js?v=20261105_145936"></script>
-  <script src="js/cumplimiento.js?v=20261105_145936"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261105_145936"></script>
-  <script src="js/analisis-mm.js?v=20261105_145936"></script>
-  <script src="js/evolucion.js?v=20261105_145936"></script>
-  <script src="js/servicios.js?v=20261105_145936"></script>
-  <script src="js/tiempos-entrega.js?v=20261105_145936"></script>
-  <script src="js/control-emrf.js?v=20261105_145936"></script>
+  <script src="js/demoras.js?v=20261106_160743"></script>
+  <script src="js/resumen.js?v=20261106_160743"></script>
+  <script src="js/cumplimiento.js?v=20261106_160743"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261106_160743"></script>
+  <script src="js/analisis-mm.js?v=20261106_160743"></script>
+  <script src="js/evolucion.js?v=20261106_160743"></script>
+  <script src="js/servicios.js?v=20261106_160743"></script>
+  <script src="js/tiempos-entrega.js?v=20261106_160743"></script>
+  <script src="js/control-emrf.js?v=20261106_160743"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2158,89 +2226,37 @@
     
 
     /* ==========================================================================
-       STREAMLIT PILL MULTISELECT CONTROLLER (Sincronizado con <select multiple>)
+       PROTOTYPE PILLS FILTER CONTROLLER (Universal en todas las pestañas)
        ========================================================================== */
     (function() {
       const instances = new Map();
 
       function isAllOption(opt) {
+        if (!opt) return false;
         const val = (opt.value || '').trim();
         const txt = (opt.textContent || '').trim().toLowerCase();
-        return val === '' || val === '__ALL__' || txt.startsWith('todo') || txt.startsWith('toda');
+        return val === '' || val === '__ALL__' || val.toUpperCase() === 'TODAS' || val.toUpperCase() === 'TODOS' || txt === 'todos' || txt === 'todas' || txt.startsWith('todo ') || txt.startsWith('toda ') || txt.startsWith('todas las') || txt.startsWith('todos los');
       }
 
-      function createStMultiSelect(sel) {
+      function createPrototypePillsFilter(sel) {
         if (instances.has(sel)) return instances.get(sel);
 
-        sel.classList.add('st-ms-hidden');
+        // Ocultar select original pero mantenerlo plenamente funcional en el DOM
+        sel.style.setProperty('display', 'none', 'important');
+        sel.classList.add('proto-select-hidden');
 
-        const container = document.createElement('div');
-        container.className = 'st-ms-container';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'proto-pills-filter-wrap';
 
-        const control = document.createElement('div');
-        control.className = 'st-ms-control';
-        control.tabIndex = 0;
+        let searchInput = null;
 
-        const pillsWrap = document.createElement('div');
-        pillsWrap.className = 'st-ms-pills';
+        const pillsContainer = document.createElement('div');
+        pillsContainer.className = 'pills-container';
 
-        const actionsWrap = document.createElement('div');
-        actionsWrap.className = 'st-ms-actions';
+        wrapper.appendChild(pillsContainer);
+        sel.parentNode.insertBefore(wrapper, sel.nextSibling);
 
-        const clearBtn = document.createElement('button');
-        clearBtn.type = 'button';
-        clearBtn.className = 'st-ms-clear';
-        clearBtn.title = 'Limpiar selección (mostrar Todos)';
-        clearBtn.innerHTML = `<svg viewBox="0 0 16 16" width="15" height="15" fill="none"><circle cx="8" cy="8" r="7" fill="#6b7280"/><path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/></svg>`;
-
-        const chevron = document.createElement('span');
-        chevron.className = 'st-ms-chevron';
-        chevron.innerHTML = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
-        actionsWrap.appendChild(clearBtn);
-        actionsWrap.appendChild(chevron);
-        control.appendChild(pillsWrap);
-        control.appendChild(actionsWrap);
-
-        const dropdown = document.createElement('div');
-        dropdown.className = 'st-ms-dropdown';
-
-        const quickBar = document.createElement('div');
-        quickBar.className = 'st-ms-quickbar';
-        quickBar.style.cssText = 'display:flex; align-items:center; justify-content:space-between; gap:4px; padding:4px 8px; background:#f8fafc; border-bottom:1px solid #e2e8f0; font-size:11px;';
-        const btnAllSpecific = document.createElement('button');
-        btnAllSpecific.type = 'button';
-        btnAllSpecific.textContent = '☑ Marcar todas';
-        btnAllSpecific.title = 'Seleccionar todas las opciones individuales (ideal para luego quitar solo 1 con ×)';
-        btnAllSpecific.style.cssText = 'background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:4px; padding:2px 6px; font-size:10.5px; font-weight:700; cursor:pointer;';
-        const btnInvertSpecific = document.createElement('button');
-        btnInvertSpecific.type = 'button';
-        btnInvertSpecific.textContent = '⇄ Invertir';
-        btnInvertSpecific.title = 'Invertir selección (selecciona todas menos las actuales)';
-        btnInvertSpecific.style.cssText = 'background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-radius:4px; padding:2px 6px; font-size:10.5px; font-weight:700; cursor:pointer;';
-        quickBar.appendChild(btnAllSpecific);
-        quickBar.appendChild(btnInvertSpecific);
-
-        const searchWrap = document.createElement('div');
-        searchWrap.className = 'st-ms-search-wrap';
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.className = 'st-ms-search';
-        searchInput.placeholder = 'Buscar opción...';
-        searchWrap.appendChild(searchInput);
-
-        const optionsList = document.createElement('div');
-        optionsList.className = 'st-ms-options';
-
-        dropdown.appendChild(quickBar);
-        dropdown.appendChild(searchWrap);
-        dropdown.appendChild(optionsList);
-
-        container.appendChild(control);
-        container.appendChild(dropdown);
-
-        sel.parentNode.insertBefore(container, sel.nextSibling);
-
+        let lastSig = '';
         let isUpdating = false;
 
         function triggerSelectChange() {
@@ -2248,185 +2264,102 @@
           sel.dispatchEvent(new Event('change', { bubbles: true }));
           setTimeout(() => {
             isUpdating = false;
-            render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+            render();
+            if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
           }, 0);
         }
 
-        function clearAllSelection(e) {
-          if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-          const opts = Array.from(sel.options);
-          const allOpt = opts.find(isAllOption);
-          opts.forEach(o => {
-            o.selected = (allOpt && o === allOpt) ? true : false;
-          });
-          triggerSelectChange();
-        }
-
-        function removeOptionValue(val, e) {
-          if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-          const opts = Array.from(sel.options);
-          opts.forEach(o => {
-            if (o.value === val && !isAllOption(o)) {
-              o.selected = false;
-            }
-          });
-          const remainingSpecific = opts.filter(o => !isAllOption(o) && o.selected);
-          const allOpt = opts.find(isAllOption);
-          if (remainingSpecific.length === 0 && allOpt) {
-            allOpt.selected = true;
-          }
-          triggerSelectChange();
-        }
-
-        function addOptionValue(val, e) {
-          if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-          const opts = Array.from(sel.options);
-          opts.forEach(o => {
-            if (isAllOption(o)) {
-              o.selected = false;
-            } else if (o.value === val) {
-              o.selected = true;
-            }
-          });
-          triggerSelectChange();
-        }
-
-        let lastSig = '';
-
         function render(force = false) {
-          const opts = Array.from(sel.options);
-          const sig = opts.map(o => o.value + ':' + (o.selected ? '1' : '0')).join('|') + '||' + (searchInput.value || '');
+          const opts = Array.from(sel.options).filter(o => o.value !== undefined);
+          if (!opts.length) {
+            wrapper.style.display = 'none';
+            return;
+          }
+          wrapper.style.display = '';
+
+          // Si tiene más de 6 opciones, agregar buscador interactivo en la parte superior
+          if (opts.length > 6 && !searchInput) {
+            searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.className = 'filter-search-input';
+            searchInput.placeholder = '🔍 Filtrar opciones...';
+            searchInput.autocomplete = 'off';
+            searchInput.addEventListener('input', () => {
+              const q = searchInput.value.toLowerCase().trim();
+              pillsContainer.querySelectorAll('.filter-pill').forEach(pill => {
+                const isAll = pill.getAttribute('data-is-all') === 'true';
+                if (isAll || pill.textContent.toLowerCase().includes(q)) {
+                  pill.style.display = 'inline-flex';
+                } else {
+                  pill.style.display = 'none';
+                }
+              });
+            });
+            wrapper.insertBefore(searchInput, pillsContainer);
+          } else if (opts.length <= 6 && searchInput) {
+            searchInput.remove();
+            searchInput = null;
+          }
+
+          const sig = opts.map(o => o.value + ':' + (o.selected ? '1' : '0') + ':' + o.textContent).join('|');
           if (!force && sig === lastSig) return;
           lastSig = sig;
-          const specificOpts = opts.filter(o => !isAllOption(o));
+
+          pillsContainer.innerHTML = '';
+
           const allOpt = opts.find(isAllOption);
+          const specificOpts = opts.filter(o => !isAllOption(o));
+          const hasSelectedSpecific = specificOpts.some(o => o.selected);
 
-          // Si la opción "Todos" está marcada junto con otras por carga inicial, o si sólo está "Todos", determinar las específicas activas
-          const selectedSpecific = specificOpts.filter(o => o.selected);
+          opts.forEach(opt => {
+            const isAll = isAllOption(opt);
+            const isSelected = isAll ? !hasSelectedSpecific : opt.selected;
 
-          pillsWrap.innerHTML = '';
+            const pill = document.createElement('span');
+            pill.className = 'filter-pill' + (isSelected ? ' active' : '');
+            pill.setAttribute('data-val', opt.value);
+            pill.setAttribute('data-is-all', isAll ? 'true' : 'false');
+            pill.textContent = opt.textContent.trim() || (isAll ? 'Todos' : opt.value);
 
-          if (selectedSpecific.length === 0) {
-            const ph = document.createElement('span');
-            ph.className = 'st-ms-placeholder';
-            ph.textContent = allOpt ? (allOpt.textContent || 'Todos') : 'Todos';
-            pillsWrap.appendChild(ph);
-            clearBtn.style.display = 'none';
-          } else {
-            clearBtn.style.display = 'inline-flex';
-            selectedSpecific.forEach(o => {
-              const pill = document.createElement('span');
-              pill.className = 'st-ms-pill';
-              pill.title = o.textContent;
+            pill.addEventListener('click', (e) => {
+              const isMulti = e.ctrlKey || e.metaKey || e.shiftKey;
 
-              const txt = document.createElement('span');
-              txt.className = 'st-ms-pill-text';
-              txt.textContent = o.textContent;
+              if (isAll) {
+                // Seleccionar Todos y deseleccionar opciones específicas
+                opts.forEach(o => {
+                  o.selected = isAllOption(o);
+                });
+              } else {
+                if (isMulti) {
+                  // Modo multiselección con Ctrl / Shift
+                  opt.selected = !opt.selected;
+                  if (allOpt) allOpt.selected = false;
+                } else {
+                  // Clic normal: foco en esta opción específica (o toggle si ya era la única seleccionada)
+                  if (opt.selected && specificOpts.filter(o => o.selected).length === 1) {
+                    opts.forEach(o => {
+                      o.selected = isAllOption(o);
+                    });
+                  } else {
+                    opts.forEach(o => {
+                      o.selected = (o === opt);
+                    });
+                  }
+                }
+              }
 
-              const rem = document.createElement('button');
-              rem.type = 'button';
-              rem.className = 'st-ms-pill-remove';
-              rem.innerHTML = '&times;';
-              rem.title = 'Quitar ' + o.textContent;
-              rem.addEventListener('click', (ev) => removeOptionValue(o.value, ev));
+              // Si ninguna específica quedó seleccionada, marcar Todos
+              const anySpecific = specificOpts.some(o => o.selected);
+              if (!anySpecific && allOpt) {
+                allOpt.selected = true;
+              }
 
-              pill.appendChild(txt);
-              pill.appendChild(rem);
-              pillsWrap.appendChild(pill);
+              triggerSelectChange();
             });
-          }
 
-          // Mostrar buscador interno si hay más de 6 opciones
-          searchWrap.style.display = specificOpts.length > 6 ? 'block' : 'none';
-          const q = (searchInput.value || '').trim().toLowerCase();
-
-          // Opciones disponibles (no seleccionadas aún)
-          const availableOpts = specificOpts.filter(o => {
-            if (o.selected) return false;
-            if (!q) return true;
-            return (o.textContent || '').toLowerCase().includes(q);
+            pillsContainer.appendChild(pill);
           });
-
-          optionsList.innerHTML = '';
-          if (availableOpts.length === 0) {
-            const empty = document.createElement('div');
-            empty.className = 'st-ms-empty';
-            empty.textContent = specificOpts.length > 0 && selectedSpecific.length === specificOpts.length
-              ? 'Todas las opciones seleccionadas'
-              : 'Sin opciones coincidentes';
-            optionsList.appendChild(empty);
-          } else {
-            availableOpts.forEach(o => {
-              const item = document.createElement('div');
-              item.className = 'st-ms-option';
-              item.textContent = o.textContent;
-              item.addEventListener('click', (ev) => addOptionValue(o.value, ev));
-              optionsList.appendChild(item);
-            });
-          }
         }
-
-        clearBtn.addEventListener('click', clearAllSelection);
-
-        btnAllSpecific.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const opts = Array.from(sel.options);
-          opts.forEach(o => {
-            o.selected = !isAllOption(o);
-          });
-          triggerSelectChange();
-        });
-
-        btnInvertSpecific.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const opts = Array.from(sel.options);
-          const specificOpts = opts.filter(o => !isAllOption(o));
-          const hadAnySpecific = specificOpts.some(o => o.selected);
-          opts.forEach(o => {
-            if (isAllOption(o)) {
-              o.selected = false;
-            } else {
-              o.selected = hadAnySpecific ? !o.selected : true;
-            }
-          });
-          const remainingSpecific = opts.filter(o => !isAllOption(o) && o.selected);
-          const allOpt = opts.find(isAllOption);
-          if (remainingSpecific.length === 0 && allOpt) {
-            allOpt.selected = true;
-          }
-          triggerSelectChange();
-        });
-
-        control.addEventListener('click', (e) => {
-          if (e.target.closest('.st-ms-pill-remove') || e.target.closest('.st-ms-clear')) return;
-          const wasOpen = container.classList.contains('is-open');
-          // Cerrar otros dropdowns abiertos
-          document.querySelectorAll('.st-ms-container.is-open').forEach(el => {
-            if (el !== container) el.classList.remove('is-open');
-          });
-          container.classList.toggle('is-open', !wasOpen);
-          if (!wasOpen) {
-            searchInput.value = '';
-            render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
-            if (searchWrap.style.display !== 'none') {
-              setTimeout(() => searchInput.focus(), 20);
-            }
-          }
-        });
-
-        searchInput.addEventListener('input', () => render());
-        searchInput.addEventListener('click', (e) => e.stopPropagation());
 
         // Observar cambios en las opciones del <select> subyacente
         const observer = new MutationObserver(() => {
@@ -2438,40 +2371,180 @@
           setTimeout(() => render(), 10);
         });
 
-        render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
-
-        const inst = { render, container, sel };
+        render();
+        const inst = { render, wrapper, pillsContainer, sel };
         instances.set(sel, inst);
         return inst;
       }
 
-      window.updateCumplFiltersSummary = function() { const renderChips = (elId, defs) => { const el = document.getElementById(elId); if (!el) return; el.innerHTML = '<span class="st-af-title">FILTROS:</span>' + defs.map(d => { if (d.custom) { const res = d.custom(); return `<span class="st-af-chip ${res.active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${res.txt}</span></span>`; } const s = document.getElementById(d.id); const selOpts = s ? [...s.options].filter(o => o.selected && !isAllOption(o)) : []; const active = selOpts.length > 0; const valTxt = active ? selOpts.map(o => (o.textContent || o.value || '').trim()).join(', ') : 'Todos'; return `<span class="st-af-chip ${active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${valTxt}</span></span>`; }).join(''); }; const isCompras = window.currentAppSector === 'compras'; renderChips('cumpl_activeFiltersSummary', isCompras ? [{ id: 'cumpl_clienteSelect', lbl: 'Cliente' }, { id: 'cumpl_operadorSelect', lbl: 'Comprador' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }, { id: 'cumpl_proveedorSelect', lbl: 'Proveedor' }, { id: 'cumpl_soloAbastSelect', lbl: 'Compras / Abast. / Equipos' }] : [{ id: 'cumpl_clienteSelect', lbl: 'Obra' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }]); renderChips('mm_activeFiltersSummary', [{ id: 'mm_clienteSelect', lbl: 'Almacén' }]); renderChips('dem_activeFiltersSummary', [{ id: 'dem_clienteSelect', lbl: 'Cliente' }, { id: 'dem_clasifSelect', lbl: 'Clasif.' }, { id: 'dem_mesSelect', lbl: 'Mes' }]); renderChips('serv_activeFiltersSummary', [{ id: 'serv_clienteSelect', lbl: 'Cliente' }, { id: 'serv_clasif2Select', lbl: 'Período' }, { id: 'serv_gcocSelect', lbl: 'Estado' }, { id: 'serv_grupoCompraSelect', lbl: 'GC' }, { id: 'serv_estadoItemSelect', lbl: 'Estado Ítem' }]); renderChips('tiempos_activeFiltersSummary', [{ lbl: 'Obra', custom: () => { const s = document.getElementById('tiempos_obraSelect'); const o = s && s.selectedOptions[0]; const txt = o ? (o.textContent || o.value || '').trim() : 'Todos'; return { active: !!(txt && txt.toLowerCase() !== 'todos' && txt.toLowerCase() !== 'todas'), txt: txt || 'Todos' }; } }, { lbl: 'Mes', custom: () => { const list = document.getElementById('tiempos_slicer_list'); if (!list) return { active: false, txt: 'Todos' }; const all = list.querySelectorAll('.tiempos-slicer-item'); const act = list.querySelectorAll('.tiempos-slicer-item.active'); if (!act.length || act.length === all.length) return { active: false, txt: 'Todos' }; const names = [...act].map(i => (i.querySelector('span')?.textContent || '').trim()).filter(Boolean); return { active: true, txt: names.join(', ') }; } }]); renderChips('emrf_activeFiltersSummary', [{ lbl: 'Sociedad', custom: () => { const s = document.getElementById('emrf_sociedadSelect'); const v = s ? s.value : 'TODAS'; const o = s && s.selectedOptions[0]; return { active: v !== 'TODAS', txt: (v === 'TODAS' || !o) ? 'Todas' : o.textContent.trim() }; } }, { lbl: 'Búsqueda', custom: () => { const inp = document.getElementById('emrf_searchInput'); const v = inp ? inp.value.trim() : ''; return { active: !!v, txt: v || 'Todos' }; } }, { id: 'emrf_estadoSelect', lbl: 'Estado' }, { id: 'emrf_gcSelect', lbl: 'GC' }, { id: 'emrf_vencSelect', lbl: 'Venc.' }, { id: 'emrf_operOcSelect', lbl: 'Operador' }]); }; window.syncAllStMultiSelects = function() {
-        document.querySelectorAll('.st-sidebar select.multi-select').forEach(sel => {
-          const inst = createStMultiSelect(sel);
-          inst.render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
-        });
+      window.updateCumplFiltersSummary = function() {
+        const renderChips = (elId, defs) => {
+          const el = document.getElementById(elId);
+          if (!el) return;
+          el.innerHTML = '<span class="st-af-title">FILTROS:</span>' + defs.map(d => {
+            if (d.custom) {
+              const res = d.custom();
+              return `<span class="st-af-chip ${res.active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${res.txt}</span></span>`;
+            }
+            const s = document.getElementById(d.id);
+            const selOpts = s ? [...s.options].filter(o => o.selected && !isAllOption(o)) : [];
+            const active = selOpts.length > 0;
+            const valTxt = active ? selOpts.map(o => (o.textContent || o.value || '').trim()).join(', ') : 'Todos';
+            return `<span class="st-af-chip ${active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${valTxt}</span></span>`;
+          }).join('');
+        };
+        const isCompras = window.currentAppSector === 'compras';
+        renderChips('cumpl_activeFiltersSummary', isCompras ? [
+          { id: 'cumpl_clienteSelect', lbl: 'Cliente' },
+          { id: 'cumpl_operadorSelect', lbl: 'Comprador' },
+          { id: 'cumpl_clasif2Select', lbl: 'Clasif.' },
+          { id: 'cumpl_gcocSelect', lbl: 'GC' },
+          { id: 'cumpl_mesSelect', lbl: 'Mes' },
+          { id: 'centroSelect', lbl: 'Centro' },
+          { id: 'cumpl_proveedorSelect', lbl: 'Proveedor' },
+          { id: 'cumpl_soloAbastSelect', lbl: 'Compras / Abast. / Equipos' }
+        ] : [
+          { id: 'cumpl_clienteSelect', lbl: 'Obra' },
+          { id: 'cumpl_clasif2Select', lbl: 'Clasif.' },
+          { id: 'cumpl_gcocSelect', lbl: 'GC' },
+          { id: 'cumpl_mesSelect', lbl: 'Mes' },
+          { id: 'centroSelect', lbl: 'Centro' }
+        ]);
+        renderChips('mm_activeFiltersSummary', [{ id: 'mm_clienteSelect', lbl: 'Almacén' }]);
+        renderChips('dem_activeFiltersSummary', [
+          { id: 'dem_clienteSelect', lbl: 'Cliente' },
+          { id: 'dem_clasifSelect', lbl: 'Clasif.' },
+          { id: 'dem_mesSelect', lbl: 'Mes' }
+        ]);
+        renderChips('serv_activeFiltersSummary', [
+          { id: 'serv_clienteSelect', lbl: 'Cliente' },
+          { id: 'serv_clasif2Select', lbl: 'Período' },
+          { id: 'serv_gcocSelect', lbl: 'Estado' },
+          { id: 'serv_grupoCompraSelect', lbl: 'GC' },
+          { id: 'serv_estadoItemSelect', lbl: 'Estado Ítem' }
+        ]);
+        renderChips('tiempos_activeFiltersSummary', [
+          {
+            lbl: 'Obra',
+            custom: () => {
+              const s = document.getElementById('tiempos_obraSelect');
+              const o = s && s.selectedOptions[0];
+              const txt = o ? (o.textContent || o.value || '').trim() : 'Todos';
+              return { active: !!(txt && txt.toLowerCase() !== 'todos' && txt.toLowerCase() !== 'todas'), txt: txt || 'Todos' };
+            }
+          },
+          {
+            lbl: 'Mes',
+            custom: () => {
+              const list = document.getElementById('tiempos_slicer_list');
+              if (!list) return { active: false, txt: 'Todos' };
+              const all = list.querySelectorAll('.tiempos-slicer-item');
+              const act = list.querySelectorAll('.tiempos-slicer-item.active');
+              if (!act.length || act.length === all.length) return { active: false, txt: 'Todos' };
+              const names = [...act].map(i => (i.querySelector('span')?.textContent || '').trim()).filter(Boolean);
+              return { active: true, txt: names.join(', ') };
+            }
+          }
+        ]);
+        renderChips('emrf_activeFiltersSummary', [
+          {
+            lbl: 'Sociedad',
+            custom: () => {
+              const s = document.getElementById('emrf_sociedadSelect');
+              const v = s ? s.value : 'TODAS';
+              const o = s && s.selectedOptions[0];
+              return { active: v !== 'TODAS', txt: (v === 'TODAS' || !o) ? 'Todas' : o.textContent.trim() };
+            }
+          },
+          {
+            lbl: 'Búsqueda',
+            custom: () => {
+              const inp = document.getElementById('emrf_searchInput');
+              const v = inp ? inp.value.trim() : '';
+              return { active: !!v, txt: v || 'Todos' };
+            }
+          },
+          { id: 'emrf_estadoSelect', lbl: 'Estado' },
+          { id: 'emrf_gcSelect', lbl: 'GC' },
+          { id: 'emrf_vencSelect', lbl: 'Venc.' },
+          { id: 'emrf_operOcSelect', lbl: 'Operador' }
+        ]);
       };
 
-      // Cerrar dropdown al hacer clic fuera
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.st-ms-container')) {
-          document.querySelectorAll('.st-ms-container.is-open').forEach(el => el.classList.remove('is-open'));
-        }
-      });
+      window.syncAllStMultiSelects = function() {
+        // Encontrar todos los selects en barras laterales (excepto el de sector y los que tienen contenedores HTML dedicados)
+        document.querySelectorAll('.st-sidebar select:not(.st-sector-select):not([data-skip-pills])').forEach(sel => {
+          if (sel.id === 'resumen_obraSelect' || sel.id === 'resumen_anioSelect' || sel.id === 'resumen_mesCumplSelect' || sel.id === 'resumen_gcEmrfSelect') {
+            return;
+          }
+          const inst = createPrototypePillsFilter(sel);
+          inst.render();
+        });
+        if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+      };
 
-      // Sincronizar al hacer clic en botones de limpiar o cambiar pestañas
+      // Helper global para alternar Medición Arriba con switch UI en Cumplimiento
+      window.toggleCumplArribaSwitch = function() {
+        const btn = document.getElementById("cumpl_btnArriba");
+        if (btn) btn.click();
+        const sw = document.getElementById("cumpl_switchArriba");
+        if (sw && btn) {
+          setTimeout(() => {
+            sw.classList.toggle("active", btn.classList.contains("btn-active"));
+          }, 20);
+        }
+      };
+
+      window.resetMMFilters = function() {
+        const sel = document.getElementById("mm_clienteSelect");
+        if (sel) {
+          [...sel.options].forEach((o, i) => o.selected = (i === 0 || o.value === "" || o.value === "__ALL__"));
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+      };
+
+      window.resetDemorasFilters = function() {
+        ['dem_clienteSelect', 'dem_clasifSelect', 'dem_mesSelect'].forEach(id => {
+          const sel = document.getElementById(id);
+          if (sel) {
+            [...sel.options].forEach((o, i) => o.selected = (i === 0 || o.value === "" || o.value === "__ALL__"));
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+        if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+      };
+
+      window.resetTiemposFilters = function() {
+        const sel = document.getElementById("tiempos_obraSelect");
+        if (sel) {
+          [...sel.options].forEach((o, i) => o.selected = (i === 0 || o.value === "" || o.value === "__ALL__"));
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        const btnAll = document.getElementById("tiempos_btn_select_all");
+        if (btnAll) btnAll.click();
+        if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+      };
+
+      // Sincronizar al hacer clic en botones de restablecer o cambiar pestañas
       document.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-clear') || e.target.closest('#cumpl_btnArriba') || e.target.closest('.st-sidebar')) { setTimeout(() => { if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary(); }, 20);
-          setTimeout(() => window.syncAllStMultiSelects(), 60);
+        if (e.target.closest('.sidebar-reset-btn') || e.target.closest('.btn-clear') || e.target.closest('#cumpl_btnArriba') || e.target.closest('.st-sidebar')) {
+          setTimeout(() => {
+            if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+            if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+          }, 40);
         }
       });
 
       window.addEventListener('DOMContentLoaded', () => {
         window.syncAllStMultiSelects();
-        // Sincronización periódica ligera para reflejar cargas asíncronas de CSV/JSON
-        setInterval(() => window.syncAllStMultiSelects(), 600);
-        document.addEventListener('input', (e) => { if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary(); });
-        document.addEventListener('change', (e) => { if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') setTimeout(() => window.updateCumplFiltersSummary(), 15); });
+        setInterval(() => window.syncAllStMultiSelects(), 500);
+        document.addEventListener('input', (e) => {
+          if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+        });
+        document.addEventListener('change', (e) => {
+          if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') setTimeout(() => window.updateCumplFiltersSummary(), 15);
+        });
       });
     })();
 
@@ -2603,7 +2676,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261105_145936"></script>
+  <script src="js/auth-user.js?v=20261106_160743"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

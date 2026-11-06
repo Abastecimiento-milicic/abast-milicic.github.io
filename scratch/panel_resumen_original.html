@@ -1,0 +1,185 @@
+    <section id="panel-resumen" class="tab-panel" style="display: none;">
+      <div id="resumen_loader" class="loader-overlay" style="display: none;">
+        <div class="spinner-bars">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <div class="loading-text">Cargando datos de resumen...</div>
+      </div>
+
+      <div id="resumen_msg"></div>
+
+      <!-- Barra Lateral Izquierda Estilo Streamlit (Panel de Control) -->
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option>
+              <option value="compras">🛒 COMPRAS</option>
+              <option value="almacen">🏭 ALMACEN</option>
+            </select>
+          </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
+        </div>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
+
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+          <div class="st-filters-actions">
+            <button id="resumen_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
+            <button class="help-btn" onclick="openHelp('Filtros — Resumen Ejecutivo', `
+              <h4>Cliente / Obra</h4>
+              <p>Filtrá el resumen por obra o almacén para visualizar el estado de stock y el cumplimiento de pedidos correspondiente.</p>
+              <h4>Mes Evaluado</h4>
+              <p>Seleccioná el mes a evaluar en el bloque de rendimiento mensual de cumplimiento.</p>
+              <div class=&quot;hm-tip&quot;>💡 Podés restablecer a todas las obras con el botón Limpiar.</div>
+            `)" title="Ayuda sobre los filtros">ℹ</button>
+          </div>
+        </div>
+
+        <div class="st-filters-stack">
+          <div class="filter" id="resumen_obraFilterWrap">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%;">
+              <label style="margin-bottom: 0;">Cliente / Obra:</label>
+              <button type="button" id="resumen_btnExcludeObra" class="res-exclude-toggle-btn" title="Activar para EXCLUIR las obras seleccionadas en lugar de incluirlas">
+                🚫 Excluir: OFF
+              </button>
+            </div>
+            <select id="resumen_obraSelect" multiple size="6" class="multi-select">
+              <option value="__ALL__">Todas las Obras</option>
+            </select>
+            <div id="resumen_obraHint" class="hint">Elegí obras o activá «Excluir» para omitir una</div>
+          </div>
+
+          <div class="filter">
+            <label>Año:</label>
+            <select id="resumen_anioSelect" multiple size="4" class="multi-select">
+              <option value="__ALL__">Todos los Años</option>
+            </select>
+            <div class="hint">Filtrar por año de entrega</div>
+          </div>
+
+          <div class="filter">
+            <label>Mes Evaluado:</label>
+            <select id="resumen_mesCumplSelect" multiple size="6" class="multi-select">
+              <option value="__ALL__">Todos los Meses</option>
+            </select>
+            <div class="hint">Período para rendimiento mensual</div>
+          </div>
+
+          <div class="filter">
+            <label>Grupo de Compras (Partidas):</label>
+            <select id="resumen_gcEmrfSelect" multiple size="5" class="multi-select">
+              <option value="__ALL__">Todos los Grupos</option>
+              <option value="C01" selected>C01</option>
+              <option value="C07" selected>C07</option>
+              <option value="C02" selected>C02</option>
+            </select>
+            <div class="hint">Solo afecta a Control de Partidas</div>
+          </div>
+
+          <hr class="st-divider" />
+
+          <!-- Botón Medir Cumplimiento Arriba en Resumen -->
+          <div id="resumen_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
+            <button id="resumen_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
+              🏔️ Medir cumplimiento arriba
+            </button>
+            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
+              Obras 365 y 372 (año 2026)
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- GRILLA EJECUTIVA 5 BLOQUES COMPACTA EN 1 PANTALLA (Izquierda 2fr: div1 + div2 | Derecha 3fr: div3 + div4 + div5) -->
+      <div class="res-bento-grid">
+
+        <!-- COLUMNA IZQUIERDA (2fr): .div1 (ANÁLISIS MM) + .div2 (DEMORAS) -->
+        <div class="res-col-left">
+
+          <!-- .div1: 1. ANÁLISIS MM -->
+          <section class="panel res-div1">
+            <div class="panel-title res-panel-title">
+              <span>📦 1. ANÁLISIS MM — DISPONIBILIDAD Y PLANIFICACIÓN</span>
+            </div>
+
+            <div class="panel-body res-panel-body" style="display: flex; flex-direction: column; gap: 5px;">
+              <!-- 1.1 Disponibilidad General -->
+              <div class="res-subcard">
+                <div class="res-subcard-header">
+                  <span>Disponibilidad:</span>
+                </div>
+                <ul class="res-metric-list">
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">📦</span>
+                    <strong>Materiales:</strong>
+                    <span id="res_txtTotal" class="res-val" style="color: #2563eb;">-</span>
+                  </li>
+
+                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                    <span class="res-ico">✅</span>
+                    <strong>Disponible:</strong>
+                    <span id="res_txtDisp" class="res-val" style="color: #16a34a;">-</span>
+                  </li>
+
+                  <li id="res_rowDispPct" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
+                    <span class="res-ico">📈</span>
+                    <strong>Disp. (%):</strong>
+                    <span id="res_txtPct" class="res-val" style="color: #16a34a;">-</span>
+                    <span class="res-note">· Obj 90%</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- 1.2 Clasificación por Estado de Planificación + Mini Gráfico Tendencia Evolución MM abajo a la derecha -->
+              <div class="res-subcard">
+                <div class="res-subcard-header">
+                  <span>Clasificación:</span>
+                </div>
+                <ul class="res-metric-list" style="margin-bottom: 4px !important;">
+                  <li id="res_rowStockNulo" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 1.5px solid #dc2626; background: #fef2f2;">
+                    <div style="display: flex; align-items: center;">
+                      <span class="res-ico">🔴</span>
+                      <strong>Stock Nulo:</strong>
+                    </div>
+                    <div id="res_wrapNulo" style="width: 100%; padding-left: 12px;">
+                      <span id="res_txtNulo" class="res-val" style="color: #dc2626;">-</span>
+                    </div>
+                  </li>
+                </ul>
+
+                <div class="res-mm-bottom-grid">
+                  <ul class="res-metric-list">
+                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                      <span class="res-ico">🟡</span>
+                      <strong>Menor al PP:</strong>
+                      <span id="res_txtMenorPP" class="res-val" style="color: #d97706;">-</span>
+                    </li>
+
+                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                      <span class="res-ico">🟢</span>
+                      <strong>Mayor al PP:</strong>
+                      <span id="res_txtMayorPP" class="res-val" style="color: #16a34a;">-</span>
+                    </li>
+
+                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
+                      <span class="res-ico">🟠</span>
+                      <strong>Mayor a Stock Máx:</strong>
+                      <span id="res_txtMayorMax" class="res-val" style="color: #ea580c;">-</span>
+                    </li>
+                  </ul>
+
+                  <div class="res-subcard res-mini-chart-card">
+                    <div class="res-subcard-header">
+                      <span>📈 Tendencia Evolución</span>
+                    </div>
+                    <div id="res_chartEvolMM" class="res-mini-trend-box"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>

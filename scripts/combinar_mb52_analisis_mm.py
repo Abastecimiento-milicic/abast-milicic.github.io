@@ -391,6 +391,8 @@ def run_combination(base_dir=None):
                 col_rename[col] = 'Stock especial'
             elif 'unidad' in c_lower and 'med' in c_lower:
                 col_rename[col] = 'Unidad medida base'
+            elif 'tipo' in c_lower and 'mat' in c_lower:
+                col_rename[col] = 'Tipo material'
         if col_rename:
             df_mb.rename(columns=col_rename, inplace=True)
 
@@ -418,7 +420,15 @@ def run_combination(base_dir=None):
                     row_mm = mm_exact[(a, mat_clean)]
                     break
 
+            # Prioridad 1: Obtener Tipo material directamente de Base MB52 si viene en el archivo
             tipo_mat = ''
+            for c_tipo in ['Tipo material', 'Tipo de material', 'Tipo Material', 'MTART']:
+                if c_tipo in r and pd.notna(r[c_tipo]):
+                    v_tm = str(r[c_tipo]).strip()
+                    if v_tm and v_tm.lower() not in ('nan', 'none', '-', ''):
+                        tipo_mat = v_tm
+                        break
+
             if row_mm is not None:
                 caract = str(row_mm.get('Caract.planif.nec.', '') or '').strip() or 'PLANIFICADO'
                 if caract.upper() == 'NO PLANIFICADO':
@@ -430,7 +440,8 @@ def run_combination(base_dir=None):
                 rubro = str(row_mm.get('Rubro', '') or '').strip()
                 subrubro = str(row_mm.get('SubRubro', '') or '').strip()
                 grp_comp = str(row_mm.get('Grupo de compras', '') or '').strip()
-                tipo_mat = str(row_mm.get('Tipo material', '') or '').strip()
+                if not tipo_mat:
+                    tipo_mat = str(row_mm.get('Tipo material', '') or '').strip()
             else:
                 caract = '-'
                 planif = 'NO'
@@ -441,7 +452,8 @@ def run_combination(base_dir=None):
                 rubro = meta.get('Rubro', '')
                 subrubro = meta.get('SubRubro', '')
                 grp_comp = meta.get('Grupo de compras', '')
-                tipo_mat = meta.get('Tipo material', '')
+                if not tipo_mat:
+                    tipo_mat = meta.get('Tipo material', '')
 
             # Prioridad 1: Obtener descripción directamente del archivo Base MB52
             desc = ''

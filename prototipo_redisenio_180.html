@@ -18,38 +18,40 @@
        VARIABLES DE DISEÑO 180° — DESIGN SYSTEM SAAS EJECUTIVO
        ========================================================================== */
     :root {
-      /* Paleta Light (Clean SaaS — Verde Institucional Sobrio del Proyecto Actual) */
-      --bg-app: #f8fafc;
+      /* Paleta Light (Clean SaaS — Dúo Verde Esmeralda & Azul Corporativo) */
+      --bg-app: #f4f7fb;
       --bg-surface: #ffffff;
-      --bg-subtle: #f1f5f9;
-      --bg-subtle-hover: #e2e8f0;
+      --bg-subtle: #f0f4f9;
+      --bg-subtle-hover: #e2eaf4;
       
-      --border-subtle: #e2e8f0;
-      --border-hover: #cbd5e1;
-      --border-focus: #0f766e;
+      --border-subtle: #e1e7f0;
+      --border-hover: #cbd7e6;
+      --border-focus: #0d9488;
       
-      --text-main: #0f172a;
-      --text-secondary: #334155;
-      --text-muted: #64748b;
+      --text-main: #0b1528;
+      --text-secondary: #334b69;
+      --text-muted: #7b91ab;
       --text-inverse: #ffffff;
       
-      /* Acentos de Marca: Verde Institucional Actual Milicic (#0f766e / #0d9488) MATE, NO BRILLANTE */
-      --brand: #0f766e;           /* Verde oscuro corporativo sobrio (Teal-700) */
-      --brand-hover: #115e59;     /* Teal-800 */
-      --brand-surface: #0d9488;   /* Teal-600 */
-      --brand-light: #f0fdfa;     /* Fondo sutil */
-      --brand-border: #ccfbf1;    /* Borde sutil */
+      /* Acentos de Marca: SOLO VERDE INSTITUCIONAL ACTUAL (#0d9488 / #0f766e / #14b8a6) */
+      --brand: #0d9488;
+      --brand-hover: #0f766e;
+      --brand-dk: #0f766e;
+      --brand-lt: #14b8a6;
+      --brand-light: #f0fdfa;
+      --brand-border: #99f6e4;
       
-      /* Gradientes y Acentos Mates (Sin brillo fluorescente) */
-      --brand-gradient: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
-      --brand-gradient-hover: linear-gradient(135deg, #115e59 0%, #0f766e 100%);
-      --brand-gradient-soft: rgba(15, 118, 110, 0.06);
-      --brand-gradient-border: #0f766e;
+      /* Gradientes Solo Verde Actual del Reporte (#0f766e -> #14b8a6 -> #0d9488) */
+      --brand-gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #0d9488 100%);
+      --brand-gradient-hover: linear-gradient(135deg, #115e59 0%, #0f766e 50%, #0d9488 100%);
+      --brand-gradient-green: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #0d9488 100%);
+      --brand-gradient-soft: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(20, 184, 166, 0.12) 100%);
+      --brand-gradient-border: linear-gradient(90deg, #0f766e, #14b8a6, #0d9488);
       
-      /* Estados Semánticos */
-      --success: #0f766e;
+      /* Estados Semánticos con Verde Actual */
+      --success: #0d9488;
       --success-bg: #f0fdfa;
-      --success-border: #ccfbf1;
+      --success-border: #99f6e4;
       --success-text: #0f766e;
 
       --warning: #f59e0b;
@@ -93,31 +95,30 @@
       --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* MODO OSCURO (SOBRIO MATE — VERDE PROYECTO ACTUAL) */
+    /* MODO OSCURO (SOLO VERDE / TEAL EJECUTIVO) */
     [data-theme="dark"] {
-      --bg-app: #0b111a;
-      --bg-surface: #111a26;
-      --bg-subtle: #182333;
-      --bg-subtle-hover: #212f42;
+      --bg-app: #090e15;
+      --bg-surface: #0f1823;
+      --bg-subtle: #152232;
+      --bg-subtle-hover: #1c2e42;
       
-      --border-subtle: #1e2c3d;
-      --border-hover: #2b3e54;
-      --border-focus: #0d9488;
+      --border-subtle: #1c2c3d;
+      --border-hover: #263c52;
+      --border-focus: #14b8a6;
       
-      --text-main: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --text-inverse: #0b111a;
+      --text-main: #f0fdfa;
+      --text-secondary: #ccfbf1;
+      --text-muted: #5eead4;
+      --text-inverse: #090e15;
       
-      --brand: #0d9488;
-      --brand-hover: #0f766e;
-      --brand-surface: #0f766e;
-      --brand-light: rgba(13, 148, 136, 0.12);
-      --brand-border: rgba(13, 148, 136, 0.3);
+      --brand: #14b8a6;
+      --brand-hover: #2dd4bf;
+      --brand-light: rgba(20, 184, 166, 0.14);
+      --brand-border: rgba(20, 184, 166, 0.35);
 
-      --brand-gradient: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
-      --brand-gradient-hover: linear-gradient(135deg, #115e59 0%, #0f766e 100%);
-      --brand-gradient-soft: rgba(13, 148, 136, 0.10);
+      --brand-gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #2dd4bf 100%);
+      --brand-gradient-hover: linear-gradient(135deg, #115e59 0%, #0f766e 50%, #14b8a6 100%);
+      --brand-gradient-soft: linear-gradient(135deg, rgba(20, 184, 166, 0.12) 0%, rgba(45, 212, 191, 0.12) 100%);
       
       --success: #2dd4bf;
       --success-bg: rgba(20, 184, 166, 0.12);
@@ -187,11 +188,11 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(15, 118, 110, 0.25);
-      color: #99f6e4;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.25), rgba(37, 99, 235, 0.25));
+      color: #6ee7b7;
       padding: 2px 8px;
       border-radius: var(--radius-pill);
-      border: 1px solid rgba(15, 118, 110, 0.45);
+      border: 1px solid rgba(56, 189, 248, 0.4);
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -230,7 +231,8 @@
       z-index: 300;
       background: var(--bg-surface);
       border-bottom: 1px solid var(--border-subtle);
-      border-top: 2px solid var(--brand);
+      border-top: 3px solid transparent;
+      border-image: var(--brand-gradient-border) 1;
       padding: 0 1.5rem;
       height: var(--topbar-height);
       display: flex;
@@ -256,12 +258,12 @@
       width: 38px;
       height: 38px;
       border-radius: var(--radius-md);
-      background: var(--brand);
+      background: var(--brand-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #ffffff;
-      box-shadow: 0 2px 5px rgba(15, 118, 110, 0.25);
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25), 0 2px 4px rgba(29, 78, 216, 0.2);
     }
     .brand-text-col {
       display: flex;
@@ -315,7 +317,8 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--brand);
+      background: var(--brand-gradient);
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
     }
 
     /* Navegación Segmented Control (Pills flotantes) */
@@ -348,14 +351,13 @@
       color: var(--text-main);
     }
     .nav-tab-btn.active {
-      background: var(--bg-surface);
-      color: var(--brand);
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border-subtle);
+      background: var(--brand-gradient);
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(13, 148, 136, 0.22), 0 1px 3px rgba(29, 78, 216, 0.18);
       font-weight: 700;
     }
     .nav-tab-btn.active svg {
-      stroke: var(--brand);
+      stroke: #ffffff;
     }
 
     .topbar-right {
@@ -509,11 +511,11 @@
       color: var(--text-main);
     }
     .filter-pill.active {
-      background: var(--brand);
+      background: var(--brand-gradient);
       color: #ffffff;
-      border-color: var(--brand);
+      border-color: transparent;
       font-weight: 600;
-      box-shadow: var(--shadow-xs);
+      box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
     }
 
     .toggle-row {
@@ -749,12 +751,13 @@
     }
     .radial-circle-progress {
       fill: none;
-      stroke: var(--brand);
-      stroke-width: 6;
+      stroke: url(#radialGreen);
+      stroke-width: 6.5;
       stroke-linecap: round;
       stroke-dasharray: 188.4;
       stroke-dashoffset: 21.8; /* 88.4% de 188.4 */
       transition: stroke-dashoffset 1s ease;
+      filter: drop-shadow(0 2px 4px rgba(13, 148, 136, 0.25));
     }
     .radial-value-center {
       position: absolute;
@@ -1324,6 +1327,13 @@
             <div class="kpi-radial-hero">
               <div class="radial-circle-box">
                 <svg viewBox="0 0 70 70">
+                  <defs>
+                    <linearGradient id="radialGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0f766e"/>
+                      <stop offset="50%" stop-color="#0d9488"/>
+                      <stop offset="100%" stop-color="#14b8a6"/>
+                    </linearGradient>
+                  </defs>
                   <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
                   <circle class="radial-circle-progress" cx="35" cy="35" r="30"></circle>
                 </svg>
@@ -1808,11 +1818,12 @@
           smooth: 0.35,
           showSymbol: false,
           data: [84.1, 85.3, 86.0, 85.8, 87.2, 88.4],
-          lineStyle: { width: 2.2, color: '#0f766e' },
+          lineStyle: { width: 2.8, color: '#0d9488' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(15, 118, 110, 0.20)' },
-              { offset: 1, color: 'rgba(15, 118, 110, 0.0)' }
+              { offset: 0, color: 'rgba(13, 148, 136, 0.45)' },
+              { offset: 0.6, color: 'rgba(20, 184, 166, 0.18)' },
+              { offset: 1, color: 'rgba(13, 148, 136, 0.0)' }
             ])
           }
         }]
@@ -1921,12 +1932,13 @@
             type: 'line',
             smooth: 0.35,
             data: [76.5, 78.2, 77.9, 80.4, 81.2, 84.6],
-            lineStyle: { width: 2.5, color: '#0f766e' },
-            itemStyle: { color: '#0f766e', borderWidth: 2, borderColor: '#ffffff' },
+            lineStyle: { width: 3.2, color: '#0d9488' },
+            itemStyle: { color: '#0f766e', borderWidth: 2, borderColor: '#14b8a6' },
             areaStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: 'rgba(15, 118, 110, 0.18)' },
-                { offset: 1, color: 'rgba(15, 118, 110, 0.0)' }
+                { offset: 0, color: 'rgba(13, 148, 136, 0.40)' },
+                { offset: 0.5, color: 'rgba(20, 184, 166, 0.18)' },
+                { offset: 1, color: 'rgba(13, 148, 136, 0.0)' }
               ])
             },
             markLine: {
@@ -1935,7 +1947,7 @@
               data: [{
                 yAxis: 78,
                 label: { show: true, formatter: 'Meta 78%', position: 'insideEndTop', color: '#0f766e', fontSize: 10, fontWeight: 700 },
-                lineStyle: { type: 'dashed', color: '#0f766e', width: 1.5 }
+                lineStyle: { type: 'dashed', color: '#0d9488', width: 1.5 }
               }]
             }
           }

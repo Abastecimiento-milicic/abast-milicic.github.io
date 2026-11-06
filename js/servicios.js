@@ -239,18 +239,7 @@
           const loader = document.getElementById("serv_loader") || document.getElementById("loader");
           if (loader) loader.style.display = "none";
       });
-  }; window.resetServiciosFilters = function() {
-    ["serv_clienteSelect", "serv_clasif2Select", "serv_gcocSelect", "serv_grupoCompraSelect", "serv_estadoItemSelect"].forEach(id => {
-      const el = document.getElementById(id) || document.getElementById(id.replace('serv_', ''));
-      if (el) {
-        [...el.options].forEach((o, i) => o.selected = (i === 0 || o.value === "__ALL__"));
-      }
-    });
-    applyAll();
-    if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
-  };
-
-  window.initServicios = function() { window.loadServiciosSector(window.currentAppSector === "sede" ? "sede" : "abastecimiento"); };
+  }; window.initServicios = function() { window.loadServiciosSector(window.currentAppSector === "sede" ? "sede" : "abastecimiento"); };
 
   // Auto-init if running on standalone servicios.html
   if (document.getElementById('panel-servicios') === null && (document.getElementById('serv_clienteSelect') || document.getElementById('clienteSelect'))) {

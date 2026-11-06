@@ -1,346 +1,696 @@
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-with open('js/resumen.js', 'r', encoding='utf-8') as f:
-    code = f.read()
+new_resumen_js = """/**
+ * resumen.js
+ * Módulo para la pestaña "RESUMEN" (Pantallazo Ejecutivo por Obra)
+ * Unifica Análisis MM (cruzado con STO NULO) y Cumplimiento de Pedidos (Acumulado 12M vs Mensual).
+ */
 
-# 1. Update renderObrasSelect
-old_render_obras = '''    sel.onchange = () => updateResumen();
+(function () {
+  "use strict";
 
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
+  const CSV_MM_URL = "data/ANALISIS-MM.csv";
+  const CSV_STONULO_URL = "data/STO NULO.csv";
+  const CSV_CUMPL_URL = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+  const DELIM = ";";
 
-new_render_obras = '''    sel.onchange = () => updateResumen();
+  let mmRawData = null;
+  let mmHeaders = [];
+  let stoNuloRawData = null;
+  let stoNuloHeaders = [];
+  let cumplRawData = null;
+  let cumplHeaders = [];
+  let isDataLoading = false;
 
-    const pillsCont = document.getElementById("obraPillsContainer");
-    if (pillsCont) {
-      const isAllSelected = !prevSelected.length || prevSelected.includes("__ALL__");
-      let pillsHtml = `<span class="filter-pill ${isAllSelected ? 'active' : ''}" data-val="__ALL__" onclick="window.selectResumenObraPill(this, '__ALL__')">Todas las Obras</span>`;
-      sortedCodes.forEach(code => {
-        const isSel = prevSelected.includes(code);
-        const label = OBRA_MAP[code] || `Obra ${code}`;
-        pillsHtml += `<span class="filter-pill ${isSel ? 'active' : ''}" data-val="${code}" onclick="window.selectResumenObraPill(this, '${code}')">${label}</span>`;
-      });
-      pillsCont.innerHTML = pillsHtml;
-    }
+  // Clave / Códigos normalizados de obra a nombres representativos
+  const OBRA_MAP = {
+    "26_314": "00026 / 00314 - CASA OLAVARRIA / SANTA FE",
+    "35_341": "00035 / 00341 - MOV SUELOS SAN LUIS",
+    "26": "00026 / 00314 - CASA OLAVARRIA / SANTA FE",
+    "314": "00026 / 00314 - CASA OLAVARRIA / SANTA FE",
+    "35": "00035 / 00341 - MOV SUELOS SAN LUIS",
+    "341": "00035 / 00341 - MOV SUELOS SAN LUIS",
+    "223": "00223 - COMP AMB SANTA FE",
+    "365": "00365 - RIO TINTO",
+    "368": "00368 - ACUEDUCTO TBH",
+    "372": "00372 - UTE POSCO II",
+    "374": "00374 - TERMINAL PUNTA COLORADA",
+    "375": "00375 - OLEODUCTO PR-LP",
+    "376": "00376 - VELADERO FASE 8B",
+    "377": "00377 - YPF 3ER LOOP",
+    "378": "00378 - OLEODUCTO PRINGLES",
+    "379": "00379 - VELADERO FASE 8C"
+  };
 
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
+  const MES_NOMBRES = {
+    "01": "Enero", "02": "Febrero", "03": "Marzo", "04": "Abril",
+    "05": "Mayo", "06": "Junio", "07": "Julio", "08": "Agosto",
+    "09": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
+  };
 
-# 2. Update renderAniosSelect
-old_render_anios = '''    sel.onchange = () => {
-      renderMesesCumplSelect(true);
-      updateCumplimientoBlock();
-      updateDemorasBlock();
-      updateTiemposBlock();
-    };
+  const clean = (v) => (v ?? "").toString().replace(/^\\uFEFF/, "").replace(/\\s+/g, " ").trim();
 
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
-
-new_render_anios = '''    sel.onchange = () => {
-      renderMesesCumplSelect(true);
-      updateCumplimientoBlock();
-      updateDemorasBlock();
-      updateTiemposBlock();
-    };
-
-    const pillsCont = document.getElementById("anioPillsContainer");
-    if (pillsCont) {
-      const isAllSelected = !prevSelected.length || prevSelected.includes("__ALL__");
-      let pillsHtml = `<span class="filter-pill ${isAllSelected ? 'active' : ''}" data-val="__ALL__" onclick="window.selectResumenAnioPill(this, '__ALL__')">Todos</span>`;
-      sortedYears.forEach(year => {
-        const isSel = prevSelected.includes(year);
-        pillsHtml += `<span class="filter-pill ${isSel ? 'active' : ''}" data-val="${year}" onclick="window.selectResumenAnioPill(this, '${year}')">${year}</span>`;
-      });
-      pillsCont.innerHTML = pillsHtml;
-    }
-
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
-
-# 3. Update renderMesesCumplSelect
-old_render_meses = '''    sel.onchange = () => { updateCumplimientoBlock(); updateDemorasBlock(); updateTiemposBlock(); };
-
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
-
-new_render_meses = '''    sel.onchange = () => { updateCumplimientoBlock(); updateDemorasBlock(); updateTiemposBlock(); };
-
-    const pillsCont = document.getElementById("mesPillsContainer");
-    if (pillsCont) {
-      const isAllSelected = !hasSelection;
-      let pillsHtml = `<span class="filter-pill ${isAllSelected ? 'active' : ''}" data-val="__ALL__" onclick="window.selectResumenMesPill(this, '__ALL__')">Todos</span>`;
-      [...sortedYM].reverse().forEach(ym => {
-        const [year, month] = ym.split("-");
-        const nombreMes = MES_NOMBRES[month] || month;
-        const isSel = prevSelected.includes(ym);
-        pillsHtml += `<span class="filter-pill ${isSel ? 'active' : ''}" data-val="${ym}" onclick="window.selectResumenMesPill(this, '${ym}')">${nombreMes} ${year}</span>`;
-      });
-      pillsCont.innerHTML = pillsHtml;
-    }
-
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
-
-# 4. Update renderGcEmrfSelect
-old_render_gc = '''    sel.onchange = () => {
-      updateEmrfBlock();
-    };
-
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
-
-new_render_gc = '''    sel.onchange = () => {
-      updateEmrfBlock();
-    };
-
-    const pillsCont = document.getElementById("gcEmrfPillsContainer");
-    if (pillsCont) {
-      let pillsHtml = `<span class="filter-pill ${hadAllSelected ? 'active' : ''}" data-val="__ALL__" onclick="window.selectResumenGcPill(this, '__ALL__')">Todos</span>`;
-      orderedGcs.forEach(gc => {
-        const isSel = !hadAllSelected && prevSelected.includes(gc);
-        pillsHtml += `<span class="filter-pill ${isSel ? 'active' : ''}" data-val="${gc}" onclick="window.selectResumenGcPill(this, '${gc}')">${gc}</span>`;
-      });
-      pillsCont.innerHTML = pillsHtml;
-    }
-
-    if (typeof window.syncAllStMultiSelects === "function") {
-      window.syncAllStMultiSelects();
-    }
-  }'''
-
-# 5. Update setResumenArribaMode & hookClearButton
-old_arriba_block = '''  function setResumenArribaMode(active) {
-    isResumenArribaActive = !!active;
-    const btn = document.getElementById("resumen_btnArriba");
-    if (btn) {
-      if (isResumenArribaActive) {
-        btn.classList.add("btn-active");
-        btn.innerHTML = "↩ Volver a cumplimiento estándar";
-      } else {
-        btn.classList.remove("btn-active");
-        btn.innerHTML = "🏔️ Medir cumplimiento arriba";
-      }
-    }
-
-    updateCumplimientoBlock();
-    updateTiemposBlock();
-  }'''
-
-new_arriba_block = '''  function setResumenArribaMode(active) {
-    isResumenArribaActive = !!active;
-    const btn = document.getElementById("resumen_btnArriba");
-    if (btn) {
-      if (isResumenArribaActive) {
-        btn.classList.add("btn-active");
-        btn.innerHTML = "↩ Volver a cumplimiento estándar";
-      } else {
-        btn.classList.remove("btn-active");
-        btn.innerHTML = "🏔️ Medir cumplimiento arriba";
-      }
-    }
-    const sw = document.getElementById("switchArriba");
-    if (sw) {
-      sw.classList.toggle("active", isResumenArribaActive);
-    }
-
-    updateCumplimientoBlock();
-    updateTiemposBlock();
+  function toNumber(v) {
+    let x = clean(v);
+    if (!x) return 0;
+    x = x.replace(/\\s/g, "");
+    if (x.includes(",")) x = x.replace(/\\./g, "").replace(",", ".");
+    const n = Number(x);
+    return Number.isFinite(n) ? n : 0;
   }
 
-  /* ==========================================================================
-     MÉTODOS PÚBLICOS DE PASTILLAS Y FILTROS INTERACTIVOS TIPO PROTOTIPO
-     ========================================================================== */
-  window.selectResumenObraPill = function(el, code) {
+  function fmtInt(n) {
+    return Number(n || 0).toLocaleString("es-AR", { maximumFractionDigits: 0 });
+  }
+
+  function fmtPct01(n) {
+    if (!Number.isFinite(n) || isNaN(n)) return "0,0%";
+    return (n * 100).toFixed(1).replace(".", ",") + "%";
+  }
+
+  function setText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text ?? "";
+  }
+
+  function setHTML(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html ?? "";
+  }
+
+  // Normalizar código de almacén a número sin ceros iniciales
+  function extractCode(val) {
+    const s = clean(val);
+    const m = s.match(/\\d+/);
+    return m ? String(parseInt(m[0], 10)) : s;
+  }
+
+  // Normalizar código de almacén u obra unificando 26/314 y 35/341
+  function getCanonicalObraCode(val) {
+    if (!val) return "";
+    const c = extractCode(val);
+    if (c === "26" || c === "314" || c === "26_314" || c === "00026" || c === "00314") return "26_314";
+    if (c === "35" || c === "341" || c === "35_341" || c === "00035" || c === "00341") return "35_341";
+    return c;
+  }
+
+  // Helpers para obtener array de selecciones activas
+  function getSelectedObras() {
+    const sel = document.getElementById("resumen_obraSelect");
+    if (!sel) return [];
+    return [...sel.selectedOptions].map(o => o.value).filter(v => v && v !== "__ALL__");
+  }
+
+  function getSelectedMeses() {
+    const sel = document.getElementById("resumen_mesCumplSelect");
+    if (!sel) return [];
+    return [...sel.selectedOptions].map(o => o.value).filter(v => v && v !== "__ALL__");
+  }
+
+  // Parsear fecha DD/MM/YYYY o YYYY-MM a "YYYY-MM"
+  function parseYearMonth(s) {
+    const t = clean(s);
+    if (!t) return null;
+    const mSlash = t.match(/^(\\d{1,2})[\\/\\-](\\d{1,2})[\\/\\-](\\d{4})$/);
+    if (mSlash) {
+      return `${mSlash[3]}-${mSlash[2].padStart(2, '0')}`;
+    }
+    const mDash = t.match(/^(\\d{4})[\\/\\-](\\d{1,2})/);
+    if (mDash) {
+      return `${mDash[1]}-${mDash[2].padStart(2, '0')}`;
+    }
+    return null;
+  }
+
+  /* ============================
+     CARGA DE DATOS
+  ============================ */
+  function parseCSV(text) {
+    const lines = text.split(/\\r?\\n/).map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return { headers: [], rows: [] };
+    const headers = lines[0].split(DELIM).map(clean);
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(DELIM);
+      const row = {};
+      for (let j = 0; j < headers.length; j++) {
+        row[headers[j]] = clean(parts[j]);
+      }
+      rows.push(row);
+    }
+    return { headers, rows };
+  }
+
+  async function loadResumenData() {
+    if (mmRawData && stoNuloRawData && cumplRawData) {
+      updateResumen();
+      return;
+    }
+    if (isDataLoading) return;
+    isDataLoading = true;
+
+    const loader = document.getElementById("resumen_loader");
+    if (loader) loader.style.display = "flex";
+
+    try {
+      const fetchCSV = async (url) => {
+        if (typeof window.fetchWithCache === "function") {
+          return await window.fetchWithCache(url);
+        }
+        const res = await fetch(url + "?t=" + Date.now());
+        if (!res.ok) throw new Error(`HTTP ${res.status} al cargar ${url}`);
+        return await res.text();
+      };
+
+      const [textMM, textStoNulo, textCumpl] = await Promise.all([
+        fetchCSV(CSV_MM_URL),
+        fetchCSV(CSV_STONULO_URL),
+        fetchCSV(CSV_CUMPL_URL)
+      ]);
+
+      const parsedMM = parseCSV(textMM);
+      mmHeaders = parsedMM.headers;
+      mmRawData = parsedMM.rows;
+
+      const parsedStoNulo = parseCSV(textStoNulo);
+      stoNuloHeaders = parsedStoNulo.headers;
+      stoNuloRawData = parsedStoNulo.rows;
+
+      const parsedCumpl = parseCSV(textCumpl);
+      cumplHeaders = parsedCumpl.headers;
+      cumplRawData = parsedCumpl.rows;
+
+      // Pre-calcular _ym en cumplimiento para agilizar cálculos
+      const colFec = cumplHeaders.find(h => /fecha/i.test(h)) || "FECHA ENTREGA ESPERADA";
+      cumplRawData.forEach(r => {
+        r._ym = parseYearMonth(r[colFec]);
+      });
+
+      renderObrasSelect();
+      renderMesesCumplSelect();
+      hookClearButton();
+      updateResumen();
+    } catch (err) {
+      console.error("[Resumen] Error al cargar datos:", err);
+      const msg = document.getElementById("resumen_msg");
+      if (msg) msg.innerHTML = `<div class="error" style="color: #ef4444; font-weight: bold; padding: 10px;">Error al cargar datos de Resumen: ${err.message}</div>`;
+    } finally {
+      isDataLoading = false;
+      if (loader) loader.style.display = "none";
+    }
+  }
+
+  /* ============================
+     SELECTORES
+  ============================ */
+  function renderObrasSelect() {
     const sel = document.getElementById("resumen_obraSelect");
     if (!sel) return;
-    const pillsCont = document.getElementById("obraPillsContainer");
 
-    if (code === "__ALL__") {
-      if (pillsCont) {
-        pillsCont.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
-      }
-      el.classList.add("active");
-      [...sel.options].forEach((o, idx) => {
-        o.selected = (o.value === "__ALL__" || idx === 0);
-      });
-    } else {
-      const allPill = pillsCont ? pillsCont.querySelector('[data-val="__ALL__"]') : null;
-      if (allPill) allPill.classList.remove("active");
+    const codes = new Set();
 
-      if (pillsCont) {
-        pillsCont.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
-      }
-      el.classList.add("active");
-
-      [...sel.options].forEach(o => {
-        o.selected = (o.value === code);
+    if (mmRawData) {
+      const colAlm = mmHeaders.find(h => /almac[eé]n/i.test(h)) || "Almacén";
+      mmRawData.forEach(r => {
+        const c = getCanonicalObraCode(r[colAlm]);
+        if (c && c !== "0") codes.add(c);
       });
     }
-    updateResumen();
-  };
 
-  window.filterResumenObraPills = function(query) {
-    const text = (query || "").toLowerCase().trim();
-    const pills = document.querySelectorAll("#obraPillsContainer .filter-pill");
-    pills.forEach(pill => {
-      const val = pill.getAttribute("data-val");
-      if (val === "__ALL__" || pill.textContent.toLowerCase().includes(text)) {
-        pill.style.display = "inline-flex";
-      } else {
-        pill.style.display = "none";
-      }
-    });
-  };
-
-  window.selectResumenAnioPill = function(el, year) {
-    const sel = document.getElementById("resumen_anioSelect");
-    if (!sel) return;
-    const pillsCont = document.getElementById("anioPillsContainer");
-    if (pillsCont) {
-      pillsCont.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+    if (cumplRawData) {
+      cumplRawData.forEach(r => {
+        const c = getCanonicalObraCode(r["CLIENTE"]);
+        if (c && c !== "0") codes.add(c);
+      });
     }
-    el.classList.add("active");
-    [...sel.options].forEach(o => {
-      o.selected = (year === "__ALL__" ? (o.value === "__ALL__") : (o.value === year));
-    });
-    renderMesesCumplSelect(true);
-    updateCumplimientoBlock();
-    updateDemorasBlock();
-    updateTiemposBlock();
-  };
 
-  window.selectResumenMesPill = function(el, ym) {
+    const sortedCodes = [...codes].sort((a, b) => {
+      const getNum = (str) => {
+        const m = str.match(/\\d+/);
+        return m ? parseInt(m[0], 10) : 99999;
+      };
+      return getNum(a) - getNum(b);
+    });
+
+    const prevSelected = [...sel.selectedOptions].map(o => o.value);
+
+    sel.innerHTML = `<option value="__ALL__">Todas las Obras</option>`;
+
+    sortedCodes.forEach(code => {
+      const opt = document.createElement("option");
+      opt.value = code;
+      opt.textContent = OBRA_MAP[code] || `Obra / Almacén ${code}`;
+      if (prevSelected.includes(code)) {
+        opt.selected = true;
+      }
+      sel.appendChild(opt);
+    });
+
+    if (!prevSelected.length || prevSelected.includes("__ALL__") || !sel.selectedOptions.length) {
+      if (sel.options[0]) sel.options[0].selected = true;
+    }
+
+    sel.onchange = () => updateResumen();
+
+    if (typeof window.syncAllStMultiSelects === "function") {
+      window.syncAllStMultiSelects();
+    }
+  }
+
+  function renderMesesCumplSelect() {
     const sel = document.getElementById("resumen_mesCumplSelect");
-    if (!sel) return;
-    const pillsCont = document.getElementById("mesPillsContainer");
-    if (pillsCont) {
-      pillsCont.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
-    }
-    el.classList.add("active");
-    [...sel.options].forEach(o => {
-      o.selected = (ym === "__ALL__" ? (o.value === "__ALL__") : (o.value === ym));
+    if (!sel || !cumplRawData) return;
+
+    const ymSet = new Set();
+    cumplRawData.forEach(r => {
+      if (r._ym) ymSet.add(r._ym);
     });
-    updateCumplimientoBlock();
-    updateDemorasBlock();
-    updateTiemposBlock();
-  };
 
-  window.selectResumenGcPill = function(el, gc) {
-    const sel = document.getElementById("resumen_gcEmrfSelect");
-    if (!sel) return;
-    const pillsCont = document.getElementById("gcEmrfPillsContainer");
-    if (gc === "__ALL__") {
-      if (pillsCont) {
-        pillsCont.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+    const sortedYM = [...ymSet].sort();
+
+    const prevSelected = [...sel.selectedOptions].map(o => o.value);
+
+    sel.innerHTML = `<option value="__ALL__">Todos los Meses</option>`;
+    sortedYM.forEach(ym => {
+      const [year, month] = ym.split("-");
+      const opt = document.createElement("option");
+      opt.value = ym;
+      const nombreMes = MES_NOMBRES[month] || month;
+      opt.textContent = `${nombreMes} ${year}`;
+      if (prevSelected.includes(ym) || (!prevSelected.length && ym === "2026-09")) {
+        opt.selected = true;
       }
-      el.classList.add("active");
-      [...sel.options].forEach((o, i) => o.selected = (i === 0 || o.value === "__ALL__"));
-    } else {
-      const allPill = pillsCont ? pillsCont.querySelector('[data-val="__ALL__"]') : null;
-      if (allPill) allPill.classList.remove("active");
-      el.classList.toggle("active");
-      const activeVals = Array.from(pillsCont.querySelectorAll(".filter-pill.active")).map(p => p.getAttribute("data-val"));
-      if (!activeVals.length) {
-        if (allPill) allPill.classList.add("active");
-        [...sel.options].forEach((o, i) => o.selected = (i === 0));
+      sel.appendChild(opt);
+    });
+
+    const hasSelection = Array.from(sel.selectedOptions).some(o => o.value !== "__ALL__");
+    if (!hasSelection) {
+      const optSep = Array.from(sel.options).find(o => o.value === "2026-09");
+      if (optSep) {
+        optSep.selected = true;
+        if (sel.options[0]) sel.options[0].selected = false;
+      } else if (sortedYM.length > 0) {
+        sel.options[sortedYM.length - 1].selected = true;
+        if (sel.options[0]) sel.options[0].selected = false;
       } else {
-        [...sel.options].forEach(o => {
-          o.selected = activeVals.includes(o.value);
-        });
+        if (sel.options[0]) sel.options[0].selected = true;
       }
     }
-    updateEmrfBlock();
-  };
 
-  window.toggleResumenArribaSwitch = function() {
-    setResumenArribaMode(!isResumenArribaActive);
-  };
+    sel.onchange = () => { updateCumplimientoBlock(); updateDemorasBlock(); };
 
-  window.toggleResumenExcludeObra = function() {
-    setObraExcludeMode(!isObraExcludeMode);
-    updateResumen();
-  };'''
+    if (typeof window.syncAllStMultiSelects === "function") {
+      window.syncAllStMultiSelects();
+    }
+  }
 
-# 6. Update hookClearButton to also reset pill classes
-old_clear_btn = '''      if (typeof window.syncAllStMultiSelects === "function") {
-        setTimeout(() => window.syncAllStMultiSelects(), 30);
+  function hookClearButton() {
+    const btn = document.getElementById("resumen_btnClearFilters");
+    if (!btn) return;
+    btn.onclick = () => {
+      const selObra = document.getElementById("resumen_obraSelect");
+      if (selObra) {
+        [...selObra.options].forEach((opt, idx) => {
+          opt.selected = (opt.value === "__ALL__" || idx === 0);
+        });
+        selObra.dispatchEvent(new Event("change", { bubbles: true }));
       }
-    };
-  }'''
-
-new_clear_btn = '''      // Resetear clases activas de las pastillas interactivas
-      const obraPills = document.querySelectorAll("#obraPillsContainer .filter-pill");
-      obraPills.forEach((p, idx) => {
-        if (p.getAttribute("data-val") === "__ALL__" || idx === 0) p.classList.add("active");
-        else p.classList.remove("active");
-        p.style.display = "inline-flex";
-      });
-      const qInput = document.getElementById("resumen_obraQuickSearch");
-      if (qInput) qInput.value = "";
-
-      const anioPills = document.querySelectorAll("#anioPillsContainer .filter-pill");
-      anioPills.forEach((p, idx) => {
-        if (p.getAttribute("data-val") === "__ALL__" || idx === 0) p.classList.add("active");
-        else p.classList.remove("active");
-      });
-
-      const mesPills = document.querySelectorAll("#mesPillsContainer .filter-pill");
-      mesPills.forEach((p, idx) => {
-        if (p.getAttribute("data-val") === "__ALL__" || idx === 0) p.classList.add("active");
-        else p.classList.remove("active");
-      });
-
-      const gcPills = document.querySelectorAll("#gcEmrfPillsContainer .filter-pill");
-      gcPills.forEach(p => {
-        const v = p.getAttribute("data-val");
-        p.classList.toggle("active", DEFAULT_EMRF_GCS.includes(v));
-      });
-
-      const sw = document.getElementById("switchArriba");
-      if (sw) sw.classList.remove("active");
-
+      const selMes = document.getElementById("resumen_mesCumplSelect");
+      if (selMes && selMes.options.length) {
+        const hasSep = Array.from(selMes.options).some(o => o.value === "2026-09");
+        [...selMes.options].forEach(opt => {
+          opt.selected = hasSep ? (opt.value === "2026-09") : (opt.value === "__ALL__");
+        });
+        selMes.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      updateResumen();
       if (typeof window.syncAllStMultiSelects === "function") {
         setTimeout(() => window.syncAllStMultiSelects(), 30);
       }
     };
-  }'''
+  }
 
-def norm(t): return t.replace('\r\n', '\n')
+  /* ============================
+     CÁLCULO Y RENDERIZADO GENERAL
+  ============================ */
+  function updateResumen() {
+    updateMMBlock();
+    updateCumplimientoBlock();
+    updateDemorasBlock();
+  }
 
-code_norm = norm(code)
-items = [
-    ("renderObrasSelect", norm(old_render_obras), norm(new_render_obras)),
-    ("renderAniosSelect", norm(old_render_anios), norm(new_render_anios)),
-    ("renderMesesCumplSelect", norm(old_render_meses), norm(new_render_meses)),
-    ("renderGcEmrfSelect", norm(old_render_gc), norm(new_render_gc)),
-    ("arribaBlock", norm(old_arriba_block), norm(new_arriba_block)),
-    ("clearButton", norm(old_clear_btn), norm(new_clear_btn))
-]
+  /* --- 3. BLOQUE DEMORAS --- */
+  function updateDemorasBlock() {
+    const selectedObras = getSelectedObras();
+    const selectedMeses = getSelectedMeses();
 
-for name, o, n in items:
-    if o in code_norm:
-        code_norm = code_norm.replace(o, n, 1)
-        print(f"Updated {name} successfully")
-    else:
-        print(f"FAILED to find {name}!")
+    if (typeof window.renderResumenDemoras === "function") {
+      window.renderResumenDemoras("res_chartMotivos", "res_chartAreas", selectedObras, selectedMeses);
+    }
+  }
 
-with open('js/resumen.js', 'w', encoding='utf-8') as f:
-    f.write(code_norm)
+  /* --- 1. BLOQUE ANÁLISIS MM --- */
+  function updateMMBlock() {
+    if (!mmRawData) return;
 
-print("js/resumen.js updated successfully")
+    const selectedObras = getSelectedObras();
+
+    const colAlmMM = mmHeaders.find(h => /almac[eé]n/i.test(h)) || "Almacén";
+    const colMat = mmHeaders.find(h => /^material$/i.test(h)) || "Material";
+    const colLibre = mmHeaders.find(h => /libre utilizaci/i.test(h) && !/valor/i.test(h) && !/[aá]rea/i.test(h)) || "Libre utilización";
+    const colEstado = mmHeaders.find(h => /^estado$/i.test(h)) || "Estado";
+
+    let rowsMM = mmRawData;
+    if (selectedObras.length > 0) {
+      const obraSet = new Set(selectedObras.map(getCanonicalObraCode));
+      rowsMM = mmRawData.filter(r => obraSet.has(getCanonicalObraCode(r[colAlmMM])));
+    }
+
+    let obraLabel = "Todas las Obras";
+    if (selectedObras.length === 1) {
+      obraLabel = OBRA_MAP[selectedObras[0]] || `Obra / Almacén ${selectedObras[0]}`;
+    } else if (selectedObras.length > 1) {
+      if (selectedObras.length <= 2) {
+        obraLabel = selectedObras.map(c => OBRA_MAP[c] || c).join(" + ");
+      } else {
+        obraLabel = `${selectedObras.length} Obras Seleccionadas`;
+      }
+    }
+
+    setText("resumen_lblObra", obraLabel);
+    const elLblObra = document.getElementById("resumen_lblObra");
+    if (elLblObra) {
+      elLblObra.title = selectedObras.map(c => OBRA_MAP[c] || c).join(", ");
+    }
+
+    let totalMat = 0;
+    let dispMat = 0;
+    let cantStockNulo = 0;
+    let cantMenorPP = 0;
+    let cantMayorPP = 0;
+    let cantMayorMax = 0;
+
+    for (const r of rowsMM) {
+      const mat = clean(r[colMat]);
+      if (!mat) continue;
+
+      totalMat++;
+
+      const libre = toNumber(r[colLibre]);
+      if (libre > 0) dispMat++;
+
+      const estado = clean(r[colEstado]).toUpperCase();
+      if (estado.includes("NULO") || estado.startsWith("01")) {
+        cantStockNulo++;
+      } else if (estado.includes("MENOR") || estado.startsWith("02")) {
+        cantMenorPP++;
+      } else if (estado.includes("MAYOR A STOCK") || estado.includes("STOCK MAX") || estado.startsWith("04")) {
+        cantMayorMax++;
+      } else if (estado.includes("MAYOR") || estado.startsWith("03")) {
+        cantMayorPP++;
+      }
+    }
+
+    const pctDisp = totalMat ? (dispMat / totalMat) : 0;
+    const pctNulo = totalMat ? (cantStockNulo / totalMat) : 0;
+    const pctMenorPP = totalMat ? (cantMenorPP / totalMat) : 0;
+    const pctMayorPP = totalMat ? (cantMayorPP / totalMat) : 0;
+    const pctMayorMax = totalMat ? (cantMayorMax / totalMat) : 0;
+
+    // Cruzar con STO NULO
+    let nuloSinPedido = 0;
+    let nuloConPedido = 0;
+
+    if (stoNuloRawData && stoNuloRawData.length) {
+      const colAlmNulo = stoNuloHeaders.find(h => /almac[eé]n/i.test(h)) || "Almacén";
+      const colTipoDoc = stoNuloHeaders.find(h => /tipo doc/i.test(h)) || "TIPO DOC";
+
+      let rowsNulo = stoNuloRawData;
+      if (selectedObras.length > 0) {
+        const obraSet = new Set(selectedObras.map(getCanonicalObraCode));
+        rowsNulo = stoNuloRawData.filter(r => obraSet.has(getCanonicalObraCode(r[colAlmNulo])));
+      }
+
+      for (const rn of rowsNulo) {
+        const td = clean(rn[colTipoDoc]).toUpperCase();
+        if (td === "SIN PEDIDO") {
+          nuloSinPedido++;
+        } else {
+          nuloConPedido++;
+        }
+      }
+    }
+
+    setText("res_txtTotal", fmtInt(totalMat));
+    setText("res_txtDisp", fmtInt(dispMat));
+    setText("res_txtPct", fmtPct01(pctDisp));
+    const isDispGood = (pctDisp >= 0.90);
+    const elDisp = document.getElementById("res_txtPct");
+    if (elDisp) elDisp.style.color = isDispGood ? "#16a34a" : "#dc2626";
+    const rowDisp = document.getElementById("res_rowDispPct");
+    if (rowDisp) {
+      rowDisp.style.border = isDispGood ? "1.5px solid #16a34a" : "1.5px solid #dc2626";
+      rowDisp.style.background = isDispGood ? "#f0fdf4" : "#fef2f2";
+    }
+
+    const txtNuloHTML = `
+      <span style="font-size: 18px; font-weight: 800; color: #dc2626; margin: 0 8px;">${fmtInt(cantStockNulo)} (${fmtPct01(pctNulo)})</span>
+      <span style="color: #475569; font-size: 13px;">
+        de los cuales <mark style="background-color: #fef08a; color: #854d0e; padding: 2px 8px; font-size: 13px; border-radius: 4px; font-weight: 800; border: 1px solid #facc15;">${fmtInt(nuloSinPedido)} ESTÁN SIN PEDIDO</mark> (${fmtInt(nuloConPedido)} con pedido en curso).
+      </span>
+    `;
+    setHTML("res_wrapNulo", txtNuloHTML);
+
+    setText("res_txtMenorPP", `${fmtInt(cantMenorPP)} (${fmtPct01(pctMenorPP)})`);
+    setText("res_txtMayorPP", `${fmtInt(cantMayorPP)} (${fmtPct01(pctMayorPP)})`);
+    setText("res_txtMayorMax", `${fmtInt(cantMayorMax)} (${fmtPct01(pctMayorMax)})`);
+  }
+
+  /* --- 2. BLOQUE CUMPLIMIENTO --- */
+  function updateCumplimientoBlock() {
+    if (!cumplRawData) return;
+
+    const selectedObras = getSelectedObras();
+    const selectedMeses = getSelectedMeses();
+
+    // 1. Filtrar por Obra seleccionada
+    let rowsBase = cumplRawData;
+    if (selectedObras.length > 0) {
+      const obraSet = new Set(selectedObras.map(getCanonicalObraCode));
+      rowsBase = cumplRawData.filter(r => obraSet.has(getCanonicalObraCode(r["CLIENTE"])));
+    }
+
+    // Orden cronológico de meses presentes
+    const allMonths = [...new Set(rowsBase.map(r => r._ym).filter(Boolean))].sort();
+
+    // Meses evaluados para la columna mensual
+    const evalMonths = selectedMeses.length > 0 ? selectedMeses : allMonths;
+
+    // Identificar mes anterior si se seleccionó exactamente 1 mes para calcular variación
+    let prevYM = null;
+    if (selectedMeses.length === 1 && allMonths.length) {
+      const idx = allMonths.indexOf(selectedMeses[0]);
+      if (idx > 0) {
+        prevYM = allMonths[idx - 1];
+      }
+    }
+
+    // Identificar últimos 12 meses cronológicos (LTM) hasta el mes de referencia
+    const refYM = selectedMeses.length ? selectedMeses[selectedMeses.length - 1] : (allMonths.length ? allMonths[allMonths.length - 1] : null);
+    let ltmMonths = [];
+    if (refYM && allMonths.length) {
+      const idx = allMonths.indexOf(refYM);
+      if (idx >= 0) {
+        ltmMonths = allMonths.slice(Math.max(0, idx - 11), idx + 1);
+      }
+    }
+    if (!ltmMonths.length) {
+      ltmMonths = allMonths.slice(-12);
+    }
+
+    // Filtrar filas
+    const rowsLTM = rowsBase.filter(r => ltmMonths.includes(r._ym));
+    const evalMonthsSet = new Set(evalMonths);
+    const rowsCurr = rowsBase.filter(r => evalMonthsSet.has(r._ym));
+    const rowsPrev = prevYM ? rowsBase.filter(r => r._ym === prevYM) : [];
+
+    // Helper cálculo de métricas de cumplimiento
+    function calcCumplMetrics(rows) {
+      let tot = 0, at = 0, ft = 0, ne = 0, sumDem = 0, cntDem = 0;
+      for (const r of rows) {
+        const cTot = toNumber(r["COMPROMETIDOS"]);
+        const cAt = toNumber(r["ENTREGADOS AT"]);
+        const cFt = toNumber(r["ENTREGADOS FT"]);
+        const cNe = toNumber(r["NO ENTREGADOS"]);
+
+        tot += cTot;
+        at += cAt;
+        ft += cFt;
+        ne += cNe;
+
+        const dem = toNumber(r["DIAS DE DEMORA"]);
+        if (dem > 0) {
+          sumDem += dem;
+          cntDem++;
+        }
+      }
+      if (!tot) tot = at + ft + ne;
+      const pctAt = tot ? (at / tot) : 0;
+      const pctFt = tot ? (ft / tot) : 0;
+      const pctNe = tot ? (ne / tot) : 0;
+      const avgDem = cntDem ? (sumDem / cntDem) : 0;
+      return { tot, at, ft, ne, pctAt, pctFt, pctNe, avgDem };
+    }
+
+    const mLTM = calcCumplMetrics(rowsLTM);
+    const mCurr = calcCumplMetrics(rowsCurr);
+    const mPrev = calcCumplMetrics(rowsPrev);
+
+    /* --- 2.1 RENDERIZAR COLUMNA IZQUIERDA: ACUMULADO ÚLTIMOS 12 MESES --- */
+    const elRango = document.getElementById("res_cumplAcumRango");
+    if (ltmMonths.length > 0) {
+      const formatYM = (ym) => {
+        const parts = ym.split("-");
+        return `${parts[1]}/${parts[0]}`;
+      };
+      const rangoStr = `(${formatYM(ltmMonths[0])} - ${formatYM(ltmMonths[ltmMonths.length - 1])})`;
+      setText("res_cumplAcumRango", rangoStr);
+      if (elRango) elRango.style.display = "inline-block";
+    } else {
+      setText("res_cumplAcumRango", "");
+      if (elRango) elRango.style.display = "none";
+    }
+
+    setText("res_cumplAcumComprometidos", fmtInt(mLTM.tot));
+
+    setText("res_cumplAcumATpct", fmtPct01(mLTM.pctAt));
+    setText("res_cumplAcumATqty", fmtInt(mLTM.at));
+    const isAcumGood = (mLTM.pctAt >= 0.78);
+    const elAcumAT = document.getElementById("res_cumplAcumATpct");
+    if (elAcumAT) elAcumAT.style.color = isAcumGood ? "#16a34a" : "#dc2626";
+    const rowAcumAT = document.getElementById("res_cumplAcumRowAT");
+    if (rowAcumAT) {
+      rowAcumAT.style.border = isAcumGood ? "1.5px solid #16a34a" : "1.5px solid #dc2626";
+      rowAcumAT.style.background = isAcumGood ? "#f0fdf4" : "#fef2f2";
+    }
+
+    // FUERA DE TIEMPO: Naranja (#ea580c)
+    setText("res_cumplAcumFTpct", fmtPct01(mLTM.pctFt));
+    setText("res_cumplAcumFTqty", fmtInt(mLTM.ft));
+    const elAcumFT = document.getElementById("res_cumplAcumFTpct");
+    if (elAcumFT) elAcumFT.style.color = "#f59e0b";
+
+    // NO ENTREGADOS: Rojo (#dc2626)
+    setText("res_cumplAcumNEpct", fmtPct01(mLTM.pctNe));
+    setText("res_cumplAcumNEqty", fmtInt(mLTM.ne));
+    const elAcumNE = document.getElementById("res_cumplAcumNEpct");
+    if (elAcumNE) elAcumNE.style.color = "#dc2626";
+
+    setText("res_cumplAcumDemoraAvg", Math.round(mLTM.avgDem) + " d");
+    const elAcumDem = document.getElementById("res_cumplAcumDemoraAvg");
+    if (elAcumDem) elAcumDem.style.color = (mLTM.avgDem > 7) ? "#dc2626" : "#16a34a";
+
+    /* --- 2.2 RENDERIZAR COLUMNA DERECHA: RENDIMIENTO MENSUAL --- */
+    let mesLabel = "Todos los Meses";
+    if (selectedMeses.length === 1) {
+      const [y, m] = selectedMeses[0].split("-");
+      mesLabel = `${MES_NOMBRES[m] || m} ${y}`;
+    } else if (selectedMeses.length > 1) {
+      if (selectedMeses.length <= 2) {
+        mesLabel = selectedMeses.map(ym => {
+          const [y, m] = ym.split("-");
+          return `${MES_NOMBRES[m] || m} ${y}`;
+        }).join(", ");
+      } else {
+        mesLabel = `${selectedMeses.length} Meses Seleccionados`;
+      }
+    }
+    setText("res_cumplMesLabel", mesLabel);
+    setText("res_cumplMesSide", mesLabel);
+    const elMesSide = document.getElementById("res_cumplMesSide");
+    if (elMesSide) {
+      elMesSide.title = selectedMeses.map(ym => {
+        const [y, m] = ym.split("-");
+        return `${MES_NOMBRES[m] || m} ${y}`;
+      }).join(", ");
+    }
+
+    // Helper cálculo de variaciones vs mes anterior
+    function getDiffInfo(currVal, prevVal, hasPrev, isPositiveMetric) {
+      if (!hasPrev) return { text: "· - vs mes anterior", color: "#64748b" };
+      const diff = (currVal - prevVal) * 100;
+      if (Math.abs(diff) < 0.05) return { text: "· = 0,0% vs mes anterior", color: "#64748b" };
+      const arrow = diff > 0 ? "▲" : "▼";
+      const absVal = Math.abs(diff).toFixed(1).replace(".", ",");
+      const isGood = isPositiveMetric ? (diff > 0) : (diff < 0);
+      const color = isGood ? "#16a34a" : "#dc2626";
+      return {
+        text: `· ${arrow} ${absVal}% vs mes anterior`,
+        color
+      };
+    }
+
+    const hasPrev = (selectedMeses.length === 1 && rowsPrev.length > 0);
+    const diffATInfo = getDiffInfo(mCurr.pctAt, mPrev.pctAt, hasPrev, true);
+    const diffFTInfo = getDiffInfo(mCurr.pctFt, mPrev.pctFt, hasPrev, false);
+    const diffNEInfo = getDiffInfo(mCurr.pctNe, mPrev.pctNe, hasPrev, false);
+
+    setText("res_cumplComprometidos", fmtInt(mCurr.tot));
+
+    // AT
+    setText("res_cumplATpct", fmtPct01(mCurr.pctAt));
+    setText("res_cumplATqty", fmtInt(mCurr.at));
+    setText("res_cumplATdiff", diffATInfo.text);
+    const elATdiff = document.getElementById("res_cumplATdiff");
+    if (elATdiff) elATdiff.style.color = diffATInfo.color;
+
+    const isCurrGood = (mCurr.pctAt >= 0.78);
+    const elAT = document.getElementById("res_cumplATpct");
+    if (elAT) elAT.style.color = isCurrGood ? "#16a34a" : "#dc2626";
+    const rowCurrAT = document.getElementById("res_cumplRowAT");
+    if (rowCurrAT) {
+      rowCurrAT.style.border = isCurrGood ? "1.5px solid #16a34a" : "1.5px solid #dc2626";
+      rowCurrAT.style.background = isCurrGood ? "#f0fdf4" : "#fef2f2";
+    }
+
+    // FT: Naranja (#ea580c)
+    setText("res_cumplFTpct", fmtPct01(mCurr.pctFt));
+    setText("res_cumplFTqty", fmtInt(mCurr.ft));
+    setText("res_cumplFTdiff", diffFTInfo.text);
+    const elFTdiff = document.getElementById("res_cumplFTdiff");
+    if (elFTdiff) elFTdiff.style.color = diffFTInfo.color;
+    const elFT = document.getElementById("res_cumplFTpct");
+    if (elFT) elFT.style.color = "#f59e0b";
+
+    // NE: Rojo (#dc2626)
+    setText("res_cumplNEpct", fmtPct01(mCurr.pctNe));
+    setText("res_cumplNEqty", fmtInt(mCurr.ne));
+    setText("res_cumplNEdiff", diffNEInfo.text);
+    const elNEdiff = document.getElementById("res_cumplNEdiff");
+    if (elNEdiff) elNEdiff.style.color = diffNEInfo.color;
+    const elNE = document.getElementById("res_cumplNEpct");
+    if (elNE) elNE.style.color = "#dc2626";
+
+    // Demora Promedio
+    setText("res_cumplDemoraAvg", Math.round(mCurr.avgDem) + " d");
+    const elDem = document.getElementById("res_cumplDemoraAvg");
+    if (elDem) elDem.style.color = (mCurr.avgDem > 7) ? "#dc2626" : "#16a34a";
+  }
+
+  // Hook global de inicialización
+  window.initResumen = function () {
+    loadResumenData();
+    if (!window.demorasInitialized && typeof window.initDemoras === "function") {
+      window.initDemoras();
+    }
+    updateDemorasBlock();
+  };
+
+})();
+"""
+
+with open("js/resumen.js", "w", encoding="utf-8") as f:
+    f.write(new_resumen_js)
+
+print("Successfully written js/resumen.js")

@@ -15,12 +15,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261110_143827" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_143827" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_143827" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261110_143827" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_143827" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_143827" />
+  <link rel="stylesheet" href="css/base.css?v=20261110_144642" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_144642" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_144642" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261110_144642" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_144642" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_144642" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -1718,95 +1718,87 @@
               </div>
 
               <!-- Doble Tarjeta: Acumulado 12M vs Período Evaluado -->
-              <div class="cumpl-dual-container">
+              <div class="cumpl-dual-container" style="gap: 0.5rem; margin-bottom: 0.5rem;">
                 
-                <!-- 12 Meses Acumulado con diseño Radial Hero -->
-                <div class="cumpl-box" style="padding: 0.75rem 0.85rem;">
-                  <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0.25rem 0.35rem; background: transparent; border: none; gap: 0.75rem;">
-                    <div class="radial-circle-box" style="width: 60px; height: 60px; flex-shrink: 0;">
+                <!-- 12 Meses Acumulado: Tarjeta compacta tipo Radial Hero -->
+                <div class="cumpl-box" style="padding: 0.55rem 0.7rem; gap: 0.25rem;">
+                  <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0; background: transparent; border: none; gap: 0.65rem;">
+                    <div class="radial-circle-box" style="width: 54px; height: 54px; flex-shrink: 0;">
                       <svg viewBox="0 0 70 70">
                         <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
                         <circle class="radial-circle-progress" id="res_radial_circle_acum" cx="35" cy="35" r="30"></circle>
                       </svg>
-                      <div class="radial-value-center" id="res_cumplAcumATpct" style="font-size: 0.82rem; font-weight: 800;">-</div>
+                      <div class="radial-value-center" id="res_cumplAcumATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
                     </div>
                     <div class="kpi-hero-details" style="min-width: 0;">
-                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
-                        <span class="kpi-hero-label" id="res_cumplAcumTitle" style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase;">Acumulado 12 Meses</span>
-                        <span id="res_cumplAcumRango" style="font-size: 0.63rem; color: var(--text-muted);">-</span>
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; line-height: 1.1;">
+                        <span class="kpi-hero-label" id="res_cumplAcumTitle" style="font-size: 0.67rem; font-weight: 700; text-transform: uppercase;">Acumulado 12 Meses</span>
+                        <span id="res_cumplAcumRango" style="font-size: 0.60rem; color: var(--text-muted);">-</span>
                       </div>
-                      <div class="kpi-hero-status" style="margin: 2px 0 3px 0;">
-                        <span class="kpi-hero-tag" id="res_tagAcumStatus">En Objetivo</span>
-                        <span style="font-size: 0.70rem; color: var(--text-muted);">Obj: 78%</span>
+                      <div class="kpi-hero-status" style="margin: 1px 0 2px 0; gap: 4px; line-height: 1;">
+                        <span class="kpi-hero-tag" id="res_tagAcumStatus" style="padding: 1px 4px; font-size: 0.65rem;">En Objetivo</span>
+                        <span style="font-size: 0.67rem; color: var(--text-muted);">Obj: 78%</span>
                       </div>
-                      <span class="kpi-hero-sub" style="font-size: 0.69rem; line-height: 1.25;"><strong id="res_cumplAcumATqty">-</strong> de <strong id="res_cumplAcumComprometidos">-</strong> pedidos a tiempo.</span>
+                      <span class="kpi-hero-sub" style="font-size: 0.67rem; line-height: 1.15;"><strong id="res_cumplAcumATqty">-</strong> de <strong id="res_cumplAcumComprometidos">-</strong> pedidos a tiempo.</span>
                     </div>
                   </div>
 
-                  <div style="display: flex; flex-direction: column; gap: 2px; margin-top: 4px; padding-top: 5px; border-top: 1px solid var(--border-subtle);">
-                    <div class="breakdown-row">
-                      <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
-                      <span class="breakdown-val" style="color: var(--warning-text);">
-                        <span id="res_cumplAcumFTpct">-</span> (<span id="res_cumplAcumFTqty">-</span>)
-                      </span>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-top: 3px; padding-top: 3px; border-top: 1px solid var(--border-subtle); font-size: 0.65rem; line-height: 1.15;">
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">Fuera Tiempo</span>
+                      <span style="font-weight: 700; color: var(--warning-text);"><span id="res_cumplAcumFTpct">-</span> (<span id="res_cumplAcumFTqty">-</span>)</span>
                     </div>
-                    <div class="breakdown-row">
-                      <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
-                      <span class="breakdown-val" style="color: var(--danger-text);">
-                        <span id="res_cumplAcumNEpct">-</span> (<span id="res_cumplAcumNEqty">-</span>)
-                      </span>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">No Entreg.</span>
+                      <span style="font-weight: 700; color: var(--danger-text);"><span id="res_cumplAcumNEpct">-</span> (<span id="res_cumplAcumNEqty">-</span>)</span>
                     </div>
-                    <div class="breakdown-row">
-                      <span class="breakdown-label">Demora Promedio</span>
-                      <span class="breakdown-val" id="res_cumplAcumDemoraAvg">-</span>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">Demora</span>
+                      <span style="font-weight: 700; color: var(--text-main);" id="res_cumplAcumDemoraAvg">-</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- Período Evaluado con diseño Radial Hero -->
-                <div class="cumpl-box" style="padding: 0.75rem 0.85rem;">
-                  <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0.25rem 0.35rem; background: transparent; border: none; gap: 0.75rem;">
-                    <div class="radial-circle-box" style="width: 60px; height: 60px; flex-shrink: 0;">
+                <!-- Período Evaluado: Tarjeta compacta tipo Radial Hero -->
+                <div class="cumpl-box" style="padding: 0.55rem 0.7rem; gap: 0.25rem;">
+                  <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0; background: transparent; border: none; gap: 0.65rem;">
+                    <div class="radial-circle-box" style="width: 54px; height: 54px; flex-shrink: 0;">
                       <svg viewBox="0 0 70 70">
                         <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
                         <circle class="radial-circle-progress" id="res_radial_circle_curr" cx="35" cy="35" r="30"></circle>
                       </svg>
-                      <div class="radial-value-center" id="res_cumplATpct" style="font-size: 0.82rem; font-weight: 800;">-</div>
+                      <div class="radial-value-center" id="res_cumplATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
                     </div>
                     <div class="kpi-hero-details" style="min-width: 0;">
-                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
-                        <span class="kpi-hero-label" style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase;">Período Seleccionado</span>
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; line-height: 1.1;">
+                        <span class="kpi-hero-label" style="font-size: 0.67rem; font-weight: 700; text-transform: uppercase;">Período Seleccionado</span>
                         <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado" style="cursor: pointer; margin: 0;">
-                          <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1px 6px; border-radius: var(--radius-pill); font-size: 0.65rem; font-weight: 700; color: var(--brand); cursor: pointer;">
+                          <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 0 4px; border-radius: var(--radius-pill); font-size: 0.63rem; font-weight: 700; color: var(--brand); cursor: pointer;">
                             <option value="__ALL__">Todos los Meses</option>
                           </select>
                         </label>
                         <span id="res_cumplMesLabel" style="display: none;"></span>
                       </div>
-                      <div class="kpi-hero-status" style="margin: 2px 0 3px 0;">
-                        <span class="kpi-hero-tag" id="res_tagCurrStatus">En Objetivo</span>
-                        <span style="font-size: 0.70rem; color: var(--text-muted);">Obj: 78%</span>
+                      <div class="kpi-hero-status" style="margin: 1px 0 2px 0; gap: 4px; line-height: 1;">
+                        <span class="kpi-hero-tag" id="res_tagCurrStatus" style="padding: 1px 4px; font-size: 0.65rem;">En Objetivo</span>
+                        <span style="font-size: 0.67rem; color: var(--text-muted);">Obj: 78%</span>
                       </div>
-                      <span class="kpi-hero-sub" style="font-size: 0.69rem; line-height: 1.25;"><strong id="res_cumplATqty">-</strong> de <strong id="res_cumplComprometidos">-</strong> pedidos a tiempo.</span>
+                      <span class="kpi-hero-sub" style="font-size: 0.67rem; line-height: 1.15;"><strong id="res_cumplATqty">-</strong> de <strong id="res_cumplComprometidos">-</strong> pedidos a tiempo.</span>
                     </div>
                   </div>
 
-                  <div style="display: flex; flex-direction: column; gap: 2px; margin-top: 4px; padding-top: 5px; border-top: 1px solid var(--border-subtle);">
-                    <div class="breakdown-row">
-                      <span class="breakdown-label"><span class="status-dot" style="background: var(--warning);"></span>Fuera de Tiempo (FT)</span>
-                      <span class="breakdown-val" style="color: var(--warning-text);">
-                        <span id="res_cumplFTpct">-</span> (<span id="res_cumplFTqty">-</span>)
-                      </span>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-top: 3px; padding-top: 3px; border-top: 1px solid var(--border-subtle); font-size: 0.65rem; line-height: 1.15;">
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">Fuera Tiempo</span>
+                      <span style="font-weight: 700; color: var(--warning-text);"><span id="res_cumplFTpct">-</span> (<span id="res_cumplFTqty">-</span>)</span>
                     </div>
-                    <div class="breakdown-row">
-                      <span class="breakdown-label"><span class="status-dot" style="background: var(--danger);"></span>No Entregados (NE)</span>
-                      <span class="breakdown-val" style="color: var(--danger-text);">
-                        <span id="res_cumplNEpct">-</span> (<span id="res_cumplNEqty">-</span>)
-                      </span>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">No Entreg.</span>
+                      <span style="font-weight: 700; color: var(--danger-text);"><span id="res_cumplNEpct">-</span> (<span id="res_cumplNEqty">-</span>)</span>
                     </div>
-                    <div class="breakdown-row">
-                      <span class="breakdown-label">Variación vs Mes Anterior</span>
-                      <span class="breakdown-val" id="res_cumplATdiff" style="color: var(--success-text); font-weight: 800;">-</span>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">vs Mes Ant.</span>
+                      <span style="font-weight: 700; color: var(--success-text);" id="res_cumplATdiff">-</span>
                     </div>
                   </div>
                 </div>
@@ -1817,9 +1809,10 @@
               <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                   <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Curva de Evolución Mensual (% AT vs Meta)</span>
-                  <div style="display: flex; align-items: center; gap: 10px; font-size: 0.68rem; font-weight: 600;">
-                    <span style="display: inline-flex; align-items: center; gap: 4px;"><span style="display: inline-block; width: 10px; height: 3px; background: #0f766e; border-radius: 2px;"></span> %AT Real</span>
-                    <span style="display: inline-flex; align-items: center; gap: 4px;"><span style="display: inline-block; width: 10px; height: 0; border-top: 2px dashed #0f766e;"></span> Meta 78%</span>
+                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.67rem; font-weight: 600;">
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 3px; background: #0f766e; border-radius: 2px;"></span> %AT</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 3px; background: #7c3aed; border-radius: 2px;"></span> %AT ACUM</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 0; border-top: 2px dashed #0f766e;"></span> Meta 78%</span>
                   </div>
                 </div>
                 <div id="res_chartTendenciaCumpl" class="chart-box-frame" style="height: 145px; width: 100%;"></div>
@@ -1967,20 +1960,20 @@
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261110_143827"></script><script src="js/last-update-sede.js?v=20261110_143827"></script><script src="js/last-update-compras.js?v=20261110_143827"></script><script src="js/last-update-almacen.js?v=20261110_143827"></script><script src="js/last-update.js?v=20261110_143827"></script>
-  <script src="js/help.js?v=20261110_143827"></script>
-  <script src="js/cache-utils.js?v=20261110_143827"></script>
+  <script src="js/last-update-obras.js?v=20261110_144642"></script><script src="js/last-update-sede.js?v=20261110_144642"></script><script src="js/last-update-compras.js?v=20261110_144642"></script><script src="js/last-update-almacen.js?v=20261110_144642"></script><script src="js/last-update.js?v=20261110_144642"></script>
+  <script src="js/help.js?v=20261110_144642"></script>
+  <script src="js/cache-utils.js?v=20261110_144642"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261110_143827"></script>
-  <script src="js/resumen.js?v=20261110_143827"></script>
-  <script src="js/cumplimiento.js?v=20261110_143827"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261110_143827"></script>
-  <script src="js/analisis-mm.js?v=20261110_143827"></script>
-  <script src="js/evolucion.js?v=20261110_143827"></script>
-  <script src="js/servicios.js?v=20261110_143827"></script>
-  <script src="js/tiempos-entrega.js?v=20261110_143827"></script>
-  <script src="js/control-emrf.js?v=20261110_143827"></script>
+  <script src="js/demoras.js?v=20261110_144642"></script>
+  <script src="js/resumen.js?v=20261110_144642"></script>
+  <script src="js/cumplimiento.js?v=20261110_144642"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261110_144642"></script>
+  <script src="js/analisis-mm.js?v=20261110_144642"></script>
+  <script src="js/evolucion.js?v=20261110_144642"></script>
+  <script src="js/servicios.js?v=20261110_144642"></script>
+  <script src="js/tiempos-entrega.js?v=20261110_144642"></script>
+  <script src="js/control-emrf.js?v=20261110_144642"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2690,7 +2683,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261110_143827"></script>
+  <script src="js/auth-user.js?v=20261110_144642"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

@@ -1920,14 +1920,23 @@
     });
 
     const pctAtData = [];
+    const pctAtAcumData = [];
+
+    let runAt = 0;
+    let runTot = 0;
 
     months.forEach(m => {
       const s = monthStats[m];
       const pAt = s.tot ? +((s.at / s.tot) * 100).toFixed(1) : 0;
+      runAt += s.at;
+      runTot += s.tot;
+      const pAcum = runTot ? +((runAt / runTot) * 100).toFixed(1) : 0;
+
       pctAtData.push(pAt);
+      pctAtAcumData.push(pAcum);
     });
 
-    // Configuración idéntica a la Imagen 2 de referencia (% AT vs Meta 78%)
+    // Dos líneas: % AT (verde/teal) y % AT ACUM (púrpura), sin % FT, con Meta 78%
     chartTendCumplInstance.setOption({
       backgroundColor: "transparent",
       animation: true,
@@ -1980,17 +1989,17 @@
       },
       series: [
         {
-          name: "%AT Real",
+          name: "% AT",
           type: "line",
           smooth: 0.35,
           symbol: "circle",
-          symbolSize: 6,
+          symbolSize: 5.5,
           showSymbol: true,
           lineStyle: { width: 2.6, color: "#0f766e" },
           itemStyle: { color: "#0f766e", borderWidth: 2, borderColor: "#ffffff" },
           areaStyle: {
             color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(15, 118, 110, 0.18)" },
+              { offset: 0, color: "rgba(15, 118, 110, 0.16)" },
               { offset: 1, color: "rgba(15, 118, 110, 0.0)" }
             ])
           },
@@ -2011,6 +2020,17 @@
             }]
           },
           data: pctAtData
+        },
+        {
+          name: "% AT ACUM",
+          type: "line",
+          smooth: 0.35,
+          symbol: "circle",
+          symbolSize: 4.5,
+          showSymbol: true,
+          lineStyle: { width: 2.2, color: "#7c3aed" },
+          itemStyle: { color: "#7c3aed", borderWidth: 1.5, borderColor: "#ffffff" },
+          data: pctAtAcumData
         }
       ]
     }, true);

@@ -2,5 +2,5 @@
 // FECHA DE ACTUALIZACIÓN — SECTOR: SEDE
 // Editá SOLO este archivo para cambiar la fecha mostrada cuando estás en SEDE
 // =========================================================================
-window.LAST_UPDATE_SEDE = "03/11/2026";
+window.LAST_UPDATE_SEDE = "10/11/2026";
 window.MES_POR_DEFECTO_SEDE = "2026-10";

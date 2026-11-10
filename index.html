@@ -15,12 +15,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261110_152419" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_152419" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_152419" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261110_152419" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_152419" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_152419" />
+  <link rel="stylesheet" href="css/base.css?v=20261110_153553" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_153553" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_153553" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261110_153553" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_153553" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_153553" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -219,91 +219,7 @@
       width: 100%;
     }
 
-    /* Header SaaS ocupando todo el ancho con pestanas integradas */
-    header.topbar {
-      width: 100% !important;
-      max-width: 100% !important;
-      position: sticky !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      z-index: 300 !important;
-      background: #ffffff !important;
-      border-bottom: 1px solid #e2e8f0 !important;
-      border-top: 3px solid #0f766e !important;
-      padding: 0 1.25rem !important;
-      height: 58px !important;
-      min-height: 58px !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      gap: 1rem !important;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    /* Pestanas estilo Segmented Control integradas dentro del Topbar */
-    header.topbar .nav-tabs,
-    header.topbar .tabs {
-      display: inline-flex !important;
-      align-items: center !important;
-      background: #f1f5f9 !important;
-      padding: 3px !important;
-      border-radius: 9999px !important;
-      border: 1px solid #e2e8f0 !important;
-      gap: 2px !important;
-      margin: 0 !important;
-      width: auto !important;
-      max-width: none !important;
-      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05) !important;
-      position: static !important;
-      overflow-x: auto !important;
-      scrollbar-width: none !important;
-      white-space: nowrap !important;
-    }
-    header.topbar .nav-tabs::-webkit-scrollbar,
-    header.topbar .tabs::-webkit-scrollbar {
-      display: none !important;
-    }
-
-    header.topbar .tabs .tab {
-      background: transparent !important;
-      border: none !important;
-      outline: none !important;
-      padding: 5px 12px !important;
-      border-radius: 9999px !important;
-      font-family: inherit !important;
-      font-size: 0.74rem !important;
-      font-weight: 600 !important;
-      color: #64748b !important;
-      cursor: pointer !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 5px !important;
-      transition: all 0.15s ease !important;
-      min-width: auto !important;
-      flex: none !important;
-      white-space: nowrap !important;
-    }
-    header.topbar .tabs .tab:hover {
-      color: #0f172a !important;
-      background: rgba(255, 255, 255, 0.7) !important;
-    }
-    header.topbar .tabs .tab.active {
-      background: #ffffff !important;
-      color: #0f766e !important;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-      border: 1px solid #e2e8f0 !important;
-      font-weight: 700 !important;
-    }
-    header.topbar .tabs .tab.active svg {
-      stroke: #0f766e !important;
-    }
-
-    /* Aprovechar todo el espacio vertical eliminando margen de tabs flotante */
-    main.container {
-      margin-top: 0 !important;
-      padding-top: 0.75rem !important;
-    }
+    
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -318,83 +234,45 @@
 
   <header class="topbar">
     <div class="topbar-left">
-      <div class="brand-logo-wrap" style="display: flex; align-items: center; gap: 0.75rem;">
-        <div class="brand-icon-box" style="width: 36px; height: 36px; border-radius: 8px; background: #0f766e; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 5px rgba(15,118,110,0.25); flex-shrink: 0;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-          </svg>
-        </div>
-        <div class="brand-text-col" style="display: flex; flex-direction: column; line-height: 1.2;">
-          <div class="brand-title" style="font-size: 0.95rem; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-            MILICIC S.A.
-            <span class="brand-tag" style="font-size: 0.65rem; font-weight: 700; background: #ccfbf1; color: #0f766e; padding: 1px 6px; border-radius: 9999px; border: 1px solid #99f6e4;">LOGÍSTICA</span>
-          </div>
-          <div id="topbarSubtitle" class="brand-sub" style="font-size: 0.75rem; color: #64748b; font-weight: 500;">Análisis de cumplimiento de pedidos por obra</div>
-        </div>
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div id="topbarSubtitle" class="title" style="font-size: 1.25rem;">Análisis de cumplimiento de pedidos por obra</div>
+        <div id="topbarScheduleBadge" class="topbar-badge">- Actualización del reporte: lunes y jueves a partir de las 13:00 hs.</div>
       </div>
-      <div id="topbarScheduleBadge" class="topbar-badge" style="display: none;">- Actualización: lun y jue 13:00 hs.</div>
     </div>
 
-    <!-- Pestañas de Navegación Segmented Control Integradas dentro del Topbar -->
-    <nav class="tabs nav-tabs" aria-label="Navegación principal">
-      <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        <span>TABLERO</span>
-      </button>
-      <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
-        <span>ANÁLISIS MM</span>
-      </button>
-      <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-        <span>CUMPLIMIENTO</span>
-      </button>
-      <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
-        <span>DEMORAS</span>
-      </button>
-      <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        <span>SERVICIOS</span>
-      </button>
-      <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span>TIEMPOS / PRIORIDAD</span>
-      </button>
-      <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        <span>CONTROL EM/RF</span>
-      </button>
-      <button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button>
-      <button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button>
-      <button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button>
-      <button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
-    </nav>
-
-    <div class="topbar-right" style="display: flex; gap: 0.5rem; align-items: center;">
-      <div id="userGreeting" style="display: flex; align-items: center; font-weight: 600; font-size: 0.82rem; color: #334155; margin-right: 4px; padding: 0 8px; border-right: 1px solid #e2e8f0;"></div>
-      <button class="btn-refresh-top" onclick="window.forceRefreshData()" title="Actualizar datos" style="width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; cursor: pointer;">
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <div class="topbar-right" style="display: flex; gap: 0.5rem; align-items: stretch;">
+      <div id="userGreeting" style="display: flex; align-items: center; font-weight: 600; font-size: 0.9rem; color: #1e293b; margin-right: 10px; padding: 0 10px; border-right: 1px solid #cbd5e1;"></div>
+      <button class="btn-refresh-top" onclick="window.forceRefreshData()" title="Actualizar datos">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"></polyline>
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
         </svg>  
       </button>
-      <div class="update-box" style="padding: 3px 8px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; min-width: auto; text-align: right;">
-        <div class="update-label" style="font-size: 0.65rem; color: #64748b; font-weight: 600; line-height: 1;">Última act.</div>
-        <div id="lastUpdate" class="update-date" style="font-size: 0.75rem; font-weight: 700; color: #0f172a; line-height: 1.2;">07/09/2026</div>
+      <div class="update-box">
+        <div class="update-label">Última actualización</div>
+        <div id="lastUpdate" class="update-date">07/09/2026</div>
       </div>
-      <button id="btnFullscreenTop" class="btn-refresh-top" onclick="window.toggleAppFullscreen()" title="Pantalla completa (Esc para salir)" aria-label="Pantalla completa" style="width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; cursor: pointer;">
-        <svg class="fs-icon-expand" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <button id="btnFullscreenTop" class="btn-refresh-top" onclick="window.toggleAppFullscreen()" title="Pantalla completa (Esc para salir)" aria-label="Pantalla completa">
+        <svg class="fs-icon-expand" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
         </svg>
-        <svg class="fs-icon-compress" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <svg class="fs-icon-compress" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
           <path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M10 4v6m0 0H4m6 0L3 3m10 7V4m0 6h6m-6 0l7-7"></path>
         </svg>
       </button>
     </div>
   </header>
+
+  <nav class="tabs">
+    <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')">TABLERO</button>
+    <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
+    <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
+    <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
+    <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
+    <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
+    <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
+    <button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button><button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button><button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button><button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
+  </nav>
 
   <main class="container">
 
@@ -2084,20 +1962,20 @@
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261110_152419"></script><script src="js/last-update-sede.js?v=20261110_152419"></script><script src="js/last-update-compras.js?v=20261110_152419"></script><script src="js/last-update-almacen.js?v=20261110_152419"></script><script src="js/last-update.js?v=20261110_152419"></script>
-  <script src="js/help.js?v=20261110_152419"></script>
-  <script src="js/cache-utils.js?v=20261110_152419"></script>
+  <script src="js/last-update-obras.js?v=20261110_153553"></script><script src="js/last-update-sede.js?v=20261110_153553"></script><script src="js/last-update-compras.js?v=20261110_153553"></script><script src="js/last-update-almacen.js?v=20261110_153553"></script><script src="js/last-update.js?v=20261110_153553"></script>
+  <script src="js/help.js?v=20261110_153553"></script>
+  <script src="js/cache-utils.js?v=20261110_153553"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261110_152419"></script>
-  <script src="js/resumen.js?v=20261110_152419"></script>
-  <script src="js/cumplimiento.js?v=20261110_152419"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261110_152419"></script>
-  <script src="js/analisis-mm.js?v=20261110_152419"></script>
-  <script src="js/evolucion.js?v=20261110_152419"></script>
-  <script src="js/servicios.js?v=20261110_152419"></script>
-  <script src="js/tiempos-entrega.js?v=20261110_152419"></script>
-  <script src="js/control-emrf.js?v=20261110_152419"></script>
+  <script src="js/demoras.js?v=20261110_153553"></script>
+  <script src="js/resumen.js?v=20261110_153553"></script>
+  <script src="js/cumplimiento.js?v=20261110_153553"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261110_153553"></script>
+  <script src="js/analisis-mm.js?v=20261110_153553"></script>
+  <script src="js/evolucion.js?v=20261110_153553"></script>
+  <script src="js/servicios.js?v=20261110_153553"></script>
+  <script src="js/tiempos-entrega.js?v=20261110_153553"></script>
+  <script src="js/control-emrf.js?v=20261110_153553"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2843,7 +2721,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261110_152419"></script>
+  <script src="js/auth-user.js?v=20261110_153553"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

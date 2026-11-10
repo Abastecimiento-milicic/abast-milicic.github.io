@@ -15,12 +15,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261110_144642" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_144642" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_144642" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261110_144642" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_144642" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_144642" />
+  <link rel="stylesheet" href="css/base.css?v=20261110_152419" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_152419" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_152419" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261110_152419" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_152419" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_152419" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -215,8 +215,94 @@
       color: white;
     }
 
-    .tab-panel {
+        .tab-panel {
       width: 100%;
+    }
+
+    /* Header SaaS ocupando todo el ancho con pestanas integradas */
+    header.topbar {
+      width: 100% !important;
+      max-width: 100% !important;
+      position: sticky !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 300 !important;
+      background: #ffffff !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      border-top: 3px solid #0f766e !important;
+      padding: 0 1.25rem !important;
+      height: 58px !important;
+      min-height: 58px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 1rem !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Pestanas estilo Segmented Control integradas dentro del Topbar */
+    header.topbar .nav-tabs,
+    header.topbar .tabs {
+      display: inline-flex !important;
+      align-items: center !important;
+      background: #f1f5f9 !important;
+      padding: 3px !important;
+      border-radius: 9999px !important;
+      border: 1px solid #e2e8f0 !important;
+      gap: 2px !important;
+      margin: 0 !important;
+      width: auto !important;
+      max-width: none !important;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+      position: static !important;
+      overflow-x: auto !important;
+      scrollbar-width: none !important;
+      white-space: nowrap !important;
+    }
+    header.topbar .nav-tabs::-webkit-scrollbar,
+    header.topbar .tabs::-webkit-scrollbar {
+      display: none !important;
+    }
+
+    header.topbar .tabs .tab {
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      padding: 5px 12px !important;
+      border-radius: 9999px !important;
+      font-family: inherit !important;
+      font-size: 0.74rem !important;
+      font-weight: 600 !important;
+      color: #64748b !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      transition: all 0.15s ease !important;
+      min-width: auto !important;
+      flex: none !important;
+      white-space: nowrap !important;
+    }
+    header.topbar .tabs .tab:hover {
+      color: #0f172a !important;
+      background: rgba(255, 255, 255, 0.7) !important;
+    }
+    header.topbar .tabs .tab.active {
+      background: #ffffff !important;
+      color: #0f766e !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+      border: 1px solid #e2e8f0 !important;
+      font-weight: 700 !important;
+    }
+    header.topbar .tabs .tab.active svg {
+      stroke: #0f766e !important;
+    }
+
+    /* Aprovechar todo el espacio vertical eliminando margen de tabs flotante */
+    main.container {
+      margin-top: 0 !important;
+      padding-top: 0.75rem !important;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -232,45 +318,83 @@
 
   <header class="topbar">
     <div class="topbar-left">
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <div id="topbarSubtitle" class="title" style="font-size: 1.25rem;">Análisis de cumplimiento de pedidos por obra</div>
-        <div id="topbarScheduleBadge" class="topbar-badge">- Actualización del reporte: lunes y jueves a partir de las 13:00 hs.</div>
+      <div class="brand-logo-wrap" style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="brand-icon-box" style="width: 36px; height: 36px; border-radius: 8px; background: #0f766e; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 5px rgba(15,118,110,0.25); flex-shrink: 0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="brand-text-col" style="display: flex; flex-direction: column; line-height: 1.2;">
+          <div class="brand-title" style="font-size: 0.95rem; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+            MILICIC S.A.
+            <span class="brand-tag" style="font-size: 0.65rem; font-weight: 700; background: #ccfbf1; color: #0f766e; padding: 1px 6px; border-radius: 9999px; border: 1px solid #99f6e4;">LOGÍSTICA</span>
+          </div>
+          <div id="topbarSubtitle" class="brand-sub" style="font-size: 0.75rem; color: #64748b; font-weight: 500;">Análisis de cumplimiento de pedidos por obra</div>
+        </div>
       </div>
+      <div id="topbarScheduleBadge" class="topbar-badge" style="display: none;">- Actualización: lun y jue 13:00 hs.</div>
     </div>
 
-    <div class="topbar-right" style="display: flex; gap: 0.5rem; align-items: stretch;">
-      <div id="userGreeting" style="display: flex; align-items: center; font-weight: 600; font-size: 0.9rem; color: #1e293b; margin-right: 10px; padding: 0 10px; border-right: 1px solid #cbd5e1;"></div>
-      <button class="btn-refresh-top" onclick="window.forceRefreshData()" title="Actualizar datos">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Pestañas de Navegación Segmented Control Integradas dentro del Topbar -->
+    <nav class="tabs nav-tabs" aria-label="Navegación principal">
+      <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span>TABLERO</span>
+      </button>
+      <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+        <span>ANÁLISIS MM</span>
+      </button>
+      <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        <span>CUMPLIMIENTO</span>
+      </button>
+      <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+        <span>DEMORAS</span>
+      </button>
+      <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span>SERVICIOS</span>
+      </button>
+      <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>TIEMPOS / PRIORIDAD</span>
+      </button>
+      <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span>CONTROL EM/RF</span>
+      </button>
+      <button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button>
+      <button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button>
+      <button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button>
+      <button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
+    </nav>
+
+    <div class="topbar-right" style="display: flex; gap: 0.5rem; align-items: center;">
+      <div id="userGreeting" style="display: flex; align-items: center; font-weight: 600; font-size: 0.82rem; color: #334155; margin-right: 4px; padding: 0 8px; border-right: 1px solid #e2e8f0;"></div>
+      <button class="btn-refresh-top" onclick="window.forceRefreshData()" title="Actualizar datos" style="width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; cursor: pointer;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"></polyline>
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
         </svg>  
       </button>
-      <div class="update-box">
-        <div class="update-label">Última actualización</div>
-        <div id="lastUpdate" class="update-date">07/09/2026</div>
+      <div class="update-box" style="padding: 3px 8px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; min-width: auto; text-align: right;">
+        <div class="update-label" style="font-size: 0.65rem; color: #64748b; font-weight: 600; line-height: 1;">Última act.</div>
+        <div id="lastUpdate" class="update-date" style="font-size: 0.75rem; font-weight: 700; color: #0f172a; line-height: 1.2;">07/09/2026</div>
       </div>
-      <button id="btnFullscreenTop" class="btn-refresh-top" onclick="window.toggleAppFullscreen()" title="Pantalla completa (Esc para salir)" aria-label="Pantalla completa">
-        <svg class="fs-icon-expand" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <button id="btnFullscreenTop" class="btn-refresh-top" onclick="window.toggleAppFullscreen()" title="Pantalla completa (Esc para salir)" aria-label="Pantalla completa" style="width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; cursor: pointer;">
+        <svg class="fs-icon-expand" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
         </svg>
-        <svg class="fs-icon-compress" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <svg class="fs-icon-compress" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
           <path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M10 4v6m0 0H4m6 0L3 3m10 7V4m0 6h6m-6 0l7-7"></path>
         </svg>
       </button>
     </div>
   </header>
-
-  <nav class="tabs">
-    <button class="tab" data-tab="resumen" onclick="window.switchTab('resumen')">TABLERO</button>
-    <button class="tab" data-tab="mm" onclick="window.switchTab('mm')">ANÁLISIS MM</button>
-    <button class="tab active" data-tab="cumplimiento" onclick="window.switchTab('cumplimiento')">CUMPLIMIENTO</button>
-    <button class="tab" data-tab="demoras" onclick="window.switchTab('demoras')">DEMORAS</button>
-    <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
-    <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
-    <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
-    <button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button><button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button><button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button><button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
-  </nav>
 
   <main class="container">
 
@@ -1960,20 +2084,20 @@
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261110_144642"></script><script src="js/last-update-sede.js?v=20261110_144642"></script><script src="js/last-update-compras.js?v=20261110_144642"></script><script src="js/last-update-almacen.js?v=20261110_144642"></script><script src="js/last-update.js?v=20261110_144642"></script>
-  <script src="js/help.js?v=20261110_144642"></script>
-  <script src="js/cache-utils.js?v=20261110_144642"></script>
+  <script src="js/last-update-obras.js?v=20261110_152419"></script><script src="js/last-update-sede.js?v=20261110_152419"></script><script src="js/last-update-compras.js?v=20261110_152419"></script><script src="js/last-update-almacen.js?v=20261110_152419"></script><script src="js/last-update.js?v=20261110_152419"></script>
+  <script src="js/help.js?v=20261110_152419"></script>
+  <script src="js/cache-utils.js?v=20261110_152419"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261110_144642"></script>
-  <script src="js/resumen.js?v=20261110_144642"></script>
-  <script src="js/cumplimiento.js?v=20261110_144642"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261110_144642"></script>
-  <script src="js/analisis-mm.js?v=20261110_144642"></script>
-  <script src="js/evolucion.js?v=20261110_144642"></script>
-  <script src="js/servicios.js?v=20261110_144642"></script>
-  <script src="js/tiempos-entrega.js?v=20261110_144642"></script>
-  <script src="js/control-emrf.js?v=20261110_144642"></script>
+  <script src="js/demoras.js?v=20261110_152419"></script>
+  <script src="js/resumen.js?v=20261110_152419"></script>
+  <script src="js/cumplimiento.js?v=20261110_152419"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261110_152419"></script>
+  <script src="js/analisis-mm.js?v=20261110_152419"></script>
+  <script src="js/evolucion.js?v=20261110_152419"></script>
+  <script src="js/servicios.js?v=20261110_152419"></script>
+  <script src="js/tiempos-entrega.js?v=20261110_152419"></script>
+  <script src="js/control-emrf.js?v=20261110_152419"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2232,38 +2356,90 @@
 
     
 
-    /* ==========================================================================
-       PROTOTYPE PILLS FILTER CONTROLLER (Universal en todas las pestañas)
+        /* ==========================================================================
+       STREAMLIT PILL MULTISELECT CONTROLLER (Sincronizado con <select multiple>)
        ========================================================================== */
     (function() {
       const instances = new Map();
 
       function isAllOption(opt) {
-        if (!opt) return false;
         const val = (opt.value || '').trim();
         const txt = (opt.textContent || '').trim().toLowerCase();
-        return val === '' || val === '__ALL__' || val.toUpperCase() === 'TODAS' || val.toUpperCase() === 'TODOS' || txt === 'todos' || txt === 'todas' || txt.startsWith('todo ') || txt.startsWith('toda ') || txt.startsWith('todas las') || txt.startsWith('todos los');
+        return val === '' || val === '__ALL__' || txt.startsWith('todo') || txt.startsWith('toda');
       }
 
-      function createPrototypePillsFilter(sel) {
+      function createStMultiSelect(sel) {
         if (instances.has(sel)) return instances.get(sel);
 
-        // Ocultar select original pero mantenerlo plenamente funcional en el DOM
-        sel.style.setProperty('display', 'none', 'important');
-        sel.classList.add('proto-select-hidden');
+        sel.classList.add('st-ms-hidden');
 
-        const wrapper = document.createElement('div');
-        wrapper.className = 'proto-pills-filter-wrap';
+        const container = document.createElement('div');
+        container.className = 'st-ms-container';
 
-        let searchInput = null;
+        const control = document.createElement('div');
+        control.className = 'st-ms-control';
+        control.tabIndex = 0;
 
-        const pillsContainer = document.createElement('div');
-        pillsContainer.className = 'pills-container';
+        const pillsWrap = document.createElement('div');
+        pillsWrap.className = 'st-ms-pills';
 
-        wrapper.appendChild(pillsContainer);
-        sel.parentNode.insertBefore(wrapper, sel.nextSibling);
+        const actionsWrap = document.createElement('div');
+        actionsWrap.className = 'st-ms-actions';
 
-        let lastSig = '';
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'st-ms-clear';
+        clearBtn.title = 'Limpiar selección (mostrar Todos)';
+        clearBtn.innerHTML = `<svg viewBox="0 0 16 16" width="15" height="15" fill="none"><circle cx="8" cy="8" r="7" fill="#6b7280"/><path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+        const chevron = document.createElement('span');
+        chevron.className = 'st-ms-chevron';
+        chevron.innerHTML = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+        actionsWrap.appendChild(clearBtn);
+        actionsWrap.appendChild(chevron);
+        control.appendChild(pillsWrap);
+        control.appendChild(actionsWrap);
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'st-ms-dropdown';
+
+        const quickBar = document.createElement('div');
+        quickBar.className = 'st-ms-quickbar';
+        quickBar.style.cssText = 'display:flex; align-items:center; justify-content:space-between; gap:4px; padding:4px 8px; background:#f8fafc; border-bottom:1px solid #e2e8f0; font-size:11px;';
+        const btnAllSpecific = document.createElement('button');
+        btnAllSpecific.type = 'button';
+        btnAllSpecific.textContent = '☑ Marcar todas';
+        btnAllSpecific.title = 'Seleccionar todas las opciones individuales (ideal para luego quitar solo 1 con ×)';
+        btnAllSpecific.style.cssText = 'background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:4px; padding:2px 6px; font-size:10.5px; font-weight:700; cursor:pointer;';
+        const btnInvertSpecific = document.createElement('button');
+        btnInvertSpecific.type = 'button';
+        btnInvertSpecific.textContent = '⇄ Invertir';
+        btnInvertSpecific.title = 'Invertir selección (selecciona todas menos las actuales)';
+        btnInvertSpecific.style.cssText = 'background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-radius:4px; padding:2px 6px; font-size:10.5px; font-weight:700; cursor:pointer;';
+        quickBar.appendChild(btnAllSpecific);
+        quickBar.appendChild(btnInvertSpecific);
+
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'st-ms-search-wrap';
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'st-ms-search';
+        searchInput.placeholder = 'Buscar opción...';
+        searchWrap.appendChild(searchInput);
+
+        const optionsList = document.createElement('div');
+        optionsList.className = 'st-ms-options';
+
+        dropdown.appendChild(quickBar);
+        dropdown.appendChild(searchWrap);
+        dropdown.appendChild(optionsList);
+
+        container.appendChild(control);
+        container.appendChild(dropdown);
+
+        sel.parentNode.insertBefore(container, sel.nextSibling);
+
         let isUpdating = false;
 
         function triggerSelectChange() {
@@ -2271,102 +2447,185 @@
           sel.dispatchEvent(new Event('change', { bubbles: true }));
           setTimeout(() => {
             isUpdating = false;
-            render();
-            if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+            render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
           }, 0);
         }
 
+        function clearAllSelection(e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const opts = Array.from(sel.options);
+          const allOpt = opts.find(isAllOption);
+          opts.forEach(o => {
+            o.selected = (allOpt && o === allOpt) ? true : false;
+          });
+          triggerSelectChange();
+        }
+
+        function removeOptionValue(val, e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const opts = Array.from(sel.options);
+          opts.forEach(o => {
+            if (o.value === val && !isAllOption(o)) {
+              o.selected = false;
+            }
+          });
+          const remainingSpecific = opts.filter(o => !isAllOption(o) && o.selected);
+          const allOpt = opts.find(isAllOption);
+          if (remainingSpecific.length === 0 && allOpt) {
+            allOpt.selected = true;
+          }
+          triggerSelectChange();
+        }
+
+        function addOptionValue(val, e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const opts = Array.from(sel.options);
+          opts.forEach(o => {
+            if (isAllOption(o)) {
+              o.selected = false;
+            } else if (o.value === val) {
+              o.selected = true;
+            }
+          });
+          triggerSelectChange();
+        }
+
+        let lastSig = '';
+
         function render(force = false) {
-          const opts = Array.from(sel.options).filter(o => o.value !== undefined);
-          if (!opts.length) {
-            wrapper.style.display = 'none';
-            return;
-          }
-          wrapper.style.display = '';
-
-          // Si tiene más de 6 opciones, agregar buscador interactivo en la parte superior
-          if (opts.length > 6 && !searchInput) {
-            searchInput = document.createElement('input');
-            searchInput.type = 'text';
-            searchInput.className = 'filter-search-input';
-            searchInput.placeholder = '🔍 Filtrar opciones...';
-            searchInput.autocomplete = 'off';
-            searchInput.addEventListener('input', () => {
-              const q = searchInput.value.toLowerCase().trim();
-              pillsContainer.querySelectorAll('.filter-pill').forEach(pill => {
-                const isAll = pill.getAttribute('data-is-all') === 'true';
-                if (isAll || pill.textContent.toLowerCase().includes(q)) {
-                  pill.style.display = 'inline-flex';
-                } else {
-                  pill.style.display = 'none';
-                }
-              });
-            });
-            wrapper.insertBefore(searchInput, pillsContainer);
-          } else if (opts.length <= 6 && searchInput) {
-            searchInput.remove();
-            searchInput = null;
-          }
-
-          const sig = opts.map(o => o.value + ':' + (o.selected ? '1' : '0') + ':' + o.textContent).join('|');
+          const opts = Array.from(sel.options);
+          const sig = opts.map(o => o.value + ':' + (o.selected ? '1' : '0')).join('|') + '||' + (searchInput.value || '');
           if (!force && sig === lastSig) return;
           lastSig = sig;
-
-          pillsContainer.innerHTML = '';
-
-          const allOpt = opts.find(isAllOption);
           const specificOpts = opts.filter(o => !isAllOption(o));
-          const hasSelectedSpecific = specificOpts.some(o => o.selected);
+          const allOpt = opts.find(isAllOption);
 
-          opts.forEach(opt => {
-            const isAll = isAllOption(opt);
-            const isSelected = isAll ? !hasSelectedSpecific : opt.selected;
+          // Si la opción "Todos" está marcada junto con otras por carga inicial, o si sólo está "Todos", determinar las específicas activas
+          const selectedSpecific = specificOpts.filter(o => o.selected);
 
-            const pill = document.createElement('span');
-            pill.className = 'filter-pill' + (isSelected ? ' active' : '');
-            pill.setAttribute('data-val', opt.value);
-            pill.setAttribute('data-is-all', isAll ? 'true' : 'false');
-            pill.textContent = opt.textContent.trim() || (isAll ? 'Todos' : opt.value);
+          pillsWrap.innerHTML = '';
 
-            pill.addEventListener('click', (e) => {
-              const isMulti = e.ctrlKey || e.metaKey || e.shiftKey;
+          if (selectedSpecific.length === 0) {
+            const ph = document.createElement('span');
+            ph.className = 'st-ms-placeholder';
+            ph.textContent = allOpt ? (allOpt.textContent || 'Todos') : 'Todos';
+            pillsWrap.appendChild(ph);
+            clearBtn.style.display = 'none';
+          } else {
+            clearBtn.style.display = 'inline-flex';
+            selectedSpecific.forEach(o => {
+              const pill = document.createElement('span');
+              pill.className = 'st-ms-pill';
+              pill.title = o.textContent;
 
-              if (isAll) {
-                // Seleccionar Todos y deseleccionar opciones específicas
-                opts.forEach(o => {
-                  o.selected = isAllOption(o);
-                });
-              } else {
-                if (isMulti) {
-                  // Modo multiselección con Ctrl / Shift
-                  opt.selected = !opt.selected;
-                  if (allOpt) allOpt.selected = false;
-                } else {
-                  // Clic normal: foco en esta opción específica (o toggle si ya era la única seleccionada)
-                  if (opt.selected && specificOpts.filter(o => o.selected).length === 1) {
-                    opts.forEach(o => {
-                      o.selected = isAllOption(o);
-                    });
-                  } else {
-                    opts.forEach(o => {
-                      o.selected = (o === opt);
-                    });
-                  }
-                }
-              }
+              const txt = document.createElement('span');
+              txt.className = 'st-ms-pill-text';
+              txt.textContent = o.textContent;
 
-              // Si ninguna específica quedó seleccionada, marcar Todos
-              const anySpecific = specificOpts.some(o => o.selected);
-              if (!anySpecific && allOpt) {
-                allOpt.selected = true;
-              }
+              const rem = document.createElement('button');
+              rem.type = 'button';
+              rem.className = 'st-ms-pill-remove';
+              rem.innerHTML = '&times;';
+              rem.title = 'Quitar ' + o.textContent;
+              rem.addEventListener('click', (ev) => removeOptionValue(o.value, ev));
 
-              triggerSelectChange();
+              pill.appendChild(txt);
+              pill.appendChild(rem);
+              pillsWrap.appendChild(pill);
             });
+          }
 
-            pillsContainer.appendChild(pill);
+          // Mostrar buscador interno si hay más de 6 opciones
+          searchWrap.style.display = specificOpts.length > 6 ? 'block' : 'none';
+          const q = (searchInput.value || '').trim().toLowerCase();
+
+          // Opciones disponibles (no seleccionadas aún)
+          const availableOpts = specificOpts.filter(o => {
+            if (o.selected) return false;
+            if (!q) return true;
+            return (o.textContent || '').toLowerCase().includes(q);
           });
+
+          optionsList.innerHTML = '';
+          if (availableOpts.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'st-ms-empty';
+            empty.textContent = specificOpts.length > 0 && selectedSpecific.length === specificOpts.length
+              ? 'Todas las opciones seleccionadas'
+              : 'Sin opciones coincidentes';
+            optionsList.appendChild(empty);
+          } else {
+            availableOpts.forEach(o => {
+              const item = document.createElement('div');
+              item.className = 'st-ms-option';
+              item.textContent = o.textContent;
+              item.addEventListener('click', (ev) => addOptionValue(o.value, ev));
+              optionsList.appendChild(item);
+            });
+          }
         }
+
+        clearBtn.addEventListener('click', clearAllSelection);
+
+        btnAllSpecific.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const opts = Array.from(sel.options);
+          opts.forEach(o => {
+            o.selected = !isAllOption(o);
+          });
+          triggerSelectChange();
+        });
+
+        btnInvertSpecific.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const opts = Array.from(sel.options);
+          const specificOpts = opts.filter(o => !isAllOption(o));
+          const hadAnySpecific = specificOpts.some(o => o.selected);
+          opts.forEach(o => {
+            if (isAllOption(o)) {
+              o.selected = false;
+            } else {
+              o.selected = hadAnySpecific ? !o.selected : true;
+            }
+          });
+          const remainingSpecific = opts.filter(o => !isAllOption(o) && o.selected);
+          const allOpt = opts.find(isAllOption);
+          if (remainingSpecific.length === 0 && allOpt) {
+            allOpt.selected = true;
+          }
+          triggerSelectChange();
+        });
+
+        control.addEventListener('click', (e) => {
+          if (e.target.closest('.st-ms-pill-remove') || e.target.closest('.st-ms-clear')) return;
+          const wasOpen = container.classList.contains('is-open');
+          // Cerrar otros dropdowns abiertos
+          document.querySelectorAll('.st-ms-container.is-open').forEach(el => {
+            if (el !== container) el.classList.remove('is-open');
+          });
+          container.classList.toggle('is-open', !wasOpen);
+          if (!wasOpen) {
+            searchInput.value = '';
+            render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+            if (searchWrap.style.display !== 'none') {
+              setTimeout(() => searchInput.focus(), 20);
+            }
+          }
+        });
+
+        searchInput.addEventListener('input', () => render());
+        searchInput.addEventListener('click', (e) => e.stopPropagation());
 
         // Observar cambios en las opciones del <select> subyacente
         const observer = new MutationObserver(() => {
@@ -2378,118 +2637,19 @@
           setTimeout(() => render(), 10);
         });
 
-        render();
-        const inst = { render, wrapper, pillsContainer, sel };
+        render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+
+        const inst = { render, container, sel };
         instances.set(sel, inst);
         return inst;
       }
 
-      window.updateCumplFiltersSummary = function() {
-        const renderChips = (elId, defs) => {
-          const el = document.getElementById(elId);
-          if (!el) return;
-          el.innerHTML = '<span class="st-af-title">FILTROS:</span>' + defs.map(d => {
-            if (d.custom) {
-              const res = d.custom();
-              return `<span class="st-af-chip ${res.active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${res.txt}</span></span>`;
-            }
-            const s = document.getElementById(d.id);
-            const selOpts = s ? [...s.options].filter(o => o.selected && !isAllOption(o)) : [];
-            const active = selOpts.length > 0;
-            const valTxt = active ? selOpts.map(o => (o.textContent || o.value || '').trim()).join(', ') : 'Todos';
-            return `<span class="st-af-chip ${active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${valTxt}</span></span>`;
-          }).join('');
-        };
-        const isCompras = window.currentAppSector === 'compras';
-        renderChips('cumpl_activeFiltersSummary', isCompras ? [
-          { id: 'cumpl_clienteSelect', lbl: 'Cliente' },
-          { id: 'cumpl_operadorSelect', lbl: 'Comprador' },
-          { id: 'cumpl_clasif2Select', lbl: 'Clasif.' },
-          { id: 'cumpl_gcocSelect', lbl: 'GC' },
-          { id: 'cumpl_mesSelect', lbl: 'Mes' },
-          { id: 'centroSelect', lbl: 'Centro' },
-          { id: 'cumpl_proveedorSelect', lbl: 'Proveedor' },
-          { id: 'cumpl_soloAbastSelect', lbl: 'Compras / Abast. / Equipos' }
-        ] : [
-          { id: 'cumpl_clienteSelect', lbl: 'Obra' },
-          { id: 'cumpl_clasif2Select', lbl: 'Clasif.' },
-          { id: 'cumpl_gcocSelect', lbl: 'GC' },
-          { id: 'cumpl_mesSelect', lbl: 'Mes' },
-          { id: 'centroSelect', lbl: 'Centro' }
-        ]);
-        renderChips('mm_activeFiltersSummary', [{ id: 'mm_clienteSelect', lbl: 'Almacén' }]);
-        renderChips('dem_activeFiltersSummary', [
-          { id: 'dem_clienteSelect', lbl: 'Cliente' },
-          { id: 'dem_clasifSelect', lbl: 'Clasif.' },
-          { id: 'dem_mesSelect', lbl: 'Mes' }
-        ]);
-        renderChips('serv_activeFiltersSummary', [
-          { id: 'serv_clienteSelect', lbl: 'Cliente' },
-          { id: 'serv_clasif2Select', lbl: 'Período' },
-          { id: 'serv_gcocSelect', lbl: 'Estado' },
-          { id: 'serv_grupoCompraSelect', lbl: 'GC' },
-          { id: 'serv_estadoItemSelect', lbl: 'Estado Ítem' }
-        ]);
-        renderChips('tiempos_activeFiltersSummary', [
-          {
-            lbl: 'Obra',
-            custom: () => {
-              const s = document.getElementById('tiempos_obraSelect');
-              const o = s && s.selectedOptions[0];
-              const txt = o ? (o.textContent || o.value || '').trim() : 'Todos';
-              return { active: !!(txt && txt.toLowerCase() !== 'todos' && txt.toLowerCase() !== 'todas'), txt: txt || 'Todos' };
-            }
-          },
-          {
-            lbl: 'Mes',
-            custom: () => {
-              const list = document.getElementById('tiempos_slicer_list');
-              if (!list) return { active: false, txt: 'Todos' };
-              const all = list.querySelectorAll('.tiempos-slicer-item');
-              const act = list.querySelectorAll('.tiempos-slicer-item.active');
-              if (!act.length || act.length === all.length) return { active: false, txt: 'Todos' };
-              const names = [...act].map(i => (i.querySelector('span')?.textContent || '').trim()).filter(Boolean);
-              return { active: true, txt: names.join(', ') };
-            }
-          }
-        ]);
-        renderChips('emrf_activeFiltersSummary', [
-          {
-            lbl: 'Sociedad',
-            custom: () => {
-              const s = document.getElementById('emrf_sociedadSelect');
-              const v = s ? s.value : 'TODAS';
-              const o = s && s.selectedOptions[0];
-              return { active: v !== 'TODAS', txt: (v === 'TODAS' || !o) ? 'Todas' : o.textContent.trim() };
-            }
-          },
-          {
-            lbl: 'Búsqueda',
-            custom: () => {
-              const inp = document.getElementById('emrf_searchInput');
-              const v = inp ? inp.value.trim() : '';
-              return { active: !!v, txt: v || 'Todos' };
-            }
-          },
-          { id: 'emrf_estadoSelect', lbl: 'Estado' },
-          { id: 'emrf_gcSelect', lbl: 'GC' },
-          { id: 'emrf_vencSelect', lbl: 'Venc.' },
-          { id: 'emrf_operOcSelect', lbl: 'Operador' }
-        ]);
-      };
-
-      window.syncAllStMultiSelects = function() {
-        // Encontrar todos los selects en barras laterales (excepto el de sector y los que tienen contenedores HTML dedicados)
-        document.querySelectorAll('.st-sidebar select:not(.st-sector-select):not([data-skip-pills])').forEach(sel => {
-          if (sel.id === 'resumen_obraSelect' || sel.id === 'resumen_anioSelect' || sel.id === 'resumen_mesCumplSelect' || sel.id === 'resumen_gcEmrfSelect') {
-            return;
-          }
-          const inst = createPrototypePillsFilter(sel);
-          inst.render();
+      window.updateCumplFiltersSummary = function() { const renderChips = (elId, defs) => { const el = document.getElementById(elId); if (!el) return; el.innerHTML = '<span class="st-af-title">FILTROS:</span>' + defs.map(d => { if (d.custom) { const res = d.custom(); return `<span class="st-af-chip ${res.active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${res.txt}</span></span>`; } const s = document.getElementById(d.id); const selOpts = s ? [...s.options].filter(o => o.selected && !isAllOption(o)) : []; const active = selOpts.length > 0; const valTxt = active ? selOpts.map(o => (o.textContent || o.value || '').trim()).join(', ') : 'Todos'; return `<span class="st-af-chip ${active ? 'is-active' : ''}"><span class="st-af-k">${d.lbl}:</span> <span class="st-af-v">${valTxt}</span></span>`; }).join(''); }; const isCompras = window.currentAppSector === 'compras'; renderChips('cumpl_activeFiltersSummary', isCompras ? [{ id: 'cumpl_clienteSelect', lbl: 'Cliente' }, { id: 'cumpl_operadorSelect', lbl: 'Comprador' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }, { id: 'cumpl_proveedorSelect', lbl: 'Proveedor' }, { id: 'cumpl_soloAbastSelect', lbl: 'Compras / Abast. / Equipos' }] : [{ id: 'cumpl_clienteSelect', lbl: 'Obra' }, { id: 'cumpl_clasif2Select', lbl: 'Clasif.' }, { id: 'cumpl_gcocSelect', lbl: 'GC' }, { id: 'cumpl_mesSelect', lbl: 'Mes' }, { id: 'centroSelect', lbl: 'Centro' }]); renderChips('mm_activeFiltersSummary', [{ id: 'mm_clienteSelect', lbl: 'Almacén' }]); renderChips('dem_activeFiltersSummary', [{ id: 'dem_clienteSelect', lbl: 'Cliente' }, { id: 'dem_clasifSelect', lbl: 'Clasif.' }, { id: 'dem_mesSelect', lbl: 'Mes' }]); renderChips('serv_activeFiltersSummary', [{ id: 'serv_clienteSelect', lbl: 'Cliente' }, { id: 'serv_clasif2Select', lbl: 'Período' }, { id: 'serv_gcocSelect', lbl: 'Estado' }, { id: 'serv_grupoCompraSelect', lbl: 'GC' }, { id: 'serv_estadoItemSelect', lbl: 'Estado Ítem' }]); renderChips('tiempos_activeFiltersSummary', [{ lbl: 'Obra', custom: () => { const s = document.getElementById('tiempos_obraSelect'); const o = s && s.selectedOptions[0]; const txt = o ? (o.textContent || o.value || '').trim() : 'Todos'; return { active: !!(txt && txt.toLowerCase() !== 'todos' && txt.toLowerCase() !== 'todas'), txt: txt || 'Todos' }; } }, { lbl: 'Mes', custom: () => { const list = document.getElementById('tiempos_slicer_list'); if (!list) return { active: false, txt: 'Todos' }; const all = list.querySelectorAll('.tiempos-slicer-item'); const act = list.querySelectorAll('.tiempos-slicer-item.active'); if (!act.length || act.length === all.length) return { active: false, txt: 'Todos' }; const names = [...act].map(i => (i.querySelector('span')?.textContent || '').trim()).filter(Boolean); return { active: true, txt: names.join(', ') }; } }]); renderChips('emrf_activeFiltersSummary', [{ lbl: 'Sociedad', custom: () => { const s = document.getElementById('emrf_sociedadSelect'); const v = s ? s.value : 'TODAS'; const o = s && s.selectedOptions[0]; return { active: v !== 'TODAS', txt: (v === 'TODAS' || !o) ? 'Todas' : o.textContent.trim() }; } }, { lbl: 'Búsqueda', custom: () => { const inp = document.getElementById('emrf_searchInput'); const v = inp ? inp.value.trim() : ''; return { active: !!v, txt: v || 'Todos' }; } }, { id: 'emrf_estadoSelect', lbl: 'Estado' }, { id: 'emrf_gcSelect', lbl: 'GC' }, { id: 'emrf_vencSelect', lbl: 'Venc.' }, { id: 'emrf_operOcSelect', lbl: 'Operador' }]); }; window.syncAllStMultiSelects = function() {
+        document.querySelectorAll('.st-sidebar select.multi-select').forEach(sel => {
+          const inst = createStMultiSelect(sel);
+          inst.render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
         });
-        if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
       };
-
       // Helper global para alternar Medición Arriba con switch UI en Cumplimiento
       window.toggleCumplArribaSwitch = function() {
         const btn = document.getElementById("cumpl_btnArriba");
@@ -2683,7 +2843,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261110_144642"></script>
+  <script src="js/auth-user.js?v=20261110_152419"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

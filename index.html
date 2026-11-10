@@ -15,12 +15,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261110_153553" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_153553" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_153553" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261110_153553" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_153553" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_153553" />
+  <link rel="stylesheet" href="css/base.css?v=20261110_155112" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_155112" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_155112" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261110_155112" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_155112" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_155112" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -1050,45 +1050,40 @@
         </div>
       </div>
 
-      <aside class="st-sidebar app-sidebar">
+      <aside class="st-sidebar">
         <div class="st-sidebar-toprow">
           <div class="st-sector-switcher">
             <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
               <option value="abastecimiento">🏗️ OBRAS</option>
-              <option value="sede">🏢 SEDE</option>
-              <option value="compras">🛒 COMPRAS</option>
-              <option value="almacen">🏭 ALMACEN</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
             </select>
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
 
-        <div class="sidebar-header">
-          <div class="sidebar-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-            <span>Filtros de Control</span>
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+          <div class="st-filters-actions">
+            <button id="serv_btnClearFilters" class="btn-clear" onclick="window.resetServiciosFilters()" title="Restablecer todos los filtros">🔄 Limpiar</button>
           </div>
-          <button type="button" class="sidebar-reset-btn" onclick="window.resetServiciosFilters()" title="Restablecer filtros">Restablecer</button>
         </div>
 
-        <div class="st-filters-stack" style="margin-top: 10px;">
-          <div class="filter"><label>Cliente / Obra:</label><select id="serv_clienteSelect" multiple class="multi-select" size="5"></select></div>
-          <div class="filter"><label>Período de Certificación:</label><select id="serv_clasif2Select" multiple class="multi-select" size="4"></select></div>
-          <div class="filter"><label>Estado del Servicio:</label><select id="serv_gcocSelect" multiple class="multi-select" size="4"></select></div>
-          <div class="filter"><label>Grupo de Compra:</label><select id="serv_grupoCompraSelect" multiple class="multi-select" size="4"></select></div>
-          <div class="filter"><label>Estado del Ítem:</label><select id="serv_estadoItemSelect" multiple class="multi-select" size="4"></select></div>
+        <div class="st-filters-stack">
+          <div class="filter"><label>Cliente:</label><select id="serv_clienteSelect" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Período:</label><select id="serv_clasif2Select" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Estado:</label><select id="serv_gcocSelect" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Grupo de Compra:</label><select id="serv_grupoCompraSelect" multiple class="multi-select"></select></div>
+          <div class="filter"><label>Estado del Ítem:</label><select id="serv_estadoItemSelect" multiple class="multi-select"></select></div>
 
           <hr class="st-divider" />
 
-          <div class="serv-kpi-card">
-            <div class="serv-kpi-inner">
-              <span class="serv-kpi-label">SERVICIOS SELECCIONADOS</span>
-              <span id="serv_kpiTotal" class="serv-kpi-value">0</span>
+          <div class="filter-kpi" style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="kpi-mini-box">
+              <span id="serv_kpiTotal" class="kpi-mini-value">0</span>
+              <span class="kpi-mini-label">Servicios Seleccionados</span>
             </div>
-            <button id="serv_btnDownloadSelection" class="btn btn-serv-download" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Descargar Selección</span>
-            </button>
+            <button id="serv_btnDownloadSelection" class="btn" style="width: 100%;">📥 Descargar Selección</button>
           </div>
         </div>
       </aside>
@@ -1469,8 +1464,8 @@
 
       <div id="resumen_msg"></div>
 
-      <!-- Barra Lateral Izquierda (Panel de Control - Estilo Prototipo) -->
-      <aside class="st-sidebar app-sidebar" id="smartSidebar">
+      <!-- Barra Lateral Izquierda Estilo Streamlit (Panel de Control) -->
+      <aside class="st-sidebar">
         <div class="st-sidebar-toprow">
           <div class="st-sector-switcher">
             <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
@@ -1482,96 +1477,75 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
+        <h3 class="st-ctrl-title">Panel de Control</h3>
 
-        <div class="sidebar-header">
-          <div class="sidebar-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-            <span>Filtros de Control</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 4px;">
-            <button id="resumen_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
+        <div class="st-filters-header">
+          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+          <div class="st-filters-actions">
+            <button id="resumen_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🔄 Limpiar</button>
             <button class="help-btn" onclick="openHelp('Filtros — Resumen Ejecutivo', `
               <h4>Cliente / Obra</h4>
-              <p>Filtrá el resumen por obra o almacén seleccionando las pastillas de obras.</p>
-              <h4>Año y Mes Evaluado</h4>
-              <p>Seleccioná el período para analizar el rendimiento de cumplimiento.</p>
-              <div class=&quot;hm-tip&quot;>💡 Podés restablecer con el botón Restablecer.</div>
+              <p>Filtrá el resumen por obra o almacén para visualizar el estado de stock y el cumplimiento de pedidos correspondiente.</p>
+              <h4>Mes Evaluado</h4>
+              <p>Seleccioná el mes a evaluar en el bloque de rendimiento mensual de cumplimiento.</p>
+              <div class=&quot;hm-tip&quot;>💡 Podés restablecer a todas las obras con el botón Limpiar.</div>
             `)" title="Ayuda sobre los filtros">ℹ</button>
           </div>
         </div>
 
-        <!-- Buscador y Pastillas de Obra -->
-        <div class="filter-group" id="resumen_obraFilterWrap">
-          <div class="filter-label">
-            <span>Cliente / Obra:</span>
-            <span style="font-size: 0.68rem; color: #0f766e; cursor: pointer; font-weight: 700;" onclick="window.toggleResumenExcludeObra()" id="resumen_btnExcludeObra">Excluir: OFF</span>
+        <div class="st-filters-stack">
+          <div class="filter" id="resumen_obraFilterWrap">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%;">
+              <label style="margin-bottom: 0;">Cliente / Obra:</label>
+              <button type="button" id="resumen_btnExcludeObra" class="res-exclude-toggle-btn" title="Activar para EXCLUIR las obras seleccionadas en lugar de incluirlas">
+                🚫 Excluir: OFF
+              </button>
+            </div>
+            <select id="resumen_obraSelect" multiple size="6" class="multi-select">
+              <option value="__ALL__">Todas las Obras</option>
+            </select>
+            <div id="resumen_obraHint" class="hint">Elegí obras o activá «Excluir» para omitir una</div>
           </div>
-          <input type="text" id="resumen_obraQuickSearch" class="filter-search-input" placeholder="🔍 Filtrar o buscar obra..." oninput="window.filterResumenObraPills(this.value)" autocomplete="off">
-          
-          <div class="pills-container" id="obraPillsContainer">
-            <span class="filter-pill active" data-val="__ALL__" onclick="window.selectResumenObraPill(this, '__ALL__')">Todas las Obras</span>
-          </div>
-          <!-- Select oculto para sincronización con lógica existente -->
-          <select id="resumen_obraSelect" multiple style="display: none;">
-            <option value="__ALL__" selected>Todas las Obras</option>
-          </select>
-          <div id="resumen_obraHint" class="hint" style="display: none;">Elegí obras o activá «Excluir» para omitir</div>
-        </div>
 
-        <!-- Filtro de Año con Pastillas -->
-        <div class="filter-group">
-          <div class="filter-label">
-            <span>Año Evaluado:</span>
+          <div class="filter">
+            <label>Año:</label>
+            <select id="resumen_anioSelect" multiple size="4" class="multi-select">
+              <option value="__ALL__">Todos los Años</option>
+            </select>
+            <div class="hint">Filtrar por año de entrega</div>
           </div>
-          <div class="pills-container" id="anioPillsContainer">
-            <span class="filter-pill active" data-val="__ALL__" onclick="window.selectResumenAnioPill(this, '__ALL__')">Todos</span>
-          </div>
-          <select id="resumen_anioSelect" multiple style="display: none;">
-            <option value="__ALL__" selected>Todos los Años</option>
-          </select>
-        </div>
 
-        <!-- Filtro Mes Evaluado con Pastillas -->
-        <div class="filter-group">
-          <div class="filter-label">
-            <span>Mes Evaluado:</span>
+          <div class="filter">
+            <label>Mes Evaluado:</label>
+            <select id="resumen_mesCumplSelect" multiple size="6" class="multi-select">
+              <option value="__ALL__">Todos los Meses</option>
+            </select>
+            <div class="hint">Período para rendimiento mensual</div>
           </div>
-          <div class="pills-container" id="mesPillsContainer">
-            <span class="filter-pill active" data-val="__ALL__" onclick="window.selectResumenMesPill(this, '__ALL__')">Todos</span>
-          </div>
-          <select id="resumen_mesCumplSelect" multiple style="display: none;">
-            <option value="__ALL__" selected>Todos los Meses</option>
-          </select>
-        </div>
 
-        <!-- Grupo de Compras (Partidas) con Pastillas -->
-        <div class="filter-group">
-          <div class="filter-label">
-            <span>Grupo de Compras (Partidas):</span>
+          <div class="filter">
+            <label>Grupo de Compras (Partidas):</label>
+            <select id="resumen_gcEmrfSelect" multiple size="5" class="multi-select">
+              <option value="__ALL__">Todos los Grupos</option>
+              <option value="C01" selected>C01</option>
+              <option value="C07" selected>C07</option>
+              <option value="C02" selected>C02</option>
+            </select>
+            <div class="hint">Solo afecta a Control de Partidas</div>
           </div>
-          <div class="pills-container" id="gcEmrfPillsContainer">
-            <span class="filter-pill" data-val="__ALL__" onclick="window.selectResumenGcPill(this, '__ALL__')">Todos</span>
-            <span class="filter-pill active" data-val="C01" onclick="window.selectResumenGcPill(this, 'C01')">C01</span>
-            <span class="filter-pill active" data-val="C07" onclick="window.selectResumenGcPill(this, 'C07')">C07</span>
-            <span class="filter-pill active" data-val="C02" onclick="window.selectResumenGcPill(this, 'C02')">C02</span>
-          </div>
-          <select id="resumen_gcEmrfSelect" multiple style="display: none;">
-            <option value="__ALL__">Todos los Grupos</option>
-            <option value="C01" selected>C01</option>
-            <option value="C07" selected>C07</option>
-            <option value="C02" selected>C02</option>
-          </select>
-        </div>
 
-        <!-- Interruptor Toggle: Medir Cumplimiento Arriba -->
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-title">Medición Arriba</span>
-            <span class="toggle-desc">Mina Obras 365 y 372</span>
+          <hr class="st-divider" />
+
+          <!-- Botón Medir Cumplimiento Arriba en Resumen -->
+          <div id="resumen_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
+            <button id="resumen_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
+              🏔️ Medir cumplimiento arriba
+            </button>
+            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
+              Obras 365 y 372 (año 2026)
+            </div>
           </div>
-          <div class="switch-ui" id="switchArriba" onclick="window.toggleResumenArribaSwitch()" title="Alternar entre Base y Mina"></div>
         </div>
-        <button id="resumen_btnArriba" style="display: none;" type="button"></button>
       </aside>
 
       <!-- ÁREA DE TRABAJO BENTO GRID (Basado 100% en Prototipo) -->
@@ -1962,20 +1936,20 @@
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261110_153553"></script><script src="js/last-update-sede.js?v=20261110_153553"></script><script src="js/last-update-compras.js?v=20261110_153553"></script><script src="js/last-update-almacen.js?v=20261110_153553"></script><script src="js/last-update.js?v=20261110_153553"></script>
-  <script src="js/help.js?v=20261110_153553"></script>
-  <script src="js/cache-utils.js?v=20261110_153553"></script>
+  <script src="js/last-update-obras.js?v=20261110_155112"></script><script src="js/last-update-sede.js?v=20261110_155112"></script><script src="js/last-update-compras.js?v=20261110_155112"></script><script src="js/last-update-almacen.js?v=20261110_155112"></script><script src="js/last-update.js?v=20261110_155112"></script>
+  <script src="js/help.js?v=20261110_155112"></script>
+  <script src="js/cache-utils.js?v=20261110_155112"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261110_153553"></script>
-  <script src="js/resumen.js?v=20261110_153553"></script>
-  <script src="js/cumplimiento.js?v=20261110_153553"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261110_153553"></script>
-  <script src="js/analisis-mm.js?v=20261110_153553"></script>
-  <script src="js/evolucion.js?v=20261110_153553"></script>
-  <script src="js/servicios.js?v=20261110_153553"></script>
-  <script src="js/tiempos-entrega.js?v=20261110_153553"></script>
-  <script src="js/control-emrf.js?v=20261110_153553"></script>
+  <script src="js/demoras.js?v=20261110_155112"></script>
+  <script src="js/resumen.js?v=20261110_155112"></script>
+  <script src="js/cumplimiento.js?v=20261110_155112"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261110_155112"></script>
+  <script src="js/analisis-mm.js?v=20261110_155112"></script>
+  <script src="js/evolucion.js?v=20261110_155112"></script>
+  <script src="js/servicios.js?v=20261110_155112"></script>
+  <script src="js/tiempos-entrega.js?v=20261110_155112"></script>
+  <script src="js/control-emrf.js?v=20261110_155112"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2721,7 +2695,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261110_153553"></script>
+  <script src="js/auth-user.js?v=20261110_155112"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

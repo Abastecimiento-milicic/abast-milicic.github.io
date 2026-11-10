@@ -85,7 +85,10 @@ def apply_excel_table_styling(ws):
     }
     center_cols = {
         'Centro', 'Almacén', 'Lote', 'E', 'Planificado', 'Caract.planif.nec.',
-        'Unidad medida base', 'Moneda', 'Tipo material'
+        'Unidad medida base', 'Moneda', 'Tipo material', 'Archivo_Origen'
+    }
+    code_cols = {
+        'Material', 'Centro', 'Almacén', 'Lote', 'Archivo_Origen'
     }
 
     # 1. Encabezados
@@ -125,7 +128,11 @@ def apply_excel_table_styling(ws):
             else:
                 cell.alignment = Alignment(horizontal="left", vertical="center")
 
-            if val is not None and isinstance(val, (int, float)):
+            if h_name in code_cols:
+                cell.number_format = '@'
+                if h_name != 'Material':
+                    cell.alignment = Alignment(horizontal="center", vertical="center")
+            elif val is not None and isinstance(val, (int, float)):
                 if h_name in currency_cols:
                     cell.number_format = '$ #,##0.00'
                 elif h_name in qty_cols:
@@ -240,13 +247,17 @@ def extract_digits_codes(text):
             res.append(num_str)
     return res
 
-def load_auxiliary_data(base_csv_path):
+def load_auxiliary_data(base_csv_path, data_dir=None):
     """
-    Carga descripciones y lotes desde Cumplimiento Arriba (Base_Final_365_372.csv).
-    Mapea lotes por (almacen, material) y por material general, priorizando los más recientes.
+    Carga:
+    1. Descripciones y lotes desde Cumplimiento Arriba (Base_Final_365_372.csv).
+    2. Diccionarios globales de Tipo material y Rubro indexados por material desde todos los archivos de stock base.
     """
     desc_map = {}
     lote_map = {}
+    tipo_map = {}
+    rubro_map = {}
+
     if os.path.exists(base_csv_path):
         encodings = ['utf-8-sig', 'utf-8', 'latin1', 'cp1252']
         df_aux = None
@@ -290,7 +301,33 @@ def load_auxiliary_data(base_csv_path):
                         if raw_l not in lote_map[m]:
                             lote_map[m].append(raw_l)
 
-    return desc_map, lote_map
+    # Cargar tipos y rubros de Stock Base Obra *.csv, MENOR A PP.csv, STO NULO.csv
+    if data_dir and os.path.exists(data_dir):
+        aux_files = glob.glob(os.path.join(data_dir, "Stock Base Obra *.csv")) + [
+            os.path.join(data_dir, "MENOR A PP.csv"),
+            os.path.join(data_dir, "STO NULO.csv")
+        ]
+        for f in aux_files:
+            if not os.path.exists(f):
+                continue
+            for enc in ['utf-8-sig', 'utf-8', 'latin1', 'cp1252']:
+                try:
+                    df_s = pd.read_csv(f, sep=';', low_memory=False, encoding=enc)
+                    for _, r in df_s.iterrows():
+                        m = norm_mat(r.get('Material', r.get('﻿Material', '')))
+                        if not m:
+                            continue
+                        t = str(r.get('Tipo material', '') or '').strip()
+                        if t and t.lower() not in ('nan', 'none', '-', ''):
+                            tipo_map[m] = t
+                        rb = str(r.get('Rubro', '') or '').strip()
+                        if rb and rb.lower() not in ('nan', 'none', '-', ''):
+                            rubro_map[m] = rb
+                    break
+                except Exception:
+                    continue
+
+    return desc_map, lote_map, tipo_map, rubro_map
 
 def run_combination(base_dir=None):
     if base_dir is None:
@@ -341,10 +378,12 @@ def run_combination(base_dir=None):
                 'Grupo de compras': str(row.get('Grupo de compras', '') or '').strip()
             }
 
-    # Cargar descripciones y lotes desde Cumplimiento Arriba (Base_Final_365_372)
-    aux_descs, aux_lotes = load_auxiliary_data(aux_path)
+    # Cargar descripciones y lotes desde Cumplimiento Arriba (Base_Final_365_372) y bases auxiliares
+    aux_descs, aux_lotes, aux_tipos, aux_rubros = load_auxiliary_data(aux_path, data_dir)
     if aux_descs:
         print(f"-> {len(aux_descs):,d} descripciones y {len(aux_lotes):,d} referencias de lotes disponibles desde Cumplimiento Arriba (Base_Final).")
+    if aux_tipos:
+        print(f"-> {len(aux_tipos):,d} tipos de material y {len(aux_rubros):,d} rubros indexados desde bases auxiliares.")
 
 
     # Buscar archivos MB52
@@ -391,6 +430,8 @@ def run_combination(base_dir=None):
                 col_rename[col] = 'Stock especial'
             elif 'unidad' in c_lower and 'med' in c_lower:
                 col_rename[col] = 'Unidad medida base'
+            elif 'tipo' in c_lower and 'mat' in c_lower:
+                col_rename[col] = 'Tipo material'
         if col_rename:
             df_mb.rename(columns=col_rename, inplace=True)
 
@@ -418,7 +459,6 @@ def run_combination(base_dir=None):
                     row_mm = mm_exact[(a, mat_clean)]
                     break
 
-            tipo_mat = ''
             if row_mm is not None:
                 caract = str(row_mm.get('Caract.planif.nec.', '') or '').strip() or 'PLANIFICADO'
                 if caract.upper() == 'NO PLANIFICADO':
@@ -430,7 +470,6 @@ def run_combination(base_dir=None):
                 rubro = str(row_mm.get('Rubro', '') or '').strip()
                 subrubro = str(row_mm.get('SubRubro', '') or '').strip()
                 grp_comp = str(row_mm.get('Grupo de compras', '') or '').strip()
-                tipo_mat = str(row_mm.get('Tipo material', '') or '').strip()
             else:
                 caract = '-'
                 planif = 'NO'
@@ -438,10 +477,40 @@ def run_combination(base_dir=None):
                 pp = 0
                 stk_max = 0
                 meta = mm_mat_meta.get(mat_clean, {})
-                rubro = meta.get('Rubro', '')
+                rubro = meta.get('Rubro', '') or aux_rubros.get(mat_clean, '')
                 subrubro = meta.get('SubRubro', '')
                 grp_comp = meta.get('Grupo de compras', '')
-                tipo_mat = meta.get('Tipo material', '')
+
+            # Extraer Tipo material con máxima robustez:
+            # Prioridad 1: Del propio archivo Base MB52
+            tipo_mat = ''
+            for c_tipo in ['Tipo material', 'Tipo de material', 'Tipo Material', 'Tipo mat.', 'MTART']:
+                if c_tipo in r and pd.notna(r[c_tipo]):
+                    val_tipo = str(r[c_tipo]).strip()
+                    if val_tipo and val_tipo.lower() not in ('nan', 'none', '-', ''):
+                        tipo_mat = val_tipo
+                        break
+
+            # Prioridad 2: De ANALISIS-MM si no vino en MB52
+            if not tipo_mat and row_mm is not None:
+                val_mm_tipo = str(row_mm.get('Tipo material', '') or '').strip()
+                if val_mm_tipo and val_mm_tipo.lower() not in ('nan', 'none', '-', ''):
+                    tipo_mat = val_mm_tipo
+
+            # Prioridad 3: De metadata de ANALISIS-MM
+            if not tipo_mat:
+                meta = mm_mat_meta.get(mat_clean, {})
+                val_meta_tipo = str(meta.get('Tipo material', '') or '').strip()
+                if val_meta_tipo and val_meta_tipo.lower() not in ('nan', 'none', '-', ''):
+                    tipo_mat = val_meta_tipo
+
+            # Prioridad 4: De diccionarios auxiliares (Stock Base, MENOR A PP, STO NULO)
+            if not tipo_mat and mat_clean in aux_tipos:
+                tipo_mat = aux_tipos[mat_clean]
+
+            # Prioridad 5: Fallback por defecto si no viniera especificado
+            if not tipo_mat:
+                tipo_mat = 'ZSTO'
 
             # Prioridad 1: Obtener descripción directamente del archivo Base MB52
             desc = ''
@@ -500,9 +569,9 @@ def run_combination(base_dir=None):
 
             # Armar registro enriquecido
             rec = {
-                'Material': int(float(mat_clean)) if mat_clean.isdigit() else mat_clean,
+                'Material': str(mat_clean),
                 'Texto breve de material': desc or 'SIN DESCRIPCIÓN',
-                'Tipo material': tipo_mat or '',
+                'Tipo material': tipo_mat or 'ZSTO',
                 'Centro': str(r.get('Centro', '') or '').strip(),
                 'Almacén': norm_alm(r.get('Almacén', '')) or str(r.get('Almacén', '') or '').strip(),
                 'Lote': lote_val or '',

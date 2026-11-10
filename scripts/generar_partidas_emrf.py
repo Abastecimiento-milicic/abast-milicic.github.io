@@ -6,14 +6,6 @@ import datetime
 import numpy as np
 import pandas as pd
 
-# Importar generador de partidas abiertas
-try:
-    from generar_partidas_abiertas import build_partidas_abiertas
-except ImportError:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    sys.path.append(script_dir)
-    from generar_partidas_abiertas import build_partidas_abiertas
-
 def clean_col(c):
     nfkd = unicodedata.normalize('NFKD', str(c))
     return ''.join([ch for ch in nfkd if not unicodedata.combining(ch)]).lower().strip()
@@ -37,135 +29,115 @@ def process_data(data_dir=None, corte_str=None):
     if data_dir is None:
         data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
-    desktop_dir = os.path.join(os.path.expanduser("~"), "Desktop", "PARTIDAS ABIERTAS")
+    sociedades = [
+        ('MLAR', os.path.join(data_dir, 'PARTIDAS MLAR.xlsx')),
+        ('MMAR', os.path.join(data_dir, 'PARTIDAS MMAR.xlsx')),
+        ('U003', os.path.join(data_dir, 'PARTIDAS U003.xlsx')),
+        ('U365', os.path.join(data_dir, 'PARTIDAS U365.xlsx'))
+    ]
 
-    # 1. Asegurar la generación/actualización de Partidas abiertas
-    partidas_xlsx = os.path.join(data_dir, "Partidas abiertas.xlsx")
-    partidas_csv = os.path.join(data_dir, "Partidas abiertas.csv")
-
-    try:
-        # Si no existe o si los archivos base están presentes y son más recientes
-        needs_build = not os.path.exists(partidas_xlsx)
-        for base_name in ['FBL3N.xlsx', 'ME2L.xlsx', 'Z909.xlsx']:
-            for cand_dir in [data_dir, desktop_dir]:
-                bp = os.path.join(cand_dir, base_name)
-                if os.path.exists(bp):
-                    if not os.path.exists(partidas_xlsx) or os.path.getmtime(bp) > os.path.getmtime(partidas_xlsx):
-                        needs_build = True
-                        break
-
-        if needs_build:
-            print("Generando archivo consolidado 'Partidas abiertas' desde FBL3N, ME2L y Z909...")
-            build_partidas_abiertas(custom_dir=data_dir, verbose=False)
-    except Exception as e:
-        print(f"[WARN] Error al verificar/generar Partidas abiertas: {e}")
-
-    # 2. Cargar 'Partidas abiertas'
-    raw = None
-    if os.path.exists(partidas_csv):
+    op_map = {}
+    map_path = os.path.join(data_dir, 'operadores_map.json')
+    if os.path.exists(map_path):
         try:
-            print(f"Cargando {partidas_csv}...")
-            raw = pd.read_csv(partidas_csv, encoding='utf-8', low_memory=False)
-        except Exception:
-            raw = None
+            with open(map_path, 'r', encoding='utf-8') as f_op:
+                op_map = json.load(f_op)
+        except Exception as e:
+            print(f"Error al cargar operadores_map.json: {e}")
 
-    if raw is None and os.path.exists(partidas_xlsx):
-        print(f"Cargando {partidas_xlsx}...")
-        raw = pd.read_excel(partidas_xlsx, sheet_name='Data')
+    docs_list = []
 
-    if raw is None or raw.empty:
-        # Fallback a Desktop si no estaba en data_dir
-        desktop_xlsx = os.path.join(desktop_dir, "Partidas abiertas.xlsx")
-        if os.path.exists(desktop_xlsx):
-            print(f"Cargando desde Desktop: {desktop_xlsx}...")
-            raw = pd.read_excel(desktop_xlsx, sheet_name='Data')
+    for soc, fpath in sociedades:
+        if not os.path.exists(fpath):
+            print(f"Archivo no encontrado: {fpath}")
+            continue
 
-    if raw is None or raw.empty:
-        print("[ERROR] No se pudo cargar el archivo 'Partidas abiertas'.")
+        print(f"Procesando {soc} desde {fpath}...")
+        raw = pd.read_excel(fpath, sheet_name='Data')
+
+        # Si la primera fila vino sin encabezados o con columnas vacias/unnamed
+        unnamed_cols = [c for c in raw.columns if str(c).strip().lower().startswith('unnamed')]
+        if len(unnamed_cols) >= 3 and len(raw.columns) >= 20:
+            standard_sap_cols = [
+                'Icono part.abiertas/comp.', 'Asignación', 'Nº documento', 'División',
+                'Clase de documento', 'Fecha de documento', 'Clave contabiliz.',
+                'Importe en moneda local', 'Moneda local', 'Indicador impuestos',
+                'Doc.compensación', 'Nombre', 'Fe.contabilización',
+                'Documento compras', 'Posición', 'CONCATENA', 'Fecha de entrega',
+                'Grupo de compras', 'Proveedor/Centro suministrador', 'OPERADOR OC'
+            ]
+            raw.columns = standard_sap_cols + list(raw.columns[len(standard_sap_cols):])
+
+        raw = raw.rename(columns={c: clean_col(c) for c in raw.columns})
+
+        key_cols = [k for k in ['documento compras', 'posicion', 'clave contabiliz.'] if k in raw.columns]
+        if key_cols:
+            raw = raw.dropna(subset=key_cols).copy()
+
+        raw['Sociedad'] = soc
+        raw['Pedido'] = raw['documento compras'].astype(np.int64).astype(str)
+        raw['Posicion'] = raw['posicion'].astype(int).astype(str)
+        raw['Key'] = soc + '_' + raw['Pedido'] + '_' + raw['Posicion']
+
+        raw['Importe'] = pd.to_numeric(raw['importe en moneda local'], errors='coerce').fillna(0.0)
+        raw['Moneda'] = raw.get('moneda local', pd.Series('ARS', index=raw.index)).fillna('ARS')
+
+        raw['Clave_Contab'] = raw['clave contabiliz.'].astype(int).astype(str)
+        raw['Clase_Doc'] = raw.get('clase de documento', pd.Series('', index=raw.index)).fillna('').astype(str).str.strip()
+        raw['Doc_SAP'] = raw.get('no documento', pd.Series('', index=raw.index)).fillna(0).astype(np.int64).astype(str)
+
+        raw['Fecha_Doc'] = pd.to_datetime(raw.get('fecha de documento'), errors='coerce', dayfirst=True)
+        raw['Fe_Contabilizacion'] = pd.to_datetime(
+            raw.get('fe.contabilizacion', raw.get('fecha de contabilizacion', pd.Series(pd.NaT, index=raw.index))),
+            errors='coerce', dayfirst=True
+        )
+        raw['Clave_Referencia'] = raw.get('clave de referencia', raw.get('referencia', raw.get('asignacion', pd.Series('', index=raw.index)))).fillna('').astype(str).str.strip()
+        raw['Fecha_Emision_OC'] = pd.to_datetime(raw.get('fecha emision oc'), errors='coerce', dayfirst=True)
+
+        f_entrega = raw.get('fecha de entrega', raw.get('fecha entrega oc', raw.get('fecha de entrega oc', pd.Series(pd.NaT, index=raw.index))))
+        raw['Fecha_Entrega_OC'] = pd.to_datetime(f_entrega, errors='coerce', dayfirst=True)
+        raw['Fecha_Aprobacion_OC'] = pd.to_datetime(raw.get('fecha aprobacion final oc'), errors='coerce', dayfirst=True)
+        raw['Primera_Fecha_Entrega_OC'] = pd.to_datetime(raw.get('primera fecha entrega oc'), errors='coerce', dayfirst=True)
+
+        prov_series = raw.get('nombre', raw.get('proveedor', raw.get('proveedor/centro suministrador', pd.Series('', index=raw.index))))
+        raw['Proveedor'] = prov_series.fillna('DESCONOCIDO').astype(str).str.strip()
+
+        op_candidates = [
+            'operador de oc', 'operador de co', 'operador oc', 'operador_oc',
+            'operador_co', 'operador co', 'operador'
+        ]
+        col_operador_oc = None
+        for cand in op_candidates:
+            if cand in raw.columns:
+                col_operador_oc = cand
+                break
+
+        if col_operador_oc is None and len(raw.columns) > 0:
+            col_operador_oc = raw.columns[-1]
+
+        if col_operador_oc is not None and col_operador_oc in raw.columns:
+            raw['Operador_OC'] = raw[col_operador_oc].fillna(raw['Key'].map(op_map)).fillna('SIN ASIGNAR').astype(str).str.strip()
+        else:
+            raw['Operador_OC'] = raw['Key'].map(op_map).fillna('SIN ASIGNAR').astype(str).str.strip()
+
+        raw['Operador_OC'] = raw['Operador_OC'].replace({'nan': 'SIN ASIGNAR', '': 'SIN ASIGNAR', 'None': 'SIN ASIGNAR'})
+        mask_sin = raw['Operador_OC'] == 'SIN ASIGNAR'
+        if mask_sin.any():
+            fallback_map = raw.loc[mask_sin, 'Key'].map(op_map)
+            raw.loc[mask_sin, 'Operador_OC'] = fallback_map.fillna('SIN ASIGNAR')
+
+        raw['Operador_VA'] = raw.get('operador de va', raw.get('operador_va', pd.Series('SIN ASIGNAR', index=raw.index))).fillna('SIN ASIGNAR').astype(str).str.strip()
+        raw['Division'] = raw.get('division', pd.Series('S/D', index=raw.index)).fillna('S/D').astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+        gc_series = raw.get('grupo de compras', raw.get('grupo de compra oc', raw.get('grupo compras', pd.Series('SIN GRUPO', index=raw.index))))
+        raw['Grupo_Compras'] = gc_series.fillna('SIN GRUPO').astype(str).str.strip()
+
+        docs_list.append(raw)
+
+    if not docs_list:
+        print("No se encontraron datos.")
         return
 
-    # Cargar mapeo de operadores si existe
-    op_map = {}
-    for map_dir in [data_dir, desktop_dir]:
-        map_path = os.path.join(map_dir, 'operadores_map.json')
-        if os.path.exists(map_path):
-            try:
-                with open(map_path, 'r', encoding='utf-8') as f_op:
-                    op_map.update(json.load(f_op))
-            except Exception as e:
-                print(f"Error al cargar operadores_map.json: {e}")
-
-    # Renombrar columnas a formato limpio
-    raw = raw.rename(columns={c: clean_col(c) for c in raw.columns})
-
-    # Filtrar filas de totales o vacías en columnas clave
-    key_cols = [k for k in ['documento compras', 'posicion', 'clave contabiliz.'] if k in raw.columns]
-    if key_cols:
-        raw = raw.dropna(subset=key_cols).copy()
-
-    # Mapear Sociedad
-    if 'sociedad' in raw.columns:
-        raw['Sociedad'] = raw['sociedad'].astype(str).str.strip()
-    else:
-        raw['Sociedad'] = 'MLAR'
-
-    raw['Pedido'] = raw['documento compras'].astype(np.int64).astype(str)
-    raw['Posicion'] = raw['posicion'].astype(int).astype(str)
-    raw['Key'] = raw['Sociedad'] + '_' + raw['Pedido'] + '_' + raw['Posicion']
-
-    raw['Importe'] = pd.to_numeric(raw['importe en moneda local'], errors='coerce').fillna(0.0)
-    raw['Moneda'] = raw.get('moneda local', pd.Series('ARS', index=raw.index)).fillna('ARS')
-
-    raw['Clave_Contab'] = raw['clave contabiliz.'].astype(int).astype(str)
-    raw['Clase_Doc'] = raw.get('clase de documento', pd.Series('', index=raw.index)).fillna('').astype(str).str.strip()
-    raw['Doc_SAP'] = raw.get('no documento', pd.Series('', index=raw.index)).fillna(0).astype(np.int64).astype(str)
-
-    raw['Fecha_Doc'] = pd.to_datetime(raw.get('fecha de documento'), errors='coerce', dayfirst=True)
-    raw['Fe_Contabilizacion'] = pd.to_datetime(
-        raw.get('fe.contabilizacion', raw.get('fecha de contabilizacion', pd.Series(pd.NaT, index=raw.index))),
-        errors='coerce', dayfirst=True
-    )
-    raw['Clave_Referencia'] = raw.get('clave de referencia', raw.get('referencia', raw.get('asignacion', pd.Series('', index=raw.index)))).fillna('').astype(str).str.strip()
-    raw['Fecha_Emision_OC'] = pd.to_datetime(raw.get('fecha emision oc'), errors='coerce', dayfirst=True)
-
-    f_entrega = raw.get('fecha de entrega', raw.get('fecha entrega oc', raw.get('fecha de entrega oc', pd.Series(pd.NaT, index=raw.index))))
-    raw['Fecha_Entrega_OC'] = pd.to_datetime(f_entrega, errors='coerce', format='mixed')
-    raw['Fecha_Aprobacion_OC'] = pd.to_datetime(raw.get('fecha aprobacion final oc'), errors='coerce', dayfirst=True)
-    raw['Primera_Fecha_Entrega_OC'] = pd.to_datetime(raw.get('primera fecha entrega oc'), errors='coerce', dayfirst=True)
-
-    prov_series = raw.get('nombre', raw.get('proveedor', raw.get('proveedor/centro suministrador', pd.Series('', index=raw.index))))
-    raw['Proveedor'] = prov_series.fillna('DESCONOCIDO').astype(str).str.strip()
-
-    op_candidates = [
-        'operador de oc', 'operador de co', 'operador oc', 'operador_oc',
-        'operador_co', 'operador co', 'operador'
-    ]
-    col_operador_oc = None
-    for cand in op_candidates:
-        if cand in raw.columns:
-            col_operador_oc = cand
-            break
-
-    if col_operador_oc is None and len(raw.columns) > 0:
-        col_operador_oc = raw.columns[-1]
-
-    if col_operador_oc is not None and col_operador_oc in raw.columns:
-        raw['Operador_OC'] = raw[col_operador_oc].fillna(raw['Key'].map(op_map)).fillna('SIN ASIGNAR').astype(str).str.strip()
-    else:
-        raw['Operador_OC'] = raw['Key'].map(op_map).fillna('SIN ASIGNAR').astype(str).str.strip()
-
-    raw['Operador_OC'] = raw['Operador_OC'].replace({'nan': 'SIN ASIGNAR', '': 'SIN ASIGNAR', 'None': 'SIN ASIGNAR'})
-    mask_sin = raw['Operador_OC'] == 'SIN ASIGNAR'
-    if mask_sin.any():
-        fallback_map = raw.loc[mask_sin, 'Key'].map(op_map)
-        raw.loc[mask_sin, 'Operador_OC'] = fallback_map.fillna('SIN ASIGNAR')
-
-    raw['Operador_VA'] = raw.get('operador de va', raw.get('operador_va', pd.Series('SIN ASIGNAR', index=raw.index))).fillna('SIN ASIGNAR').astype(str).str.strip()
-    raw['Division'] = raw.get('division', pd.Series('S/D', index=raw.index)).fillna('S/D').astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-    gc_series = raw.get('grupo de compras', raw.get('grupo de compra oc', raw.get('grupo compras', pd.Series('SIN GRUPO', index=raw.index))))
-    raw['Grupo_Compras'] = gc_series.fillna('SIN GRUPO').astype(str).str.strip()
-
-    df_docs = raw
+    df_docs = pd.concat(docs_list, ignore_index=True)
 
     today_date = pd.to_datetime(corte_str, dayfirst=True)
     if pd.isna(today_date):

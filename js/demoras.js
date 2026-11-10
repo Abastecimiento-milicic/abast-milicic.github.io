@@ -1985,6 +1985,14 @@ EQUIPOS MENORES = if List.Sum({[PREPARACION], [TRANSPORTEyALM]}) > 0 then 1 else
         const rowObj = worksheet.addRow(excelRow);
         
         rowObj.eachCell((cell, colNumber) => {
+           const h = allHeaders[colNumber - 1] || "";
+           const isCode = /(nro|numero|número|num|c[oó]digo|cod|item|pos|doc|va01|va21|cliente|proveedor|centro|almac[eé]n|material|prioridad)/i.test(h);
+           if (isCode) {
+              cell.value = String(cell.value === null || cell.value === undefined ? "" : cell.value).trim();
+              cell.numFmt = '@';
+           } else if (typeof cell.value === 'number') {
+              cell.numFmt = Number.isInteger(cell.value) ? '0' : '0.00';
+           }
            if (colNumber > baseHeaders.length) {
               const extraIdx = colNumber - baseHeaders.length - 1;
               const colorConfig = config.extraColors[extraIdx];

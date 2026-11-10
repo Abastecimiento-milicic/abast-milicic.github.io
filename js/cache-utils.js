@@ -226,32 +226,38 @@
           if (typeof rawVal === 'string') {
             rawVal = rawVal.replace(/^\uFEFF/, "").trim();
           }
+          const strVal = (rawVal === null || rawVal === undefined) ? "" : String(rawVal).trim();
+          const hClean = hName.toLowerCase();
 
-          // Proteger columnas que deben ser estrictamente texto (códigos, IDs, números de pieza con letras como 8E5529)
-          const isCodeOrIdCol = /^(Material|Centro|Almac[eé]n|Ubicaci[oó]n|Caract\.planif\.nec|Unidad|Moneda|Tipo|Fabricante|Pieza|Numero|Grupo|Id|Doc|Pedido|SolPed)/i.test(hName);
+          // 1. Columnas explícitamente monetarias (únicas con formato de moneda con separador de miles)
+          const isCurrencyCol = /(valor|importe|monto|precio|costo|saldo|debe|haber|pesos|dolar|ars|usd|\$)/i.test(hClean);
+
+          // 2. Columnas de códigos, IDs, documentos, pedidos, posiciones, referencias, etc.
+          // DEBEN SER ESTRICTAMENTE TEXTO (sin puntos, sin notación científica, sin perder ceros iniciales)
+          const isCodeOrIdCol = /(nro|numero|número|num|c[oó]digo|cod|item|pos|doc|va01|va21|va02|va03|me21|me22|me23|me2l|me2m|me2n|fbl3n|mb52|pedido|orden|oc|co|solped|solicitud|cliente|proveedor|material|centro|almac[eé]n|lote|concat|asignaci[oó]n|cuenta|referencia|ref|pep|motivo|rechazo|indicador|bloqueo|prioridad|grupo|clase|tipo|id|pieza|fabricante|ubicaci[oó]n|unidad|moneda)/i.test(hClean);
+
+          // 3. Detectar códigos con ceros a la izquierda (ej: "00375", "04") o números largos en columnas no monetarias
+          const hasLeadingZero = /^0\d+$/.test(strVal);
+          const isLongCodeNumber = !isCurrencyCol && /^\d{5,}$/.test(strVal);
 
           let isNumeric = false;
           let numVal = null;
 
-          if (!isCodeOrIdCol && rawVal !== "" && rawVal !== null && rawVal !== undefined) {
-            let strVal = String(rawVal).trim();
-            // Códigos con ceros a la izquierda (ej: "0365", "01") se mantienen como texto
-            if (!/^0\d+/.test(strVal)) {
-              if (/^\d{1,3}(\.\d{3})+$/.test(strVal)) {
-                strVal = strVal.replace(/\./g, '');
-              } else if (/^\d{1,3}(\.\d{3})+,\d+$/.test(strVal)) {
-                strVal = strVal.replace(/\./g, '').replace(',', '.');
-              } else if (/^-?\d+,\d+$/.test(strVal)) {
-                strVal = strVal.replace(',', '.');
-              }
+          if (!isCodeOrIdCol && !hasLeadingZero && !isLongCodeNumber && strVal !== "") {
+            let cleanNumStr = strVal;
+            if (/^\d{1,3}(\.\d{3})+$/.test(cleanNumStr)) {
+              cleanNumStr = cleanNumStr.replace(/\./g, '');
+            } else if (/^\d{1,3}(\.\d{3})+,\d+$/.test(cleanNumStr)) {
+              cleanNumStr = cleanNumStr.replace(/\./g, '').replace(',', '.');
+            } else if (/^-?\d+,\d+$/.test(cleanNumStr)) {
+              cleanNumStr = cleanNumStr.replace(',', '.');
+            }
 
-              // Validar estrictamente número real finito (evita que códigos con 'E' como 8E5529 generen Infinity)
-              if (/^-?\d+(\.\d+)?$/.test(strVal)) {
-                const n = Number(strVal);
-                if (Number.isFinite(n) && !isNaN(n) && Math.abs(n) < 1e15) {
-                  isNumeric = true;
-                  numVal = n;
-                }
+            if (/^-?\d+(\.\d+)?$/.test(cleanNumStr)) {
+              const n = Number(cleanNumStr);
+              if (Number.isFinite(n) && !isNaN(n) && Math.abs(n) < 1e15) {
+                isNumeric = true;
+                numVal = n;
               }
             }
           }
@@ -259,13 +265,20 @@
           if (isNumeric && numVal !== null) {
             cell.value = numVal;
             cell.alignment = { vertical: 'middle', horizontal: 'right' };
-            if (Number.isInteger(numVal)) {
-              cell.numFmt = '#,##0';
+            if (isCurrencyCol) {
+              cell.numFmt = '$ #,##0.00';
+            } else if (Number.isInteger(numVal)) {
+              cell.numFmt = '0'; // Sin separadores de miles
             } else {
-              cell.numFmt = '#,##0.00';
+              cell.numFmt = '0.00'; // Sin separadores de miles
             }
           } else {
-            cell.value = (rawVal === null || rawVal === undefined) ? "" : rawVal;
+            // Guardar como TEXTO EXACTO sin formato de miles ni puntos
+            cell.value = strVal;
+            cell.numFmt = '@';
+            if (isCodeOrIdCol && !/descripcion|motivo|texto|comentario|nombre|ref\.cliente/i.test(hClean)) {
+              cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
           }
 
           // Resaltado de color en Caract.planif.nec.

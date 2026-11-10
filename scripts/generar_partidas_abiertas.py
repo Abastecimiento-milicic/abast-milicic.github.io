@@ -193,8 +193,23 @@ def build_partidas_abiertas(custom_dir=None, verbose=True):
 
         merged['OPERADOR OC'] = merged.apply(get_op_fallback, axis=1)
 
-    # Convertir CONCATENA a numérico limpio para exportar
-    merged['CONCATENA'] = pd.to_numeric(merged['CONCATENA'], errors='coerce')
+    # Asegurar que códigos y números largos (Documento compras, Posición, CONCATENA) sean texto limpio sin puntos ni notación científica
+    def to_clean_str_code(v):
+        if pd.isna(v) or v is None:
+            return ""
+        try:
+            return str(int(round(float(v))))
+        except Exception:
+            return str(v).strip()
+
+    if 'Documento compras' in merged.columns:
+        merged['Documento compras'] = merged['Documento compras'].apply(to_clean_str_code)
+    if 'Posición' in merged.columns:
+        merged['Posición'] = merged['Posición'].apply(to_clean_str_code)
+    if 'CONCATENA' in merged.columns:
+        merged['CONCATENA'] = merged['CONCATENA'].apply(to_clean_str_code)
+    if 'Nº documento' in merged.columns:
+        merged['Nº documento'] = merged['Nº documento'].apply(to_clean_str_code)
 
     # Orden exacto de columnas para garantizar consistencia total
     desired_cols = [

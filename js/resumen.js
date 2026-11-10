@@ -1745,6 +1745,22 @@
       rowAcumAT.style.background = isAcumGood ? "#f0fdf4" : "#fef2f2";
     }
 
+    // Actualizar anillo radial y etiqueta de objetivo para Acumulado
+    const radAcum = document.getElementById("res_radial_circle_acum");
+    if (radAcum) {
+      const pAcum = Math.max(0, Math.min(100, (mLTM.pctAt * 100)));
+      const offsetAcum = 188.5 * (1 - (pAcum / 100));
+      radAcum.style.strokeDashoffset = offsetAcum;
+      radAcum.style.stroke = isAcumGood ? "#0f766e" : "#dc2626";
+    }
+    const tagAcumStatus = document.getElementById("res_tagAcumStatus");
+    if (tagAcumStatus) {
+      tagAcumStatus.textContent = isAcumGood ? "En Objetivo" : "Bajo Objetivo";
+      tagAcumStatus.style.background = isAcumGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
+      tagAcumStatus.style.color = isAcumGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
+      tagAcumStatus.style.borderColor = isAcumGood ? "var(--success-border, #ccfbf1)" : "var(--danger-border, #fecaca)";
+    }
+
     // FUERA DE TIEMPO: Naranja (#ea580c)
     setText("res_cumplAcumFTpct", fmtPct01(mLTM.pctFt));
     setText("res_cumplAcumFTqty", fmtInt(mLTM.ft));
@@ -1828,6 +1844,22 @@
       rowCurrAT.style.background = isCurrGood ? "#f0fdf4" : "#fef2f2";
     }
 
+    // Actualizar anillo radial y etiqueta de objetivo para Período Seleccionado
+    const radCurr = document.getElementById("res_radial_circle_curr");
+    if (radCurr) {
+      const pCurr = Math.max(0, Math.min(100, (mCurr.pctAt * 100)));
+      const offsetCurr = 188.5 * (1 - (pCurr / 100));
+      radCurr.style.strokeDashoffset = offsetCurr;
+      radCurr.style.stroke = isCurrGood ? "#0f766e" : "#dc2626";
+    }
+    const tagCurrStatus = document.getElementById("res_tagCurrStatus");
+    if (tagCurrStatus) {
+      tagCurrStatus.textContent = isCurrGood ? "En Objetivo" : "Bajo Objetivo";
+      tagCurrStatus.style.background = isCurrGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
+      tagCurrStatus.style.color = isCurrGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
+      tagCurrStatus.style.borderColor = isCurrGood ? "var(--success-border, #ccfbf1)" : "var(--danger-border, #fecaca)";
+    }
+
     // FT: Naranja (#ea580c)
     setText("res_cumplFTpct", fmtPct01(mCurr.pctFt));
     setText("res_cumplFTqty", fmtInt(mCurr.ft));
@@ -1888,42 +1920,32 @@
     });
 
     const pctAtData = [];
-    const pctAtAcumData = [];
-    const pctFtData = [];
-
-    let runAt = 0;
-    let runTot = 0;
 
     months.forEach(m => {
       const s = monthStats[m];
       const pAt = s.tot ? +((s.at / s.tot) * 100).toFixed(1) : 0;
-      const pFt = s.tot ? +((s.ft / s.tot) * 100).toFixed(1) : 0;
-      runAt += s.at;
-      runTot += s.tot;
-      const pAcum = runTot ? +((runAt / runTot) * 100).toFixed(1) : 0;
-
       pctAtData.push(pAt);
-      pctAtAcumData.push(pAcum);
-      pctFtData.push(pFt);
     });
 
+    // Configuración idéntica a la Imagen 2 de referencia (% AT vs Meta 78%)
     chartTendCumplInstance.setOption({
+      backgroundColor: "transparent",
       animation: true,
       animationDuration: 400,
-      grid: { left: 14, right: 14, top: 8, bottom: 18, containLabel: false },
+      grid: { left: 34, right: 30, top: 16, bottom: 20, containLabel: false },
       tooltip: {
         trigger: "axis",
         confine: true,
         backgroundColor: "rgba(15, 23, 42, 0.94)",
         borderColor: "#334155",
         borderWidth: 1,
-        padding: [5, 8],
-        textStyle: { color: "#ffffff", fontSize: 10.5 },
+        padding: [6, 10],
+        textStyle: { color: "#ffffff", fontSize: 11 },
         formatter: (params) => {
           if (!params || !params.length) return "";
           const name = params[0].name || "";
-          const lines = params.map(p => `${p.marker} ${p.seriesName}: <b>${String(p.value).replace(".", ",")}%</b>`);
-          return `<b>Período ${name}</b><br/>` + lines.join("<br/>");
+          let lines = params.map(p => `${p.marker} ${p.seriesName}: <b>${String(p.value).replace(".", ",")}%</b>`);
+          return `<div style="font-weight:700;margin-bottom:3px;">Período ${name}</div>` + lines.join("<br/>");
         }
       },
       xAxis: {
@@ -1934,7 +1956,8 @@
         axisTick: { show: false },
         axisLabel: {
           show: true,
-          fontSize: 8.5,
+          fontSize: 9.5,
+          fontWeight: 600,
           color: "#64748b",
           interval: 0,
           hideOverlap: true
@@ -1942,69 +1965,52 @@
       },
       yAxis: {
         type: "value",
-        min: 0,
-        max: 100,
-        splitLine: { show: true, lineStyle: { color: "#f1f5f9", type: "dashed" } },
-        axisLabel: { show: false },
+        min: value => Math.max(0, Math.min(65, Math.floor((value.min - 5) / 5) * 5)),
+        max: value => Math.min(100, Math.max(95, Math.ceil((value.max + 5) / 5) * 5)),
+        interval: 10,
+        splitLine: { show: true, lineStyle: { color: "#f1f5f9" } },
+        axisLabel: {
+          show: true,
+          formatter: "{value}%",
+          color: "#64748b",
+          fontSize: 9.5
+        },
         axisLine: { show: false },
         axisTick: { show: false }
       },
       series: [
         {
-          name: "% AT",
+          name: "%AT Real",
           type: "line",
           smooth: 0.35,
-          symbol: "none",
-          showSymbol: false,
-          label: { show: false },
-          lineStyle: { width: 2.2, color: "#16a34a" },
-          itemStyle: { color: "#16a34a" },
+          symbol: "circle",
+          symbolSize: 6,
+          showSymbol: true,
+          lineStyle: { width: 2.6, color: "#0f766e" },
+          itemStyle: { color: "#0f766e", borderWidth: 2, borderColor: "#ffffff" },
           areaStyle: {
             color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(22, 163, 74, 0.18)" },
-              { offset: 1, color: "rgba(22, 163, 74, 0.02)" }
+              { offset: 0, color: "rgba(15, 118, 110, 0.18)" },
+              { offset: 1, color: "rgba(15, 118, 110, 0.0)" }
             ])
           },
           markLine: {
+            symbol: ["none", "none"],
             silent: true,
-            symbol: "none",
-            label: {
-              show: true,
-              position: "insideEndTop",
-              formatter: "Obj 78%",
-              fontSize: 8,
-              fontWeight: 600,
-              color: "rgba(100, 116, 139, 0.85)",
-              backgroundColor: "rgba(255, 255, 255, 0.65)",
-              padding: [0, 2],
-              borderRadius: 2
-            },
-            lineStyle: { color: "rgba(100, 116, 139, 0.55)", type: "dashed", width: 1.1 },
-            data: [{ yAxis: 78 }]
+            data: [{
+              yAxis: 78,
+              label: {
+                show: true,
+                formatter: "Meta 78%",
+                position: "insideEndTop",
+                color: "#0f766e",
+                fontSize: 9.5,
+                fontWeight: 700
+              },
+              lineStyle: { type: "dashed", color: "#0f766e", width: 1.5 }
+            }]
           },
           data: pctAtData
-        },
-        {
-          name: "% AT Acum.",
-          type: "line",
-          smooth: 0.35,
-          symbol: "none",
-          showSymbol: false,
-          label: { show: false },
-          lineStyle: { width: 2.2, color: "#7c3aed" },
-          itemStyle: { color: "#7c3aed" },
-          data: pctAtAcumData
-        },
-        {
-          name: "% FT",
-          type: "line",
-          smooth: 0.35,
-          symbol: "none",
-          showSymbol: false,
-          label: { show: false },
-          lineStyle: { width: 2, color: "#f59e0b" },
-          itemStyle: { color: "#f59e0b" },
-          data: pctFtData
         }
       ]
     }, true);

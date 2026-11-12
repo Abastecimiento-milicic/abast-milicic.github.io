@@ -6,11 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-# Evita conflictos 409 en Azure esperando despliegues previos si se hace un nuevo push
-concurrency:
-  group: azure-deploy
-  cancel-in-progress: false
-
 jobs:
   deploy:
     runs-on: ubuntu-latest

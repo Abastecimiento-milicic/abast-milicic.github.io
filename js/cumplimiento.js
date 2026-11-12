@@ -711,6 +711,7 @@
     if (!chartMes) chartMes = echarts.init(el, null, { renderer: "canvas" });
 
     if (months.length === 0) {
+      chartMes.clear();
       chartMes.setOption({
         title: {
           show: true,
@@ -719,7 +720,8 @@
           top: "middle",
           textStyle: { color: "#64748b", fontSize: 13, fontWeight: "normal" }
         },
-        xAxis: { data: [] },
+        xAxis: { show: false, type: "category", data: [] },
+        yAxis: { show: false, type: "value" },
         series: []
       }, true);
       return;
@@ -1248,6 +1250,7 @@
     if (!chartTendencia) chartTendencia = echarts.init(el, null, { renderer: "canvas" });
 
     if (months.length === 0) {
+      chartTendencia.clear();
       chartTendencia.setOption({
         title: {
           show: true,
@@ -1256,7 +1259,8 @@
           top: "middle",
           textStyle: { color: "#64748b", fontSize: 13, fontWeight: "normal" }
         },
-        xAxis: { data: [] },
+        xAxis: { show: false, type: "category", data: [] },
+        yAxis: { show: false, type: "value" },
         series: []
       }, true);
       return;

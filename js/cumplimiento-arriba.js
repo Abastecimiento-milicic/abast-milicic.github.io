@@ -444,6 +444,7 @@
 
     if (months.length === 0) {
       if (chartMes) {
+        chartMes.clear();
         chartMes.setOption({
           title: {
             show: true,
@@ -452,11 +453,13 @@
             top: "middle",
             textStyle: { color: "#64748b", fontSize: 13, fontWeight: "normal" }
           },
-          xAxis: { data: [] },
+          xAxis: { show: false, type: "category", data: [] },
+          yAxis: { show: false, type: "value" },
           series: []
         }, true);
       }
       if (chartTendencia) {
+        chartTendencia.clear();
         chartTendencia.setOption({
           title: {
             show: true,
@@ -465,7 +468,8 @@
             top: "middle",
             textStyle: { color: "#64748b", fontSize: 13, fontWeight: "normal" }
           },
-          xAxis: { data: [] },
+          xAxis: { show: false, type: "category", data: [] },
+          yAxis: { show: false, type: "value" },
           series: []
         }, true);
       }

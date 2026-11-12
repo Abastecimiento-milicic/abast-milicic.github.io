@@ -50,10 +50,23 @@
   function parseDateAny(s) {
     const t = clean(s);
     if (!t) return null;
+
+    if (/^\d{4,5}$/.test(t)) {
+      const serial = parseInt(t, 10);
+      if (serial > 30000 && serial < 60000) {
+        const utcDays = serial - 25569;
+        const ms = utcDays * 86400 * 1000;
+        const d = new Date(ms);
+        return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+      }
+    }
+
     let m = t.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
     if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+
     m = t.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
     if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+
     return null;
   }
 

@@ -66,9 +66,44 @@
     }
 
     // Network fetch
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`No pude abrir ${url} (HTTP ${resp.status})`);
-    const data = await resp.text();
+    let resp = null;
+    try {
+      resp = await fetch(url);
+    } catch (_) {
+      resp = null;
+    }
+
+    // Fallback si la subcarpeta con espacios falla (404, error, etc.)
+    if (!resp || !resp.ok) {
+      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, 'data/').replace(/data\/data [^/]+\//i, 'data/');
+      if (fallbackUrl !== url) {
+        console.warn([cache-utils] No se pudo abrir , probando fallback en );
+        try {
+          const respFb = await fetch(fallbackUrl);
+          if (respFb.ok) resp = respFb;
+        } catch (_) {}
+      }
+    }
+
+    if (!resp || !resp.ok) throw new Error(No pude abrir  (HTTP ));
+    let data = await resp.text();
+
+    // Fallback si el servidor devolvio HTML (404 disfrazado o login de SPA)
+    if (data.trim().startsWith('<') && (url.includes('/data%20') || url.includes('/data '))) {
+      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, 'data/').replace(/data\/data [^/]+\//i, 'data/');
+      if (fallbackUrl !== url) {
+        console.warn([cache-utils]  devolvio HTML en vez de datos, probando fallback en );
+        try {
+          const respFb = await fetch(fallbackUrl);
+          if (respFb.ok) {
+            const dataFb = await respFb.text();
+            if (!dataFb.trim().startsWith('<')) {
+              data = dataFb;
+            }
+          }
+        } catch (_) {}
+      }
+    }
 
     // Store in cache (fire-and-forget)
     try {

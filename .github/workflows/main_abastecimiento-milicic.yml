@@ -14,7 +14,21 @@ jobs:
       # 1. Descarga directo tus archivos del repositorio (incluyendo los CSV nuevos)
       - uses: actions/checkout@v4
 
-      # 2. Sube los archivos directo a producción usando el Perfil de Publicación
+      # 2. Libera posibles bloqueos huérfanos de Kudu (error 409 Conflict)
+      - name: Clear Kudu deployment locks
+        env:
+          PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        run: |
+          USER=$(echo "$PUBLISH_PROFILE" | grep -o 'userName="[^"]*"' | head -n 1 | cut -d'"' -f2)
+          PASS=$(echo "$PUBLISH_PROFILE" | grep -o 'userPWD="[^"]*"' | head -n 1 | cut -d'"' -f2)
+          if [ -n "$USER" ] && [ -n "$PASS" ]; then
+            echo "Liberando posibles bloqueos de despliegue en Kudu..."
+            curl -k -s -X DELETE -u "$USER:$PASS" "https://abastecimiento-milicic.scm.azurewebsites.net/api/vfs/site/locks/deployment.lock" || true
+            curl -k -s -X DELETE -u "$USER:$PASS" "https://abastecimiento-milicic.scm.azurewebsites.net/api/vfs/site/locks/status.lock" || true
+            curl -k -s -X DELETE -u "$USER:$PASS" "https://abastecimiento-milicic.scm.azurewebsites.net/api/vfs/locks/deployment.lock" || true
+          fi
+
+      # 3. Sube los archivos directo a producción usando el Perfil de Publicación
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3

@@ -2,7 +2,7 @@
   /* ============================
      DEMORAS - CONFIG
   ============================ */
-  const csvUrl = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+  const csvUrl = "data/data CUMPLIMIENTO/CUMPLIMIENTO_OPTIMIZADO.csv";
   const DELIM = ";";
 
   const CLIENT_CANDIDATES = ["CLIENTE", "CLIENTE / OBRA", "CLIENTE NRO.", "OBRA", "ALMACEN", "ALMACÉN"];

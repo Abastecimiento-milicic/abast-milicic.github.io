@@ -44,7 +44,7 @@
      CONFIG (Multi-Sector: Abastecimiento / Compras)
   ============================ */
   const SECTOR_CSV_URLS = {
-    abastecimiento: "data/CUMPLIMIENTO_OPTIMIZADO.csv",
+    abastecimiento: "data/data CUMPLIMIENTO/CUMPLIMIENTO_OPTIMIZADO.csv",
     compras: "data - compras/R1 - REPORTE CUMPLIMIENTO COMPRAS ACUMULADO.csv", almacen: "data - almacen/ALMACEN.csv", sede: "data - sede/CUMPLIMIENTO_SEDE.csv", sede_reap: "data - sede/R1 - REPORTE CUMPLIMIENTO REAP ACUMULADO.csv", sede_pi: "data - sede/R1 - REPORTE CUMPLIMIENTO PI ACUMULADO.csv"
   };
   let currentSector = "abastecimiento";

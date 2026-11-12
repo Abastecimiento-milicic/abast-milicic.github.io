@@ -668,7 +668,7 @@
     }
 
     async function loadCsv() {
-      const csvUrl = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+      const csvUrl = "data/data CUMPLIMIENTO/CUMPLIMIENTO_OPTIMIZADO.csv";
       try {
         let text = "";
         if (window.fetchWithCache) {

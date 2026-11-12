@@ -10,8 +10,8 @@
 (function () {
   "use strict";
 
-  const CSV_ARRIBA_URL = "data/Base_Final_365_372.csv";
-  const XLSX_ARRIBA_URL = "data/Base_Final_365_372.xlsx";
+  const CSV_ARRIBA_URL = "data/data CUMPLIMIENTO/Base_Final_365_372.csv";
+  const XLSX_ARRIBA_URL = "data/data CUMPLIMIENTO/Base_Final_365_372.xlsx";
   const TARGET_OBRAS = ["00365", "00372", "365", "372"];
 
   let isArribaActive = false;

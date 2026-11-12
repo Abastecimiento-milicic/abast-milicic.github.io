@@ -15,12 +15,12 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261110_142156" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261110_142156" />
-  <link rel="stylesheet" href="css/analisis-mm.css?v=20261110_142156" />
-  <link rel="stylesheet" href="css/demoras.css?v=20261110_142156" />
-  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261110_142156" />
-  <link rel="stylesheet" href="css/control-emrf.css?v=20261110_142156" />
+  <link rel="stylesheet" href="css/base.css?v=20261112_121239" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261112_121239" />
+  <link rel="stylesheet" href="css/analisis-mm.css?v=20261112_121239" />
+  <link rel="stylesheet" href="css/demoras.css?v=20261112_121239" />
+  <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261112_121239" />
+  <link rel="stylesheet" href="css/control-emrf.css?v=20261112_121239" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -215,9 +215,11 @@
       color: white;
     }
 
-    .tab-panel {
+        .tab-panel {
       width: 100%;
     }
+
+    
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -297,12 +299,13 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
-
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
-          <div class="st-filters-actions">
-            <button id="cumpl_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="cumpl_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros — Cumplimiento', `
               <h4>Cliente / Obra</h4>
               <p>Filtrá los pedidos por el nombre de la obra o cliente. Podés seleccionar varios con <strong>Ctrl + clic</strong>.</p>
@@ -360,14 +363,16 @@
 
           <hr class="st-divider" />
 
-          <!-- Botón Medir Cumplimiento Arriba -->
-          <div id="cumpl_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
-            <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
-              🏔️ Medir cumplimiento arriba
-            </button>
-            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
-              Obras 365 y 372 (año 2026)
+          <!-- Interruptor Toggle: Medir Cumplimiento Arriba -->
+          <div id="cumpl_arribaWrap" style="width: 100%;">
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <span class="toggle-title">Medición Arriba</span>
+                <span class="toggle-desc">Mina Obras 365 y 372 (2026)</span>
+              </div>
+              <div class="switch-ui" id="cumpl_switchArriba" onclick="window.toggleCumplArribaSwitch()" title="Alternar entre Base y Mina"></div>
             </div>
+            <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="display: none;" title="Alternar entre Base y Mina"></button>
           </div>
 
           <!-- Tarjeta Pedidos Incompletos -->
@@ -684,11 +689,13 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
-
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
-          <div class="st-filters-actions">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="mm_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetMMFilters()" title="Restablecer filtros">Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros y Disponibilidad — Análisis MM', `
               <h4>Cliente (Almacén)</h4>
               <p>Seleccioná uno o varios almacenes para filtrar.</p>
@@ -869,10 +876,12 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
-
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <button id="dem_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetDemorasFilters()" title="Restablecer filtros">Restablecer</button>
         </div>
 
         <div class="st-filters-stack">
@@ -1027,8 +1036,18 @@
         <div class="loading-text">Cargando servicios...</div>
       </div>
 
-      <div class="topbar-badge" style="margin-bottom: 14px; font-size: 0.82rem; font-weight: 500; line-height: 1.45; display: block; padding: 8px 14px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background-color: #ea580c; color: #fff;">
-        ℹ️ Este reporte contempla las VA tipo <strong>ZPAN</strong> y <strong>ZPAI</strong> de clientes (obras) cuyo GC es <strong>24, 25, 26, 16 ó 04</strong>, y posiciones con Tipo de Ítem <strong>"SERVICIOS"</strong> (aun si pertenecen a otro GC). No se muestran los servicios ya finalizados (sin cantidades pendientes de recepción y con fecha vencida).
+      <!-- Banner Informativo Estilo SaaS -->
+      <div class="serv-notice-banner">
+        <div class="serv-notice-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="serv-notice-text">
+          Este reporte contempla las VA tipo <strong>ZPAN</strong> y <strong>ZPAI</strong> de clientes (obras) cuyo GC es <strong>24, 25, 26, 16 ó 04</strong>, y posiciones con Tipo de Ítem <strong>"SERVICIOS"</strong> (aun si pertenecen a otro GC). No se muestran los servicios ya finalizados (sin cantidades pendientes de recepción y con fecha vencida).
+        </div>
       </div>
 
       <aside class="st-sidebar">
@@ -1045,6 +1064,9 @@
 
         <div class="st-filters-header">
           <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+          <div class="st-filters-actions">
+            <button id="serv_btnClearFilters" class="btn-clear" onclick="window.resetServiciosFilters()" title="Restablecer todos los filtros">🔄 Limpiar</button>
+          </div>
         </div>
 
         <div class="st-filters-stack">
@@ -1061,21 +1083,30 @@
               <span id="serv_kpiTotal" class="kpi-mini-value">0</span>
               <span class="kpi-mini-label">Servicios Seleccionados</span>
             </div>
-            <button id="serv_btnDownloadSelection" class="btn" style="width: 100%;">⬇ Descargar Selección</button>
+            <button id="serv_btnDownloadSelection" class="btn" style="width: 100%;">📥 Descargar Selección</button>
           </div>
         </div>
       </aside>
 
-      <section class="panel">
-        <div class="panel-title">RESUMEN DE PEDIDOS POR ESTADO<span id="serv_activeFiltersSummary" class="st-active-filters-summary"></span></div>
-        <div class="panel-body" style="padding: 20px; overflow-x: auto;">
+      <section class="panel serv-table-panel">
+        <div class="panel-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>RESUMEN DE PEDIDOS POR ESTADO</span>
+            <span id="serv_activeFiltersSummary" class="st-active-filters-summary"></span>
+          </div>
+        </div>
+        <div class="panel-body" style="padding: 18px; overflow-x: auto;">
           <table id="serv_tablaResumen" class="serv-resumen-table">
             <thead>
               <tr>
                 <th class="sortable" data-sort="estadoItem" title="Ordenar por Estado Item">ESTADO ITEM <span id="serv_sort_estadoItem">↕</span></th>
-                <th class="sortable" data-sort="estadoServicio" title="Ordenar por Estado Servicio">Estado Servicio <span id="serv_sort_estadoServicio">↕</span></th>
+                <th class="sortable" data-sort="estadoServicio" title="Ordenar por Estado Servicio">ESTADO SERVICIO <span id="serv_sort_estadoServicio">↕</span></th>
                 <th class="sortable" data-sort="count" title="Ordenar por Cantidad" style="text-align: right;">CANTIDAD DE PEDIDOS <span id="serv_sort_count">▼</span></th>
-                <th style="text-align: center; width: 130px;">ACCIONES</th>
+                <th style="text-align: center; width: 140px;">ACCIONES</th>
               </tr>
             </thead>
             <tbody id="serv_resumenBody"></tbody>
@@ -1097,10 +1128,13 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
 
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <button id="tiempos_btnReset" class="sidebar-reset-btn" onclick="window.resetTiemposFilters()" title="Restablecer filtros">Restablecer</button>
         </div>
 
         <div class="st-filters-stack">
@@ -1293,7 +1327,16 @@
           </div>
           <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
         </div>
-        <h3 class="st-ctrl-title">Panel de Control</h3>
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="emrf_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
+            <button id="emrf_btnHelp" class="help-btn" title="Ayuda y Guía Operativa de la Cuenta EM/RF">ℹ</button>
+          </div>
+        </div>
 
         <!-- 1. Base de Datos / Sociedad (como en Streamlit) -->
         <div class="st-field-group" style="margin-top: 4px;">
@@ -1311,13 +1354,7 @@
 
         <hr class="st-divider" />
 
-        <div class="st-filters-header">
-          <h4 class="st-filters-title">Filtros de Búsqueda</h4>
-          <div class="st-filters-actions">
-            <button id="emrf_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
-            <button id="emrf_btnHelp" class="help-btn" title="Ayuda y Guía Operativa de la Cuenta EM/RF">ℹ</button>
-          </div>
-        </div>
+
 
         <div class="st-filters-stack">
           <!-- Búsqueda rápida por Pedido o Proveedor -->
@@ -1445,7 +1482,7 @@
         <div class="st-filters-header">
           <h4 class="st-filters-title">Filtros de Búsqueda</h4>
           <div class="st-filters-actions">
-            <button id="resumen_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🧹 Limpiar</button>
+            <button id="resumen_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🔄 Limpiar</button>
             <button class="help-btn" onclick="openHelp('Filtros — Resumen Ejecutivo', `
               <h4>Cliente / Obra</h4>
               <p>Filtrá el resumen por obra o almacén para visualizar el estado de stock y el cumplimiento de pedidos correspondiente.</p>
@@ -1511,372 +1548,386 @@
         </div>
       </aside>
 
-      <!-- GRILLA EJECUTIVA 5 BLOQUES COMPACTA EN 1 PANTALLA (Izquierda 2fr: div1 + div2 | Derecha 3fr: div3 + div4 + div5) -->
-      <div class="res-bento-grid">
+      <!-- ÁREA DE TRABAJO BENTO GRID (Basado 100% en Prototipo) -->
+      <div class="main-workspace">
+        <!-- Span oculto para compatibilidad con scripts existentes -->
+        <span id="resumen_lblObra" style="display: none;">Todas las Obras</span>
 
-        <!-- COLUMNA IZQUIERDA (2fr): .div1 (ANÁLISIS MM) + .div2 (DEMORAS) -->
-        <div class="res-col-left">
+        <!-- BENTO MASTER GRID -->
+        <div class="bento-master-grid">
 
-          <!-- .div1: 1. ANÁLISIS MM -->
-          <section class="panel res-div1">
-            <div class="panel-title res-panel-title">
-              <span>📦 1. ANÁLISIS MM — DISPONIBILIDAD Y PLANIFICACIÓN</span>
-            </div>
+          <!-- COLUMNA IZQUIERDA: 1. MM + 3. DEMORAS -->
+          <div class="bento-column">
 
-            <div class="panel-body res-panel-body" style="display: flex; flex-direction: column; gap: 5px;">
-              <!-- 1.1 Disponibilidad General -->
-              <div class="res-subcard">
-                <div class="res-subcard-header">
-                  <span>Disponibilidad:</span>
+            <!-- 1. DISPONIBILIDAD & PLANIFICACIÓN MM -->
+            <section class="bento-card res-div1">
+              <div class="bento-header">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                  </div>
+                  <h3 class="bento-title">1. Disponibilidad & Materiales</h3>
                 </div>
-                <ul class="res-metric-list">
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📦</span>
-                    <strong>Materiales:</strong>
-                    <span id="res_txtTotal" class="res-val" style="color: #2563eb;">-</span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">✅</span>
-                    <strong>Disponible:</strong>
-                    <span id="res_txtDisp" class="res-val" style="color: #16a34a;">-</span>
-                  </li>
-
-                  <li id="res_rowDispPct" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                    <span class="res-ico">📈</span>
-                    <strong>Disp. (%):</strong>
-                    <span id="res_txtPct" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">· Obj 90%</span>
-                  </li>
-                </ul>
+                <span class="bento-action-badge">Inventario Activo</span>
               </div>
 
-              <!-- 1.2 Clasificación por Estado de Planificación + Mini Gráfico Tendencia Evolución MM abajo a la derecha -->
-              <div class="res-subcard">
-                <div class="res-subcard-header">
-                  <span>Clasificación:</span>
+              <!-- Radial Hero KPI de Disponibilidad General -->
+              <div class="kpi-radial-hero">
+                <div class="radial-circle-box">
+                  <svg viewBox="0 0 70 70">
+                    <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
+                    <circle class="radial-circle-progress" id="res_radial_circle" cx="35" cy="35" r="30"></circle>
+                  </svg>
+                  <div class="radial-value-center" id="res_txtPct">-</div>
                 </div>
-                <ul class="res-metric-list" style="margin-bottom: 4px !important;">
-                  <li id="res_rowStockNulo" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 1.5px solid #dc2626; background: #fef2f2;">
-                    <div style="display: flex; align-items: center;">
-                      <span class="res-ico">🔴</span>
-                      <strong>Stock Nulo:</strong>
+                <div class="kpi-hero-details">
+                  <span class="kpi-hero-label">Disponibilidad General</span>
+                  <div class="kpi-hero-status">
+                    <span class="kpi-hero-tag" id="res_tagDispStatus">En Rango</span>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">Obj: 90%</span>
+                  </div>
+                  <span class="kpi-hero-sub"><strong id="res_txtDisp">-</strong> de <strong id="res_txtTotal">-</strong> materiales con disponibilidad inmediata.</span>
+                </div>
+              </div>
+
+              <!-- Métricas Secundarias en Grid -->
+              <div class="metrics-card-grid">
+                <div class="stat-pill-card">
+                  <div class="stat-header-row">
+                    <span class="stat-title">Total Materiales</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  </div>
+                  <span class="stat-value" id="res_txtTotal_card">-</span>
+                  <span class="stat-hint">Ítems catalogados</span>
+                </div>
+
+                <div class="stat-pill-card danger-card">
+                  <div class="stat-header-row">
+                    <span class="stat-title">Stock Nulo</span>
+                    <span style="font-size: 0.65rem; background: #dc2626; color: white; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Crítico</span>
+                  </div>
+                  <span class="stat-value" id="res_txtNulo">-</span>
+                  <div id="res_wrapNulo" style="width: 100%;">
+                    <span class="stat-hint" id="res_txtNulo_sub">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Desglose de Planificación con barras sutiles -->
+              <div style="background: var(--bg-subtle); border-radius: var(--radius-md); padding: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.75rem;">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px; display: block;">Clasificación de Planificación</span>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                      <span style="color: var(--warning-text); font-weight: 600;">● Menor al Punto de Pedido</span>
+                      <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMenorPP">-</span>
                     </div>
-                    <div id="res_wrapNulo" style="width: 100%; padding-left: 12px;">
-                      <span id="res_txtNulo" class="res-val" style="color: #dc2626;">-</span>
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" id="res_barMenorPP" style="width: 0%; background: var(--warning);"></div>
                     </div>
-                  </li>
-                </ul>
+                  </div>
 
-                <div class="res-mm-bottom-grid">
-                  <ul class="res-metric-list">
-                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                      <span class="res-ico">🟡</span>
-                      <strong>Menor al PP:</strong>
-                      <span id="res_txtMenorPP" class="res-val" style="color: #d97706;">-</span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                      <span class="res-ico">🟢</span>
-                      <strong>Mayor al PP:</strong>
-                      <span id="res_txtMayorPP" class="res-val" style="color: #16a34a;">-</span>
-                    </li>
-
-                    <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                      <span class="res-ico">🟠</span>
-                      <strong>Mayor a Stock Máx:</strong>
-                      <span id="res_txtMayorMax" class="res-val" style="color: #ea580c;">-</span>
-                    </li>
-                  </ul>
-
-                  <div class="res-subcard res-mini-chart-card">
-                    <div class="res-subcard-header">
-                      <span>📈 Tendencia Evolución</span>
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                      <span style="color: var(--success-text); font-weight: 600;">● Mayor al Punto de Pedido</span>
+                      <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMayorPP">-</span>
                     </div>
-                    <div id="res_chartEvolMM" class="res-mini-trend-box"></div>
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" id="res_barMayorPP" style="width: 0%; background: var(--success);"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                      <span style="color: #ea580c; font-weight: 600;">● Sobre Stock Máximo</span>
+                      <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMayorMax">-</span>
+                    </div>
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" id="res_barMayorMax" style="width: 0%; background: #ea580c;"></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
 
-          <!-- .div2: 3. DEMORAS -->
-          <section class="panel res-div2">
-            <div class="panel-title res-panel-title">
-              <span>⏱️ 3. DEMORAS</span>
-            </div>
-            <div class="panel-body res-panel-body" style="display: flex; flex-direction: column; flex: 1;">
-              <div class="res-subcard" style="display: flex; flex-direction: column; flex: 1;">
-                <div class="res-subcard-header">
-                  <span>Demora por Área</span>
-                  <span id="res_lblTotalAreas">-</span>
+              <!-- Sparkline MM -->
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Evolución de Stock</span>
+                  <span style="font-size: 0.68rem; color: #0f766e; font-weight: 700;">Tendencia</span>
                 </div>
-                <div id="res_chartAreas" style="width: 100%; height: 155px; min-height: 145px; flex: 1;"></div>
-              </div>
-            </div>
-          </section>
-
-        </div>
-
-        <!-- COLUMNA DERECHA (3fr): .div3 (CUMPLIMIENTO) + .div4 (TIEMPOS/PRIORIDAD) + .div5 (SERVICIOS) -->
-        <div class="res-col-right">
-
-          <!-- .div3: 2. CUMPLIMIENTO (Compacto en 2 columnas) -->
-          <section class="panel res-div3">
-            <div class="panel-title res-panel-title">
-              <span>🎯 2. CUMPLIMIENTO</span>
-            </div>
-
-            <div class="panel-body res-panel-body" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; align-items: start;">
-              <!-- 2.1 Acumulado Últimos 12 Meses -->
-              <div class="res-subcard">
-                <div class="res-subcard-header">
-                  <span id="res_cumplAcumTitle">Acumulado 12 Meses:</span>
-                  <span id="res_cumplAcumRango" style="font-size: 9.5px; font-weight: 800; color: #1d4ed8; text-transform: none; border: 1px solid #2563eb; background: #eff6ff; padding: 0px 4px; border-radius: 3px; display: none;"></span>
-                </div>
-                <ul class="res-metric-list">
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📦</span>
-                    <strong>COMPROMETIDOS:</strong>
-                    <span id="res_cumplAcumComprometidos" class="res-val" style="color: #2563eb;">-</span>
-                    <span class="res-note">— Total 12M</span>
-                  </li>
-
-                  <li id="res_cumplAcumRowAT" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                    <span class="res-ico">✅</span>
-                    <strong>A TIEMPO (AT):</strong>
-                    <span id="res_cumplAcumATpct" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplAcumATqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      <span style="color: #64748b; margin-left: 2px;">· Obj 78%</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">⏳</span>
-                    <strong>FUERA TIEMPO (FT):</strong>
-                    <span id="res_cumplAcumFTpct" class="res-val" style="color: #f59e0b;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplAcumFTqty" style="font-weight: 700; color: #0f172a;">-</span>
-                    </span>
-                  </li>
-
-                  <li id="res_cumplAcumRowNE" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #dc2626; background: #fef2f2;">
-                    <span class="res-ico">🚫</span>
-                    <strong>NO ENTREG. (NE):</strong>
-                    <span id="res_cumplAcumNEpct" class="res-val" style="color: #dc2626;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplAcumNEqty" style="font-weight: 700; color: #0f172a;">-</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📅</span>
-                    <strong>DEMORA PROM.:</strong>
-                    <span id="res_cumplAcumDemoraAvg" class="res-val" style="color: #ea580c;">-</span>
-                    <span class="res-note">— Prom. 12M</span>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- 2.2 Rendimiento Mensual -->
-              <div class="res-subcard">
-                <div class="res-subcard-header" style="gap: 6px;">
-                  <span>Período:</span>
-                  <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado">
-                    <span class="res-inline-mes-ico">📅</span>
-                    <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" aria-label="Seleccionar mes evaluado de cumplimiento">
-                      <option value="__ALL__">Todos los Meses</option>
-                    </select>
-                  </label>
-                  <span id="res_cumplMesLabel" style="display: none;"></span>
-                </div>
-                <ul class="res-metric-list">
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📦</span>
-                    <strong>COMPROMETIDOS:</strong>
-                    <span id="res_cumplComprometidos" class="res-val" style="color: #2563eb;">-</span>
-                    <span class="res-note">— Total período</span>
-                  </li>
-
-                  <li id="res_cumplRowAT" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #16a34a; background: #f0fdf4;">
-                    <span class="res-ico">✅</span>
-                    <strong>A TIEMPO (AT):</strong>
-                    <span id="res_cumplATpct" class="res-val" style="color: #16a34a;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplATqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      <span id="res_cumplATdiff" style="color: #16a34a; font-weight: 700; margin-left: 2px;">· - vs mes ant.</span>
-                      <span style="color: #64748b; margin-left: 2px;">· Obj 78%</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">⏳</span>
-                    <strong>FUERA TIEMPO (FT):</strong>
-                    <span id="res_cumplFTpct" class="res-val" style="color: #f59e0b;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplFTqty" style="font-weight: 700; color: #0f172a;">-</span>
-                      <span id="res_cumplFTdiff" style="color: #16a34a; font-weight: 700; margin-left: 2px;">· - vs mes ant.</span>
-                    </span>
-                  </li>
-
-                  <li id="res_cumplRowNE" style="display: flex; align-items: center; flex-wrap: wrap; border: 1.5px solid #dc2626; background: #fef2f2;">
-                    <span class="res-ico">🚫</span>
-                    <strong>NO ENTREG. (NE):</strong>
-                    <span id="res_cumplNEpct" class="res-val" style="color: #dc2626;">-</span>
-                    <span class="res-note">
-                      Cant: <span id="res_cumplNEqty" style="font-weight: 700; color: #0f172a;">-</span>
-                    </span>
-                  </li>
-
-                  <li style="display: flex; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0;">
-                    <span class="res-ico">📅</span>
-                    <strong>DEMORA PROM.:</strong>
-                    <span id="res_cumplDemoraAvg" class="res-val" style="color: #ea580c;">-</span>
-                    <span class="res-note">— Prom. período</span>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- 2.3 Mini Gráfico Tendencia de Cumplimiento -->
-              <div class="res-subcard res-mini-chart-card">
-                <div class="res-subcard-header" style="flex-wrap: wrap; gap: 4px;">
-                  <span>📈 Tendencia</span>
-                  <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 800; text-transform: none;">
-                    <span style="color: #16a34a;">● %AT</span>
-                    <span style="color: #7c3aed;">● %AT Acum</span>
-                    <span style="color: #f59e0b;">● %FT</span>
-                  </span>
-                </div>
-                <div id="res_chartTendenciaCumpl" class="res-mini-trend-box"></div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Fila combinada: 4. SERVICIOS (izq) y 5. CONTROL DE PARTIDAS (der) -->
-          <div class="res-row-serv-emrf">
-            <!-- .div5: 4. SERVICIOS (Compacto en tira horizontal de KPIs) -->
-            <section class="panel res-div5">
-              <div class="panel-title res-panel-title">
-                <span>🛠️ 4. SERVICIOS</span>
-                <span id="res_serv_total_badge" style="display: none;">-</span>
-              </div>
-              <div class="panel-body res-panel-body" style="padding: 5px 6px !important;">
-                <div class="res-serv-strip">
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
-                    <span class="res-serv-lbl">📋 Total</span>
-                    <span id="res_servTotal" class="res-serv-num" style="color: #2563eb;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: #f0fdf4; border-color: #86efac;">
-                    <span class="res-serv-lbl">🟢 En Curso</span>
-                    <span id="res_servEnCurso" class="res-serv-num" style="color: #16a34a;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL">
-                    <span class="res-serv-lbl">🟠 Recep.</span>
-                    <span id="res_servTotRecep" class="res-serv-num" style="color: #ea580c;">-</span>
-                  </div>
-                  <div id="res_servRowVencido" class="res-serv-pill res-has-tooltip" data-serv-cat="VENCIDOS" style="background: #fef2f2; border-color: #fca5a5;">
-                    <span class="res-serv-lbl">🔴 Vencidos</span>
-                    <span id="res_servVencido" class="res-serv-num" style="color: #dc2626;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER">
-                    <span class="res-serv-lbl">🟡 Próx.</span>
-                    <span id="res_servProxVencer" class="res-serv-num" style="color: #d97706;">-</span>
-                  </div>
-                  <div class="res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO">
-                    <span class="res-serv-lbl">🟣 Sin Trat.</span>
-                    <span id="res_servSinTrat" class="res-serv-num" style="color: #7c3aed;">-</span>
-                    <span id="res_servSinTratNote" style="display: none;"></span>
-                  </div>
-                </div>
+                <div id="res_chartEvolMM" style="width: 100%; height: 85px;"></div>
               </div>
             </section>
 
-            <!-- .div6: 5. CONTROL DE PARTIDAS (3 tarjetas + filtro inline de Vencimiento OC) -->
-            <section class="panel res-div6">
-              <div class="panel-title res-panel-title" style="gap: 5px; flex-wrap: wrap;">
-                <span>📑 5. PARTIDAS</span>
-                <span id="res_emrf_gc_badge" style="font-size: 8.5px; font-weight: 800; color: #0f766e; background: #ccfbf1; border: 1px solid #5eead4; padding: 0px 5px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">GC: C01, C07, C02</span>
-                <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar partidas por estado de vencimiento de OC">
-                  <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" aria-label="Filtrar OC vencidas, no vencidas o todas">
-                    <option value="VENCIDA" selected>🔴 OC VENCIDAS</option>
-                    <option value="NO_VENCIDA">🔵 OC NO VENCIDAS</option>
-                    <option value="__ALL__">📋 TODAS LAS OC</option>
-                  </select>
-                </label>
-              </div>
-              <div class="panel-body res-panel-body" style="padding: 5px 6px !important;">
-                <div class="res-serv-strip res-emrf-strip-3">
-                  <div class="res-serv-pill">
-                    <span class="res-serv-lbl">📋 Total</span>
-                    <span id="res_emrfTotal" class="res-serv-num" style="color: #2563eb;">-</span>
+            <!-- 3. DEMORAS -->
+            <section class="bento-card res-div2">
+              <div class="bento-header">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--danger);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
                   </div>
-                  <div class="res-serv-pill" style="background: #fffbeb; border-color: #fde68a;">
-                    <span class="res-serv-lbl">📦 Falta Fact.</span>
-                    <span id="res_emrfFaltaFact" class="res-serv-num" style="color: #d97706;">-</span>
-                  </div>
-                  <div class="res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
-                    <span class="res-serv-lbl">📄 Falta Recep.</span>
-                    <span id="res_emrfFaltaRecep" class="res-serv-num" style="color: #ea580c;">-</span>
-                  </div>
+                  <h3 class="bento-title">3. Demoras por Área Responsable</h3>
                 </div>
+                <span class="bento-action-badge" id="res_lblTotalAreas">-</span>
               </div>
+              <div id="res_chartAreas" class="chart-box-frame" style="height: 160px; width: 100%;"></div>
             </section>
+
           </div>
 
-          <!-- .div4: 6. TIEMPOS / PRIORIDAD (CONTROL) -->
-          <section class="panel res-div4">
-            <div class="panel-title res-panel-title">
-              <span>⏳ 6. TIEMPOS / PRIORIDAD</span>
-            </div>
-            <div class="panel-body res-panel-body">
-              <div class="res-subcard" style="background: #ffffff !important;">
-                <div class="res-subcard-header" style="flex-wrap: wrap; gap: 4px; margin-bottom: 4px !important;">
-                  <span style="display: inline-flex; align-items: center; gap: 4px;">
-                    <span>📊</span>
-                    <span>Porcentajes de Cumplimiento y Promedio de Días</span>
-                  </span>
-                  <span id="res_tiempos_rule_badge" style="font-size: 9px; font-weight: 800; color: #713f12; background: #fef08a; border: 1px solid #eab308; padding: 0px 6px; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase;">
-                    POCO TIEMPO TODAS LAS OBRAS
-                  </span>
-                </div>
-                <div style="width: 100%; overflow-x: hidden;">
-                  <table class="tiempos-table res-tiempos-compact">
-                    <thead>
-                      <tr>
-                        <th rowspan="3" class="th-row-header">Etiquetas de fila</th>
-                        <th rowspan="2" colspan="4" class="th-top-critico">CRITICO</th>
-                        <th colspan="8" class="th-top-sinprio">SIN PRIORIDAD</th>
-                      </tr>
-                      <tr>
-                        <th colspan="4" class="th-sub-poco">POCO TIEMPO</th>
-                        <th colspan="4" class="th-sub-normal">SIN PRIORIDAD</th>
-                      </tr>
-                      <tr>
-                        <th class="th-col-at">%AT</th>
-                        <th class="th-col-ft">%FT</th>
-                        <th class="th-col-ne">%NE</th>
-                        <th class="th-col-tot">%TOT</th>
+          <!-- COLUMNA DERECHA: 2. CUMPLIMIENTO + 4. SERVICIOS + 5. PARTIDAS + 6. TIEMPOS -->
+          <div class="bento-column">
 
-                        <th class="th-col-at">%AT</th>
-                        <th class="th-col-ft">%FT</th>
-                        <th class="th-col-ne">%NE</th>
-                        <th class="th-col-tot">%TOT</th>
-
-                        <th class="th-col-at">%AT</th>
-                        <th class="th-col-ft">%FT</th>
-                        <th class="th-col-ne">%NE</th>
-                        <th class="th-col-tot">%TOT</th>
-                      </tr>
-                    </thead>
-                    <tbody id="res_tiempos_tbody_pcts">
-                      <!-- Generado dinámicamente en js/resumen.js -->
-                    </tbody>
-                  </table>
+            <!-- 2. CUMPLIMIENTO -->
+            <section class="bento-card res-div3" style="height: auto !important; min-height: auto !important;">
+              <div class="bento-header">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--success);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                  </div>
+                  <h3 class="bento-title">2. Cumplimiento de Pedidos (Nivel de Servicio)</h3>
                 </div>
+                <span class="cumpl-meta-chip" style="background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border);">
+                  Obj: 78%
+                </span>
               </div>
+
+              <!-- Doble Tarjeta: Acumulado 12M vs Período Evaluado -->
+              <div class="cumpl-dual-container" style="gap: 0.5rem; margin-bottom: 0.5rem;">
+                
+                <!-- 12 Meses Acumulado: Tarjeta compacta tipo Radial Hero -->
+                <div class="cumpl-box" style="padding: 0.55rem 0.7rem; gap: 0.25rem;">
+                  <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0; background: transparent; border: none; gap: 0.65rem;">
+                    <div class="radial-circle-box" style="width: 54px; height: 54px; flex-shrink: 0;">
+                      <svg viewBox="0 0 70 70">
+                        <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
+                        <circle class="radial-circle-progress" id="res_radial_circle_acum" cx="35" cy="35" r="30"></circle>
+                      </svg>
+                      <div class="radial-value-center" id="res_cumplAcumATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
+                    </div>
+                    <div class="kpi-hero-details" style="min-width: 0;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; line-height: 1.1;">
+                        <span class="kpi-hero-label" id="res_cumplAcumTitle" style="font-size: 0.67rem; font-weight: 700; text-transform: uppercase;">Acumulado 12 Meses</span>
+                        <span id="res_cumplAcumRango" style="font-size: 0.60rem; color: var(--text-muted);">-</span>
+                      </div>
+                      <div class="kpi-hero-status" style="margin: 1px 0 2px 0; gap: 4px; line-height: 1;">
+                        <span class="kpi-hero-tag" id="res_tagAcumStatus" style="padding: 1px 4px; font-size: 0.65rem;">En Objetivo</span>
+                        <span style="font-size: 0.67rem; color: var(--text-muted);">Obj: 78%</span>
+                      </div>
+                      <span class="kpi-hero-sub" style="font-size: 0.67rem; line-height: 1.15;"><strong id="res_cumplAcumATqty">-</strong> de <strong id="res_cumplAcumComprometidos">-</strong> pedidos a tiempo.</span>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-top: 3px; padding-top: 3px; border-top: 1px solid var(--border-subtle); font-size: 0.65rem; line-height: 1.15;">
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">Fuera Tiempo</span>
+                      <span style="font-weight: 700; color: var(--warning-text);"><span id="res_cumplAcumFTpct">-</span> (<span id="res_cumplAcumFTqty">-</span>)</span>
+                    </div>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">No Entreg.</span>
+                      <span style="font-weight: 700; color: var(--danger-text);"><span id="res_cumplAcumNEpct">-</span> (<span id="res_cumplAcumNEqty">-</span>)</span>
+                    </div>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">Demora</span>
+                      <span style="font-weight: 700; color: var(--text-main);" id="res_cumplAcumDemoraAvg">-</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Período Evaluado: Tarjeta compacta tipo Radial Hero -->
+                <div class="cumpl-box" style="padding: 0.55rem 0.7rem; gap: 0.25rem;">
+                  <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0; background: transparent; border: none; gap: 0.65rem;">
+                    <div class="radial-circle-box" style="width: 54px; height: 54px; flex-shrink: 0;">
+                      <svg viewBox="0 0 70 70">
+                        <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
+                        <circle class="radial-circle-progress" id="res_radial_circle_curr" cx="35" cy="35" r="30"></circle>
+                      </svg>
+                      <div class="radial-value-center" id="res_cumplATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
+                    </div>
+                    <div class="kpi-hero-details" style="min-width: 0;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; line-height: 1.1;">
+                        <span class="kpi-hero-label" style="font-size: 0.67rem; font-weight: 700; text-transform: uppercase;">Período Seleccionado</span>
+                        <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado" style="cursor: pointer; margin: 0;">
+                          <select id="res_cumplInlineMesSelect" class="res-inline-mes-select" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 0 4px; border-radius: var(--radius-pill); font-size: 0.63rem; font-weight: 700; color: var(--brand); cursor: pointer;">
+                            <option value="__ALL__">Todos los Meses</option>
+                          </select>
+                        </label>
+                        <span id="res_cumplMesLabel" style="display: none;"></span>
+                      </div>
+                      <div class="kpi-hero-status" style="margin: 1px 0 2px 0; gap: 4px; line-height: 1;">
+                        <span class="kpi-hero-tag" id="res_tagCurrStatus" style="padding: 1px 4px; font-size: 0.65rem;">En Objetivo</span>
+                        <span style="font-size: 0.67rem; color: var(--text-muted);">Obj: 78%</span>
+                      </div>
+                      <span class="kpi-hero-sub" style="font-size: 0.67rem; line-height: 1.15;"><strong id="res_cumplATqty">-</strong> de <strong id="res_cumplComprometidos">-</strong> pedidos a tiempo.</span>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-top: 3px; padding-top: 3px; border-top: 1px solid var(--border-subtle); font-size: 0.65rem; line-height: 1.15;">
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">Fuera Tiempo</span>
+                      <span style="font-weight: 700; color: var(--warning-text);"><span id="res_cumplFTpct">-</span> (<span id="res_cumplFTqty">-</span>)</span>
+                    </div>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">No Entreg.</span>
+                      <span style="font-weight: 700; color: var(--danger-text);"><span id="res_cumplNEpct">-</span> (<span id="res_cumplNEqty">-</span>)</span>
+                    </div>
+                    <div>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">vs Mes Ant.</span>
+                      <span style="font-weight: 700; color: var(--success-text);" id="res_cumplATdiff">-</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Spline Chart Cumplimiento -->
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Curva de Evolución Mensual (% AT vs Meta)</span>
+                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.67rem; font-weight: 600;">
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 3px; background: #0f766e; border-radius: 2px;"></span> %AT</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 3px; background: #7c3aed; border-radius: 2px;"></span> %AT ACUM</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 0; border-top: 2px dashed #0f766e;"></span> Meta 78%</span>
+                  </div>
+                </div>
+                <div id="res_chartTendenciaCumpl" class="chart-box-frame" style="height: 145px; width: 100%;"></div>
+              </div>
+            </section>
+
+            <!-- SERVICIOS + PARTIDAS -->
+            <div class="services-dual-row res-row-serv-emrf">
+              
+              <!-- 4. SERVICIOS -->
+              <section class="bento-card res-div5" style="padding: 0.95rem;">
+                <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                  <div class="bento-title-group">
+                    <div class="bento-icon-wrapper" style="color: var(--brand);">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <h3 class="bento-title" style="font-size: 0.8rem;">4. Servicios</h3>
+                  </div>
+                  <span class="bento-action-badge" id="res_serv_total_badge">Activos</span>
+                </div>
+
+                <div class="service-stat-strip res-serv-strip">
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
+                    <span class="strip-lbl res-serv-lbl">Total</span>
+                    <span class="strip-val res-serv-num" id="res_servTotal" style="color: var(--brand);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: var(--success-bg); border-color: var(--success-border);">
+                    <span class="strip-lbl res-serv-lbl">En Curso</span>
+                    <span class="strip-val res-serv-num" id="res_servEnCurso" style="color: var(--success-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" id="res_servRowVencido" data-serv-cat="VENCIDOS" style="background: var(--danger-bg); border-color: var(--danger-border);">
+                    <span class="strip-lbl res-serv-lbl">Vencidos</span>
+                    <span class="strip-val res-serv-num" id="res_servVencido" style="color: var(--danger-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                    <span class="strip-lbl res-serv-lbl">Próx.</span>
+                    <span class="strip-val res-serv-num" id="res_servProxVencer" style="color: var(--warning-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL" style="display: none;">
+                    <span id="res_servTotRecep">0</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO" style="display: none;">
+                    <span id="res_servSinTrat">0</span>
+                    <span id="res_servSinTratNote"></span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- 5. CONTROL PARTIDAS -->
+              <section class="bento-card res-div6" style="padding: 0.95rem;">
+                <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                  <div class="bento-title-group">
+                    <div class="bento-icon-wrapper" style="color: var(--purple);">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <h3 class="bento-title" style="font-size: 0.8rem;">5. Control Partidas</h3>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <span class="bento-action-badge" id="res_emrf_gc_badge" style="background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border);">GC: C01, C07, C02</span>
+                    <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar OC" style="margin: 0;">
+                      <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" style="font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
+                        <option value="VENCIDA" selected>🔴 VENCIDAS</option>
+                        <option value="NO_VENCIDA">🔵 NO VENCIDAS</option>
+                        <option value="__ALL__">📋 TODAS</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="service-stat-strip res-serv-strip res-emrf-strip-3" style="grid-template-columns: repeat(3, 1fr);">
+                  <div class="strip-pill res-serv-pill">
+                    <span class="strip-lbl res-serv-lbl">Total</span>
+                    <span class="strip-val res-serv-num" id="res_emrfTotal" style="color: var(--brand);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                    <span class="strip-lbl res-serv-lbl">Falta Fact.</span>
+                    <span class="strip-val res-serv-num" id="res_emrfFaltaFact" style="color: var(--warning-text);">-</span>
+                  </div>
+                  <div class="strip-pill res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
+                    <span class="strip-lbl res-serv-lbl">Falta Recep.</span>
+                    <span class="strip-val res-serv-num" id="res_emrfFaltaRecep" style="color: #ea580c;">-</span>
+                  </div>
+                </div>
+              </section>
+
             </div>
-          </section>
+
+            <!-- 6. TIEMPOS / PRIORIDAD -->
+            <section class="bento-card res-div4">
+              <div class="bento-header" style="margin-bottom: 0.5rem; padding-bottom: 0.4rem;">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--warning);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </div>
+                  <h3 class="bento-title">6. Tiempos de Entrega & Prioridad de Pedidos</h3>
+                </div>
+                <span class="bento-action-badge" id="res_tiempos_rule_badge" style="background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border);">
+                  POCO TIEMPO TODAS LAS OBRAS
+                </span>
+              </div>
+
+              <!-- Tabla Matriz con Micro-Heatmap -->
+              <div class="table-responsive-box" style="width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <table class="modern-tiempos-table tiempos-table res-tiempos-compact">
+                  <thead>
+                    <tr>
+                      <th rowspan="3" class="th-row-header" style="text-align: left;">Etiquetas de fila</th>
+                      <th rowspan="2" colspan="4" class="th-top-critico" style="background: var(--danger-bg); color: var(--danger-text);">CRITICO</th>
+                      <th colspan="8" class="th-top-sinprio">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th colspan="4" class="th-sub-poco" style="background: var(--warning-bg); color: var(--warning-text);">POCO TIEMPO</th>
+                      <th colspan="4" class="th-sub-normal">SIN PRIORIDAD</th>
+                    </tr>
+                    <tr>
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+
+                      <th class="th-col-at">%AT</th>
+                      <th class="th-col-ft">%FT</th>
+                      <th class="th-col-ne">%NE</th>
+                      <th class="th-col-tot">%TOT</th>
+                    </tr>
+                  </thead>
+                  <tbody id="res_tiempos_tbody_pcts">
+                    <!-- Generado dinámicamente en js/resumen.js -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+          </div>
 
         </div>
 
@@ -1885,20 +1936,20 @@
 
   </main>
 
-  <script src="js/last-update-obras.js?v=20261110_142156"></script><script src="js/last-update-sede.js?v=20261110_142156"></script><script src="js/last-update-compras.js?v=20261110_142156"></script><script src="js/last-update-almacen.js?v=20261110_142156"></script><script src="js/last-update.js?v=20261110_142156"></script>
-  <script src="js/help.js?v=20261110_142156"></script>
-  <script src="js/cache-utils.js?v=20261110_142156"></script>
+  <script src="js/last-update-obras.js?v=20261112_121239"></script><script src="js/last-update-sede.js?v=20261112_121239"></script><script src="js/last-update-compras.js?v=20261112_121239"></script><script src="js/last-update-almacen.js?v=20261112_121239"></script><script src="js/last-update.js?v=20261112_121239"></script>
+  <script src="js/help.js?v=20261112_121239"></script>
+  <script src="js/cache-utils.js?v=20261112_121239"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261110_142156"></script>
-  <script src="js/resumen.js?v=20261110_142156"></script>
-  <script src="js/cumplimiento.js?v=20261110_142156"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261110_142156"></script>
-  <script src="js/analisis-mm.js?v=20261110_142156"></script>
-  <script src="js/evolucion.js?v=20261110_142156"></script>
-  <script src="js/servicios.js?v=20261110_142156"></script>
-  <script src="js/tiempos-entrega.js?v=20261110_142156"></script>
-  <script src="js/control-emrf.js?v=20261110_142156"></script>
+  <script src="js/demoras.js?v=20261112_121239"></script>
+  <script src="js/resumen.js?v=20261112_121239"></script>
+  <script src="js/cumplimiento.js?v=20261112_121239"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261112_121239"></script>
+  <script src="js/analisis-mm.js?v=20261112_121239"></script>
+  <script src="js/evolucion.js?v=20261112_121239"></script>
+  <script src="js/servicios.js?v=20261112_121239"></script>
+  <script src="js/tiempos-entrega.js?v=20261112_121239"></script>
+  <script src="js/control-emrf.js?v=20261112_121239"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2157,7 +2208,7 @@
 
     
 
-    /* ==========================================================================
+        /* ==========================================================================
        STREAMLIT PILL MULTISELECT CONTROLLER (Sincronizado con <select multiple>)
        ========================================================================== */
     (function() {
@@ -2451,27 +2502,68 @@
           inst.render(); if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
         });
       };
-
-      // Cerrar dropdown al hacer clic fuera
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.st-ms-container')) {
-          document.querySelectorAll('.st-ms-container.is-open').forEach(el => el.classList.remove('is-open'));
+      // Helper global para alternar Medición Arriba con switch UI en Cumplimiento
+      window.toggleCumplArribaSwitch = function() {
+        const btn = document.getElementById("cumpl_btnArriba");
+        if (btn) btn.click();
+        const sw = document.getElementById("cumpl_switchArriba");
+        if (sw && btn) {
+          setTimeout(() => {
+            sw.classList.toggle("active", btn.classList.contains("btn-active"));
+          }, 20);
         }
-      });
+      };
 
-      // Sincronizar al hacer clic en botones de limpiar o cambiar pestañas
+      window.resetMMFilters = function() {
+        const sel = document.getElementById("mm_clienteSelect");
+        if (sel) {
+          [...sel.options].forEach((o, i) => o.selected = (i === 0 || o.value === "" || o.value === "__ALL__"));
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+      };
+
+      window.resetDemorasFilters = function() {
+        ['dem_clienteSelect', 'dem_clasifSelect', 'dem_mesSelect'].forEach(id => {
+          const sel = document.getElementById(id);
+          if (sel) {
+            [...sel.options].forEach((o, i) => o.selected = (i === 0 || o.value === "" || o.value === "__ALL__"));
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+        if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+      };
+
+      window.resetTiemposFilters = function() {
+        const sel = document.getElementById("tiempos_obraSelect");
+        if (sel) {
+          [...sel.options].forEach((o, i) => o.selected = (i === 0 || o.value === "" || o.value === "__ALL__"));
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        const btnAll = document.getElementById("tiempos_btn_select_all");
+        if (btnAll) btnAll.click();
+        if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+      };
+
+      // Sincronizar al hacer clic en botones de restablecer o cambiar pestañas
       document.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-clear') || e.target.closest('#cumpl_btnArriba') || e.target.closest('.st-sidebar')) { setTimeout(() => { if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary(); }, 20);
-          setTimeout(() => window.syncAllStMultiSelects(), 60);
+        if (e.target.closest('.sidebar-reset-btn') || e.target.closest('.btn-clear') || e.target.closest('#cumpl_btnArriba') || e.target.closest('.st-sidebar')) {
+          setTimeout(() => {
+            if (typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+            if (typeof window.syncAllStMultiSelects === 'function') window.syncAllStMultiSelects();
+          }, 40);
         }
       });
 
       window.addEventListener('DOMContentLoaded', () => {
         window.syncAllStMultiSelects();
-        // Sincronización periódica ligera para reflejar cargas asíncronas de CSV/JSON
-        setInterval(() => window.syncAllStMultiSelects(), 600);
-        document.addEventListener('input', (e) => { if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary(); });
-        document.addEventListener('change', (e) => { if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') setTimeout(() => window.updateCumplFiltersSummary(), 15); });
+        setInterval(() => window.syncAllStMultiSelects(), 500);
+        document.addEventListener('input', (e) => {
+          if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') window.updateCumplFiltersSummary();
+        });
+        document.addEventListener('change', (e) => {
+          if (e.target.closest('.st-sidebar') && typeof window.updateCumplFiltersSummary === 'function') setTimeout(() => window.updateCumplFiltersSummary(), 15);
+        });
       });
     })();
 
@@ -2603,7 +2695,7 @@
     </div>
   </div>
 
-  <script src="js/auth-user.js?v=20261110_142156"></script>
+  <script src="js/auth-user.js?v=20261112_121239"></script>
   <!-- <script src="js/envio-informe.js"></script> -->
 </body>
 

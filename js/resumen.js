@@ -7,13 +7,13 @@
 (function () {
   "use strict";
 
-  const CSV_MM_URL = "data/data ANALISIS MM/ANALISIS-MM.csv";
-  const CSV_STONULO_URL = "data/data ANALISIS MM/STO NULO.csv";
-  const CSV_CUMPL_URL = "data/data CUMPLIMIENTO/CUMPLIMIENTO_OPTIMIZADO.csv";
-  const CSV_ARRIBA_URL = "data/data CUMPLIMIENTO/Base_Final_365_372.csv";
-  const CSV_SERV_URL = "data/data SERVICIOS/SERVICIOS OBRA.csv";
-  const CSV_EVOL_URL = "data/data ANALISIS MM/EVOLUCION.csv";
-  const JSON_EMRF_URL = "data/data PARTIDAS ABIERTAS/partidas_emrf.json";
+  const CSV_MM_URL = "data/ANALISIS-MM.csv";
+  const CSV_STONULO_URL = "data/STO NULO.csv";
+  const CSV_CUMPL_URL = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+  const CSV_ARRIBA_URL = "data/Base_Final_365_372.csv";
+  const CSV_SERV_URL = "data/SERVICIOS OBRA.csv";
+  const CSV_EVOL_URL = "data/EVOLUCION.csv";
+  const JSON_EMRF_URL = "data/partidas_emrf.json";
   const DEFAULT_EMRF_GCS = ["C01", "C07", "C02"];
   const DELIM = ";";
 

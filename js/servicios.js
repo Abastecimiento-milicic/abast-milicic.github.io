@@ -1,5 +1,5 @@
 (function() {
-  const SERV_SECTOR_URLS = { abastecimiento: "data/data SERVICIOS/SERVICIOS OBRA.csv", sede: "data - sede/REPORTE CUMPLIMIENTO SS Y SUB - SEDE.csv" }; let currentServSector = "abastecimiento"; let csvUrl = SERV_SECTOR_URLS.abastecimiento; const servCache = {}; let servEventsBound = false;
+  const SERV_SECTOR_URLS = { abastecimiento: "data/SERVICIOS OBRA.csv", sede: "data - sede/REPORTE CUMPLIMIENTO SS Y SUB - SEDE.csv" }; let currentServSector = "abastecimiento"; let csvUrl = SERV_SECTOR_URLS.abastecimiento; const servCache = {}; let servEventsBound = false;
   const DELIM = ";";
 
   const CLIENT_COL_NAME = "CLIENTE";

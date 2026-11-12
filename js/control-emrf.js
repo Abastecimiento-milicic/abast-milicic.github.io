@@ -4,7 +4,7 @@
  */
 
 (function () {
-  const JSON_URL = "data/data PARTIDAS ABIERTAS/partidas_emrf.json";
+  const JSON_URL = "data/partidas_emrf.json";
   
   // Estado global del módulo
   let allPositions = [];

@@ -381,6 +381,21 @@
     
     const cents = getSelValues("centroSelect");
     if (cents.length && CENTRO_COL) rows = rows.filter(r => cents.includes(clean(r[CENTRO_COL]))); if (currentSector === "compras") { const ops = getSelValues("cumpl_operadorSelect"); if (ops.length && OPERADOR_COL) rows = rows.filter(r => ops.includes(clean(r[OPERADOR_COL]))); const provs = getSelValues("cumpl_proveedorSelect"); if (provs.length && PROVEEDOR_COL) rows = rows.filter(r => provs.includes(clean(r[PROVEEDOR_COL]))); const sa = getSelValues("cumpl_soloAbastSelect"); if (sa.length && SOLO_ABAST_COL) rows = rows.filter(r => { const raw = clean(r[SOLO_ABAST_COL]).toUpperCase(); let mapped = ""; if (raw === "1" || raw === "ABASTECIMIENTO" || raw === "SI" || raw === "SÍ") { mapped = "Abastecimiento"; } else if (raw === "2" || raw === "EQUIPOS") { mapped = "Equipos"; } return sa.includes(mapped); }); }
+    if (currentSector === "almacen") {
+      const bases = getSelValues("cumpl_baseAlmacenSelect");
+      if (bases.length) {
+        const wantRos = bases.includes("BASE ROS");
+        const wantSj = bases.includes("BASE SJ");
+        rows = rows.filter(r => {
+          const isRos = clean(r["BASE ROS"]) === "1" || clean(r["BASE ROS"]).startsWith("1");
+          const isSj = clean(r["BASE SJ"]) === "1" || clean(r["BASE SJ"]).startsWith("1");
+          if (wantRos && wantSj) return isRos || isSj;
+          if (wantRos) return isRos;
+          if (wantSj) return isSj;
+          return true;
+        });
+      }
+    }
     
     return rows;
   }
@@ -415,6 +430,19 @@
     if (sel) sel.disabled = false;
     fillSelect("centroSelect", vals, "Todos");
   }
+    function renderAlmacenExtraFilters() {
+    const sel = document.getElementById("cumpl_baseAlmacenSelect");
+    if (!sel) return;
+    const isAlmacen = currentSector === "almacen";
+    const wrap = sel.closest(".almacen-only-filter");
+    if (wrap) wrap.style.display = isAlmacen ? "" : "none";
+    if (isAlmacen) {
+      sel.innerHTML = '<option value="__ALL__" selected>Todos</option><option value="BASE ROS">BASE ROS</option><option value="BASE SJ">BASE SJ</option>';
+      const hint = document.getElementById("cumpl_baseAlmacenHint");
+      if (hint) hint.textContent = "Filtrar por BASE ROS / BASE SJ";
+    }
+  }
+
   function renderComprasExtraFilters() { if (OPERADOR_COL) { fillSelect("cumpl_operadorSelect", uniqSorted(data.map(r => r[OPERADOR_COL])), "Todos"); } if (PROVEEDOR_COL) { fillSelect("cumpl_proveedorSelect", uniqSorted(data.map(r => r[PROVEEDOR_COL])), "Todos"); } if (SOLO_ABAST_COL) { fillSelect("cumpl_soloAbastSelect", ["Abastecimiento", "Equipos"], "Todos"); }
   }
 
@@ -1430,7 +1458,7 @@
   }
 
   function clearAllFilters() {
-    const selects = ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect"];
+    const selects = ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect", "cumpl_baseAlmacenSelect"];
     selects.forEach(id => {
       const sel = document.getElementById(id);
       if (!sel) return;
@@ -1644,7 +1672,7 @@
   }
 
   function resetSelectSelectionsForSectorSwitch() {
-    ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect"].forEach(id => {
+    ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect", "cumpl_baseAlmacenSelect"].forEach(id => {
       const sel = document.getElementById(id);
       if (sel) sel.innerHTML = '<option value="__ALL__" selected>Todos</option>';
     });
@@ -1770,7 +1798,7 @@
       setText("centroHint", CENTRO_COL ? `Columna: ${CENTRO_COL}` : "Columna: (no encontrada)");
 
       renderClientes();
-      renderCentros(); renderComprasExtraFilters();
+      renderCentros(); renderComprasExtraFilters(); renderAlmacenExtraFilters();
       const baseCliente = rowsByClienteBase();
       renderClasif2(baseCliente);
       renderGcoc(baseCliente);
@@ -1829,7 +1857,7 @@
           applyAll();
         });
 
-        ["cumpl_operadorSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect"].forEach(id => { document.getElementById(id)?.addEventListener("change", (e) => { enforceAllOption(e.target); applyAll(); }); }); document.getElementById("centroSelect")?.addEventListener("change", (e) => {
+        ["cumpl_operadorSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect", "cumpl_baseAlmacenSelect"].forEach(id => { document.getElementById(id)?.addEventListener("change", (e) => { enforceAllOption(e.target); applyAll(); }); }); document.getElementById("centroSelect")?.addEventListener("change", (e) => {
           enforceAllOption(e.target);
           applyAll();
         });

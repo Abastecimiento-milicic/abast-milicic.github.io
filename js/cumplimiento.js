@@ -1686,12 +1686,29 @@
     }
   }
 
-  function loadFromCsv(cacheKey) {
+  function loadFromCsv(cacheKey, isFallback = false) {
     const encodedUrl = encodeURI(csvUrl) + "?t=" + window.CACHE_BUSTER;
     fetchWithCache(encodedUrl)
       .then(text => {
+        if (!text || text.trim().startsWith("<") || text.length < 50) {
+          if (!isFallback && currentSector === "abastecimiento") {
+            console.warn("Ruta primaria no devolvió CSV válido, intentando ruta alternativa...");
+            csvUrl = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+            loadFromCsv(cacheKey, true);
+            return;
+          }
+          showError("El CSV está vacío o no tiene filas.");
+          return;
+        }
+
         const m = parseDelimited(text, DELIM);
         if (!m.length || m.length < 2) {
+          if (!isFallback && currentSector === "abastecimiento") {
+            console.warn("Delimitador o formato no reconocido en ruta primaria, probando fallback...");
+            csvUrl = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+            loadFromCsv(cacheKey, true);
+            return;
+          }
           showError("El CSV está vacío o no tiene filas.");
           return;
         }
@@ -1714,6 +1731,12 @@
         if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
       })
       .catch(err => {
+        if (!isFallback && currentSector === "abastecimiento") {
+          console.warn("Error cargando CSV primario, intentando fallback...", err);
+          csvUrl = "data/CUMPLIMIENTO_OPTIMIZADO.csv";
+          loadFromCsv(cacheKey, true);
+          return;
+        }
         console.error(err);
         showError("Error cargando CSV: " + (err?.message || err));
       })

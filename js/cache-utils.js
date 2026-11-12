@@ -75,9 +75,9 @@
 
     // Fallback si la subcarpeta con espacios falla (404, error, etc.)
     if (!resp || !resp.ok) {
-      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, 'data/').replace(/data\/data [^/]+\//i, 'data/');
+      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, "data/").replace(/data\/data [^/]+\//i, "data/");
       if (fallbackUrl !== url) {
-        console.warn([cache-utils] No se pudo abrir , probando fallback en );
+        console.warn("[cache-utils] No se pudo abrir " + url + ", probando fallback en " + fallbackUrl);
         try {
           const respFb = await fetch(fallbackUrl);
           if (respFb.ok) resp = respFb;
@@ -85,19 +85,19 @@
       }
     }
 
-    if (!resp || !resp.ok) throw new Error(No pude abrir  (HTTP ));
+    if (!resp || !resp.ok) throw new Error("No pude abrir " + url + " (HTTP " + (resp ? resp.status : "ERR") + ")");
     let data = await resp.text();
 
     // Fallback si el servidor devolvio HTML (404 disfrazado o login de SPA)
-    if (data.trim().startsWith('<') && (url.includes('/data%20') || url.includes('/data '))) {
-      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, 'data/').replace(/data\/data [^/]+\//i, 'data/');
+    if (data.trim().startsWith("<") && (url.includes("/data%20") || url.includes("/data "))) {
+      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, "data/").replace(/data\/data [^/]+\//i, "data/");
       if (fallbackUrl !== url) {
-        console.warn([cache-utils]  devolvio HTML en vez de datos, probando fallback en );
+        console.warn("[cache-utils] " + url + " devolvio HTML en vez de datos, probando fallback en " + fallbackUrl);
         try {
           const respFb = await fetch(fallbackUrl);
           if (respFb.ok) {
             const dataFb = await respFb.text();
-            if (!dataFb.trim().startsWith('<')) {
+            if (!dataFb.trim().startsWith("<")) {
               data = dataFb;
             }
           }

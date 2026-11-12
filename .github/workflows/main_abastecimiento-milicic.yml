@@ -6,19 +6,20 @@ on:
       - main
   workflow_dispatch:
 
+# Evita conflictos 409 en Azure cancelando despliegues previos si se hace un nuevo push
+concurrency:
+  group: azure-deploy
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descarga directo tus archivos del repositorio
+      # 1. Descarga directo tus archivos del repositorio (incluyendo los CSV nuevos)
       - uses: actions/checkout@v4
 
-      # 2. Comprime solo los archivos necesarios (excluye .git de 360MB y node_modules)
-      - name: Zip artifact for deployment
-        run: zip -r release.zip . -x "*.git*" "node_modules/*" ".github/*"
-
-      # 3. Sube el paquete optimizado a Azure Web App
+      # 2. Sube los archivos directo a producción usando el Perfil de Publicación
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -26,5 +27,4 @@ jobs:
           app-name: 'abastecimiento-milicic'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: release.zip
-          clean: true
+          package: . # Sube la raíz directamente

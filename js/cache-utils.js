@@ -41,6 +41,32 @@
     return _dbPromise;
   }
 
+    /** Helper para obtener ruta alternativa bidireccional (raíz data/ <-> subcarpeta organizada) */
+  function getFallbackDataUrl(url) {
+    if (!url || typeof url !== "string") return null;
+    // 1. Si viene con subcarpeta con espacios (/data%20 o /data ), probar directo en raíz data/
+    if (url.match(/data\/data(?:%20|\s)[^/]+\//i)) {
+      return url.replace(/data\/data(?:%20|\s)[^/]+\//i, "data/");
+    }
+    // 2. Si viene en raíz data/, probar en su subcarpeta organizada correspondiente
+    const map = [
+      { re: /data\/ANALISIS-MM\.csv/i, target: "data/data%20ANALISIS%20MM/ANALISIS-MM.csv" },
+      { re: /data\/STO(?:%20|\s)NULO\.csv/i, target: "data/data%20ANALISIS%20MM/STO%20NULO.csv" },
+      { re: /data\/MENOR(?:%20|\s)A(?:%20|\s)PP\.csv/i, target: "data/data%20ANALISIS%20MM/MENOR%20A%20PP.csv" },
+      { re: /data\/EVOLUCION\.csv/i, target: "data/data%20ANALISIS%20MM/EVOLUCION.csv" },
+      { re: /data\/CUMPLIMIENTO_OPTIMIZADO\.csv/i, target: "data/data%20CUMPLIMIENTO/CUMPLIMIENTO_OPTIMIZADO.csv" },
+      { re: /data\/Base_Final_365_372\.csv/i, target: "data/data%20CUMPLIMIENTO/Base_Final_365_372.csv" },
+      { re: /data\/SERVICIOS(?:%20|\s)OBRA\.csv/i, target: "data/data%20SERVICIOS/SERVICIOS%20OBRA.csv" },
+      { re: /data\/partidas_emrf\.json/i, target: "data/data%20PARTIDAS%20ABIERTAS/partidas_emrf.json" }
+    ];
+    for (const item of map) {
+      if (item.re.test(url)) {
+        return url.replace(item.re, item.target);
+      }
+    }
+    return null;
+  }
+
   /**
    * Fetch a URL with IndexedDB caching.
    * Returns a Promise that resolves to the response **text**.
@@ -59,7 +85,15 @@
       });
 
       if (cached && cached.data) {
-        return cached.data;
+        if (typeof cached.data === "string" && cached.data.trim().startsWith("<")) {
+          console.warn("[cache-utils] Descartando entrada de cache corrupta (HTML) para: " + url);
+          try {
+            const txW = db.transaction(STORE_NAME, "readwrite");
+            txW.objectStore(STORE_NAME).delete(url);
+          } catch (_) {}
+        } else {
+          return cached.data;
+        }
       }
     } catch (_) {
       // IndexedDB unavailable — fall through to network
@@ -73,39 +107,38 @@
       resp = null;
     }
 
-    // Fallback si la subcarpeta con espacios falla (404, error, etc.)
-    if (!resp || !resp.ok) {
-      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, "data/").replace(/data\/data [^/]+\//i, "data/");
-      if (fallbackUrl !== url) {
-        console.warn("[cache-utils] No se pudo abrir " + url + ", probando fallback en " + fallbackUrl);
-        try {
-          const respFb = await fetch(fallbackUrl);
-          if (respFb.ok) resp = respFb;
-        } catch (_) {}
+    let data = null;
+    if (resp && resp.ok) {
+      try {
+        data = await resp.text();
+      } catch (_) {
+        data = null;
       }
     }
 
-    if (!resp || !resp.ok) throw new Error("No pude abrir " + url + " (HTTP " + (resp ? resp.status : "ERR") + ")");
-    let data = await resp.text();
-
-    // Fallback si el servidor devolvio HTML (404 disfrazado o login de SPA)
-    if (data.trim().startsWith("<") && (url.includes("/data%20") || url.includes("/data "))) {
-      const fallbackUrl = url.replace(/data\/data%20[^/]+\//i, "data/").replace(/data\/data [^/]+\//i, "data/");
-      if (fallbackUrl !== url) {
-        console.warn("[cache-utils] " + url + " devolvio HTML en vez de datos, probando fallback en " + fallbackUrl);
+    // Fallback si no hubo respuesta OK o el servidor devolvió HTML (404/login/error)
+    if (!resp || !resp.ok || (data && data.trim().startsWith("<"))) {
+      const fallbackUrl = getFallbackDataUrl(url);
+      if (fallbackUrl && fallbackUrl !== url) {
+        console.warn("[cache-utils] No se obtuvieron datos válidos de " + url + ", probando fallback en " + fallbackUrl);
         try {
           const respFb = await fetch(fallbackUrl);
           if (respFb.ok) {
             const dataFb = await respFb.text();
-            if (!dataFb.trim().startsWith("<")) {
+            if (dataFb && !dataFb.trim().startsWith("<")) {
               data = dataFb;
+              resp = respFb;
             }
           }
         } catch (_) {}
       }
     }
 
-    // Store in cache (fire-and-forget)
+    if (!data || (typeof data === "string" && data.trim().startsWith("<"))) {
+      throw new Error("No se pudo obtener datos válidos para " + url + " (Respuesta HTTP inválida o HTML devuelto)");
+    }
+
+    // Store in cache (fire-and-forget) SOLO si son datos válidos (nunca HTML)
     try {
       const db = await openDB();
       const tx = db.transaction(STORE_NAME, "readwrite");
@@ -118,7 +151,6 @@
     return data;
   };
 
-  /** Get raw or structured data by key */
   window.getCachedData = async function getCachedData(key) {
     try {
       const db = await openDB();

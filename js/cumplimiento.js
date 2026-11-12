@@ -1659,6 +1659,7 @@
      EXPOSE DEFERRED INITIALIZATION LIFE CYCLE HOOK
   =========================== */
   const sectorMemoryCache = {};
+  window.cumplSectorCache = sectorMemoryCache;
   let uiEventsBound = false;
 
   function showLoader() {

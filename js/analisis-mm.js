@@ -887,6 +887,7 @@
     function initializeUIWithData(processedHeaders, processedData) {
         headers = processedHeaders;
         data = processedData;
+        window.mmGlobalRawData = { headers: processedHeaders, data: processedData };
 
         COL_CLIENT = byFirstExisting(CLIENT_CANDIDATES);
         COL_MATERIAL = byFirstExisting(MATERIAL_CANDIDATES);

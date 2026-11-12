@@ -33,12 +33,24 @@ window.syncSectorLastUpdate = function(sector) {
   }
 };
 
+const APP_CACHE_VERSION = "v145_20261112_162500";
+try {
+  const lastStoredVersion = localStorage.getItem("app_cache_version");
+  if (lastStoredVersion !== APP_CACHE_VERSION) {
+    localStorage.setItem("app_cache_version", APP_CACHE_VERSION);
+    sessionStorage.removeItem("mi_cache_buster");
+    if (typeof window.clearDataCache === "function") {
+      window.clearDataCache();
+    }
+  }
+} catch (_) {}
+
 let cb = sessionStorage.getItem('mi_cache_buster');
 if (!cb) {
   cb = new Date().getTime();
   sessionStorage.setItem('mi_cache_buster', cb);
 }
-window.CACHE_BUSTER = cb + "_v142_20261112_152400";
+window.CACHE_BUSTER = cb + "_" + APP_CACHE_VERSION;
 
 window.forceRefreshData = function() {
   sessionStorage.removeItem('mi_cache_buster');

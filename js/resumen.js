@@ -229,6 +229,9 @@
      CARGA DE DATOS
   ============================ */
   function parseCSV(text) {
+    if (!text || typeof text !== "string" || text.trim().startsWith("<") || text.trim().length < 10) {
+      return { headers: [], rows: [] };
+    }
     if (typeof Papa !== "undefined" && typeof Papa.parse === "function") {
       const res = Papa.parse(text, {
         delimiter: DELIM,
@@ -266,6 +269,16 @@
   }
 
   async function loadResumenData() {
+    // 1. Reusar datos en memoria si ya fueron cargados por Cumplimiento o MM
+    if (!cumplRawData && window.cumplSectorCache && window.cumplSectorCache.abastecimiento) {
+      cumplHeaders = window.cumplSectorCache.abastecimiento.headers || [];
+      cumplRawData = window.cumplSectorCache.abastecimiento.data || [];
+    }
+    if (!mmRawData && window.mmGlobalRawData && window.mmGlobalRawData.data) {
+      mmHeaders = window.mmGlobalRawData.headers || [];
+      mmRawData = window.mmGlobalRawData.data || [];
+    }
+
     if (mmRawData && stoNuloRawData && cumplRawData) {
       updateResumen();
       return;
@@ -289,59 +302,72 @@
       };
 
       const [textMM, textStoNulo, textCumpl, textArriba, textServ, textEmrf, textEvol] = await Promise.all([
-        fetchCSV(CSV_MM_URL),
-        fetchCSV(CSV_STONULO_URL),
-        fetchCSV(CSV_CUMPL_URL),
+        (mmRawData ? Promise.resolve("") : fetchCSV(CSV_MM_URL).catch(() => "")),
+        fetchCSV(CSV_STONULO_URL).catch(() => ""),
+        (cumplRawData ? Promise.resolve("") : fetchCSV(CSV_CUMPL_URL).catch(() => "")),
         fetchCSV(CSV_ARRIBA_URL).catch(() => ""),
         fetchCSV(CSV_SERV_URL).catch(() => ""),
         fetchCSV(JSON_EMRF_URL).catch(() => ""),
         fetchCSV(CSV_EVOL_URL).catch(() => "")
       ]);
 
-      const parsedMM = parseCSV(textMM);
-      mmHeaders = parsedMM.headers;
-      mmRawData = parsedMM.rows;
+      if (!mmRawData && textMM && !textMM.trim().startsWith("<")) {
+        const parsedMM = parseCSV(textMM);
+        mmHeaders = parsedMM.headers;
+        mmRawData = parsedMM.rows;
+      }
 
-      const parsedStoNulo = parseCSV(textStoNulo);
-      stoNuloHeaders = parsedStoNulo.headers;
-      stoNuloRawData = parsedStoNulo.rows;
+      if (textStoNulo && !textStoNulo.trim().startsWith("<")) {
+        const parsedStoNulo = parseCSV(textStoNulo);
+        stoNuloHeaders = parsedStoNulo.headers;
+        stoNuloRawData = parsedStoNulo.rows;
+      } else if (!stoNuloRawData) {
+        stoNuloHeaders = [];
+        stoNuloRawData = [];
+      }
 
-      const parsedCumpl = parseCSV(textCumpl);
-      cumplHeaders = parsedCumpl.headers;
-      cumplRawData = parsedCumpl.rows;
+      if (!cumplRawData && textCumpl && !textCumpl.trim().startsWith("<")) {
+        const parsedCumpl = parseCSV(textCumpl);
+        cumplHeaders = parsedCumpl.headers;
+        cumplRawData = parsedCumpl.rows;
+      }
 
       // Pre-calcular _ym en cumplimiento para agilizar cálculos
-      const colFec = cumplHeaders.find(h => /entrega\s+esperada/i.test(h)) || "FECHA ENTREGA ESPERADA";
-      cumplRawData.forEach(r => {
-        r._ym = parseYearMonth(r[colFec]);
-      });
+      if (cumplRawData && cumplRawData.length) {
+        const colFec = (cumplHeaders || []).find(h => /entrega\s+esperada/i.test(h)) || "FECHA ENTREGA ESPERADA";
+        cumplRawData.forEach(r => {
+          if (!r._ym) r._ym = parseYearMonth(r[colFec]);
+        });
+      } else {
+        cumplRawData = cumplRawData || [];
+      }
 
-      if (textArriba && textArriba.length > 50) {
+      if (textArriba && textArriba.length > 50 && !textArriba.trim().startsWith("<")) {
         const parsedArriba = parseCSV(textArriba);
-        const colFecArr = parsedArriba.headers.find(h => /entrega\s+esperada/i.test(h)) || "FECHA ENTREGA ESPERADA";
-        arribaRawData = parsedArriba.rows.map(r => {
+        const colFecArr = (parsedArriba.headers || []).find(h => /entrega\s+esperada/i.test(h)) || "FECHA ENTREGA ESPERADA";
+        arribaRawData = (parsedArriba.rows || []).map(r => {
           r._ym = parseYearMonth(r[colFecArr]);
           return r;
         }).filter(r => r._ym && r._ym !== "2025-09" && r._ym >= "2025-10");
       } else {
-        arribaRawData = [];
+        arribaRawData = arribaRawData || [];
       }
 
-      if (textServ && textServ.length > 50) {
+      if (textServ && textServ.length > 50 && !textServ.trim().startsWith("<")) {
         const parsedServ = parseCSV(textServ);
-        servRawData = parsedServ.rows;
+        servRawData = parsedServ.rows || [];
       } else {
-        servRawData = [];
+        servRawData = servRawData || [];
       }
 
-      if (textEvol && textEvol.length > 50) {
+      if (textEvol && textEvol.length > 50 && !textEvol.trim().startsWith("<")) {
         const parsedEvol = parseCSV(textEvol);
-        evolRawData = parsedEvol.rows;
+        evolRawData = parsedEvol.rows || [];
       } else {
-        evolRawData = [];
+        evolRawData = evolRawData || [];
       }
 
-      if (textEmrf && textEmrf.length > 20) {
+      if (textEmrf && textEmrf.length > 20 && !textEmrf.trim().startsWith("<")) {
         try {
           const parsedEmrf = JSON.parse(textEmrf);
           emrfRawData = (parsedEmrf && Array.isArray(parsedEmrf.data)) ? parsedEmrf.data : [];
@@ -350,7 +376,7 @@
           emrfRawData = [];
         }
       } else {
-        emrfRawData = [];
+        emrfRawData = emrfRawData || [];
       }
 
       renderObrasSelect();
@@ -706,12 +732,12 @@
      CÁLCULO Y RENDERIZADO GENERAL
   ============================ */
   function updateResumen() {
-    updateMMBlock();
-    updateCumplimientoBlock();
-    updateDemorasBlock();
-    updateTiemposBlock();
-    updateServiciosBlock();
-    updateEmrfBlock();
+    try { updateMMBlock(); } catch (e) { console.error("[Resumen] Error en updateMMBlock:", e); }
+    try { updateCumplimientoBlock(); } catch (e) { console.error("[Resumen] Error en updateCumplimientoBlock:", e); }
+    try { updateDemorasBlock(); } catch (e) { console.error("[Resumen] Error en updateDemorasBlock:", e); }
+    try { updateTiemposBlock(); } catch (e) { console.error("[Resumen] Error en updateTiemposBlock:", e); }
+    try { updateServiciosBlock(); } catch (e) { console.error("[Resumen] Error en updateServiciosBlock:", e); }
+    try { updateEmrfBlock(); } catch (e) { console.error("[Resumen] Error en updateEmrfBlock:", e); }
   }
 
   /* --- 5. BLOQUE CONTROL DE PARTIDAS (.div6) --- */

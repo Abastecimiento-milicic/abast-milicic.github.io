@@ -1,0 +1,914 @@
+[
+  {
+    "code": "00378",
+    "fullName": "00378 YPF – Oleoducto Cnel. Pringle",
+    "shortName": "YPF Pringles",
+    "tot": 2224,
+    "alm": 1241,
+    "inc": 413,
+    "pct": 33.28,
+    "monthly": [
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 2.2,
+        "count": 2,
+        "alm": 92
+      },
+      {
+        "value": 56.2,
+        "count": 207,
+        "alm": 368
+      },
+      {
+        "value": 14.0,
+        "count": 37,
+        "alm": 265
+      },
+      {
+        "value": 60.9,
+        "count": 165,
+        "alm": 271
+      },
+      {
+        "value": 0.5,
+        "count": 1,
+        "alm": 193
+      },
+      {
+        "value": 1.9,
+        "count": 1,
+        "alm": 52
+      }
+    ]
+  },
+  {
+    "code": "00377",
+    "fullName": "00377-YPF 3° loop",
+    "shortName": "YPF 3° Loop",
+    "tot": 6387,
+    "alm": 3206,
+    "inc": 630,
+    "pct": 19.65,
+    "monthly": [
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 100.0,
+        "count": 13,
+        "alm": 13
+      },
+      {
+        "value": 39.8,
+        "count": 313,
+        "alm": 787
+      },
+      {
+        "value": 9.0,
+        "count": 15,
+        "alm": 166
+      },
+      {
+        "value": 11.3,
+        "count": 27,
+        "alm": 239
+      },
+      {
+        "value": 2.0,
+        "count": 7,
+        "alm": 342
+      },
+      {
+        "value": 6.9,
+        "count": 28,
+        "alm": 403
+      },
+      {
+        "value": 3.6,
+        "count": 8,
+        "alm": 220
+      },
+      {
+        "value": 14.4,
+        "count": 54,
+        "alm": 374
+      },
+      {
+        "value": 1.8,
+        "count": 3,
+        "alm": 169
+      },
+      {
+        "value": 15.7,
+        "count": 42,
+        "alm": 267
+      },
+      {
+        "value": 53.6,
+        "count": 120,
+        "alm": 224
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 2
+      }
+    ]
+  },
+  {
+    "code": "00368",
+    "fullName": "00368-YPF Acueducto TBH",
+    "shortName": "YPF TBH",
+    "tot": 1407,
+    "alm": 1061,
+    "inc": 148,
+    "pct": 13.95,
+    "monthly": [
+      {
+        "value": 4.0,
+        "count": 10,
+        "alm": 247
+      },
+      {
+        "value": 4.7,
+        "count": 9,
+        "alm": 190
+      },
+      {
+        "value": 16.7,
+        "count": 28,
+        "alm": 168
+      },
+      {
+        "value": 29.2,
+        "count": 70,
+        "alm": 240
+      },
+      {
+        "value": 17.5,
+        "count": 25,
+        "alm": 143
+      },
+      {
+        "value": 10.9,
+        "count": 5,
+        "alm": 46
+      },
+      {
+        "value": 6.2,
+        "count": 1,
+        "alm": 16
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 11
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      }
+    ]
+  },
+  {
+    "code": "0376",
+    "fullName": "0376 VELADERO FASE 8B /SAN JUAN",
+    "shortName": "Veladero 8B",
+    "tot": 3177,
+    "alm": 3129,
+    "inc": 297,
+    "pct": 9.49,
+    "monthly": [
+      {
+        "value": 2.0,
+        "count": 10,
+        "alm": 507
+      },
+      {
+        "value": 12.6,
+        "count": 81,
+        "alm": 642
+      },
+      {
+        "value": 0.6,
+        "count": 3,
+        "alm": 476
+      },
+      {
+        "value": 4.9,
+        "count": 28,
+        "alm": 572
+      },
+      {
+        "value": 27.7,
+        "count": 138,
+        "alm": 499
+      },
+      {
+        "value": 9.3,
+        "count": 36,
+        "alm": 387
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 39
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 4
+      },
+      {
+        "value": 50.0,
+        "count": 1,
+        "alm": 2
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 1
+      }
+    ]
+  },
+  {
+    "code": "00314",
+    "fullName": "00314 CASA Olavarría",
+    "shortName": "CASA Olavarría",
+    "tot": 3565,
+    "alm": 2581,
+    "inc": 219,
+    "pct": 8.49,
+    "monthly": [
+      {
+        "value": 2.9,
+        "count": 6,
+        "alm": 204
+      },
+      {
+        "value": 1.8,
+        "count": 4,
+        "alm": 220
+      },
+      {
+        "value": 1.3,
+        "count": 3,
+        "alm": 226
+      },
+      {
+        "value": 41.8,
+        "count": 59,
+        "alm": 141
+      },
+      {
+        "value": 3.5,
+        "count": 7,
+        "alm": 200
+      },
+      {
+        "value": 6.2,
+        "count": 16,
+        "alm": 257
+      },
+      {
+        "value": 13.5,
+        "count": 31,
+        "alm": 230
+      },
+      {
+        "value": 22.2,
+        "count": 53,
+        "alm": 239
+      },
+      {
+        "value": 9.5,
+        "count": 16,
+        "alm": 169
+      },
+      {
+        "value": 4.3,
+        "count": 9,
+        "alm": 207
+      },
+      {
+        "value": 0.5,
+        "count": 1,
+        "alm": 196
+      },
+      {
+        "value": 4.9,
+        "count": 10,
+        "alm": 206
+      },
+      {
+        "value": 4.7,
+        "count": 4,
+        "alm": 86
+      }
+    ]
+  },
+  {
+    "code": "00375",
+    "fullName": "00375 YPF OLEODUCTO PR-LP",
+    "shortName": "YPF PR-LP",
+    "tot": 2100,
+    "alm": 1279,
+    "inc": 63,
+    "pct": 4.93,
+    "monthly": [
+      {
+        "value": 6.7,
+        "count": 18,
+        "alm": 268
+      },
+      {
+        "value": 5.4,
+        "count": 13,
+        "alm": 241
+      },
+      {
+        "value": 24.2,
+        "count": 23,
+        "alm": 95
+      },
+      {
+        "value": 0.8,
+        "count": 2,
+        "alm": 261
+      },
+      {
+        "value": 1.2,
+        "count": 2,
+        "alm": 162
+      },
+      {
+        "value": 2.2,
+        "count": 3,
+        "alm": 138
+      },
+      {
+        "value": 1.0,
+        "count": 1,
+        "alm": 103
+      },
+      {
+        "value": 9.1,
+        "count": 1,
+        "alm": 11
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      }
+    ]
+  },
+  {
+    "code": "00365",
+    "fullName": "00365 RIO TINTO",
+    "shortName": "Rio Tinto",
+    "tot": 6657,
+    "alm": 1330,
+    "inc": 58,
+    "pct": 4.36,
+    "monthly": [
+      {
+        "value": 6.5,
+        "count": 2,
+        "alm": 31
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 75
+      },
+      {
+        "value": 2.7,
+        "count": 1,
+        "alm": 37
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 110
+      },
+      {
+        "value": 9.7,
+        "count": 9,
+        "alm": 93
+      },
+      {
+        "value": 6.8,
+        "count": 8,
+        "alm": 117
+      },
+      {
+        "value": 4.5,
+        "count": 4,
+        "alm": 89
+      },
+      {
+        "value": 20.7,
+        "count": 23,
+        "alm": 111
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 106
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 180
+      },
+      {
+        "value": 4.4,
+        "count": 9,
+        "alm": 204
+      },
+      {
+        "value": 0.8,
+        "count": 1,
+        "alm": 120
+      },
+      {
+        "value": 1.8,
+        "count": 1,
+        "alm": 57
+      }
+    ]
+  },
+  {
+    "code": "00341",
+    "fullName": "00341 Mov. Suelos San Luis",
+    "shortName": "San Luis",
+    "tot": 3023,
+    "alm": 2305,
+    "inc": 84,
+    "pct": 3.64,
+    "monthly": [
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 174
+      },
+      {
+        "value": 0.6,
+        "count": 1,
+        "alm": 158
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 158
+      },
+      {
+        "value": 0.6,
+        "count": 1,
+        "alm": 162
+      },
+      {
+        "value": 0.9,
+        "count": 2,
+        "alm": 212
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 226
+      },
+      {
+        "value": 4.7,
+        "count": 11,
+        "alm": 233
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 142
+      },
+      {
+        "value": 19.5,
+        "count": 50,
+        "alm": 256
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 126
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 226
+      },
+      {
+        "value": 12.2,
+        "count": 18,
+        "alm": 148
+      },
+      {
+        "value": 1.2,
+        "count": 1,
+        "alm": 84
+      }
+    ]
+  },
+  {
+    "code": "00379",
+    "fullName": "00379 – VELADERO FASE 8C",
+    "shortName": "Veladero 8C",
+    "tot": 2129,
+    "alm": 827,
+    "inc": 15,
+    "pct": 1.81,
+    "monthly": [
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 0
+      },
+      {
+        "value": 1.8,
+        "count": 15,
+        "alm": 827
+      }
+    ]
+  },
+  {
+    "code": "00223",
+    "fullName": "00223 Comp Amb Santa Fe",
+    "shortName": "Santa Fe",
+    "tot": 1174,
+    "alm": 901,
+    "inc": 10,
+    "pct": 1.11,
+    "monthly": [
+      {
+        "value": 1.6,
+        "count": 1,
+        "alm": 63
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 48
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 69
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 35
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 56
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 107
+      },
+      {
+        "value": 1.1,
+        "count": 1,
+        "alm": 87
+      },
+      {
+        "value": 1.1,
+        "count": 1,
+        "alm": 95
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 92
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 52
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 61
+      },
+      {
+        "value": 8.0,
+        "count": 7,
+        "alm": 88
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 48
+      }
+    ]
+  },
+  {
+    "code": "00374",
+    "fullName": "00374 TERMINAL PUNTA COLORADA",
+    "shortName": "Pta. Colorada",
+    "tot": 11220,
+    "alm": 6257,
+    "inc": 34,
+    "pct": 0.54,
+    "monthly": [
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 599
+      },
+      {
+        "value": 0.5,
+        "count": 2,
+        "alm": 395
+      },
+      {
+        "value": 0.8,
+        "count": 2,
+        "alm": 242
+      },
+      {
+        "value": 2.7,
+        "count": 11,
+        "alm": 414
+      },
+      {
+        "value": 0.2,
+        "count": 1,
+        "alm": 490
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 496
+      },
+      {
+        "value": 0.8,
+        "count": 5,
+        "alm": 626
+      },
+      {
+        "value": 0.9,
+        "count": 5,
+        "alm": 541
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 467
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 492
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 609
+      },
+      {
+        "value": 1.6,
+        "count": 8,
+        "alm": 486
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 400
+      }
+    ]
+  },
+  {
+    "code": "00372",
+    "fullName": "00372 UTE 372 GEO POSCO II",
+    "shortName": "POSCO II",
+    "tot": 3269,
+    "alm": 1031,
+    "inc": 5,
+    "pct": 0.48,
+    "monthly": [
+      {
+        "value": 1.4,
+        "count": 1,
+        "alm": 71
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 35
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 57
+      },
+      {
+        "value": 1.6,
+        "count": 1,
+        "alm": 63
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 108
+      },
+      {
+        "value": 0.9,
+        "count": 1,
+        "alm": 116
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 54
+      },
+      {
+        "value": 0.6,
+        "count": 1,
+        "alm": 181
+      },
+      {
+        "value": 1.0,
+        "count": 1,
+        "alm": 102
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 72
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 93
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 38
+      },
+      {
+        "value": 0.0,
+        "count": 0,
+        "alm": 41
+      }
+    ]
+  }
+]

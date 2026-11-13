@@ -227,7 +227,36 @@
     }
 
     
-  </style>
+  
+    /* Recuadro de fila seleccionada en Control de Pedidos */
+    .ctrl-ped-row {
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .ctrl-ped-row:hover:not(.selected) td {
+      background-color: #f8fafc !important;
+    }
+    .ctrl-ped-row.selected {
+      background-color: #eff6ff !important;
+    }
+    .ctrl-ped-row.selected td {
+      background-color: #eff6ff !important;
+      border-top: 2.5px solid #2563eb !important;
+      border-bottom: 2.5px solid #2563eb !important;
+      color: #0f172a !important;
+    }
+    .ctrl-ped-row.selected td:first-child {
+      border-left: 3.5px solid #2563eb !important;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+    }
+    .ctrl-ped-row.selected td:last-child {
+      border-right: 3px solid #2563eb !important;
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+</style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -1975,184 +2004,213 @@
     </section>
 
     <!-- PANEL: CONTROL DE PEDIDOS -->
-    <section id="panel-control-pedidos" class="tab-panel" style="display: none; padding: 24px 30px; max-width: 1400px; margin: 0 auto;">
+    <section id="panel-control-pedidos" class="tab-panel" style="display: none; padding: 20px 28px; max-width: 1550px; margin: 0 auto;">
       
       <!-- ENCABEZADO Y ACCIONES -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
         <div>
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-            <div style="width: 34px; height: 34px; border-radius: 8px; background: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             </div>
-            <h2 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">Control de Pedidos: Almacenamiento Sello &lt; Contabilización VL</h2>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">Control de Pedidos: Almacenamiento Sello &lt; Contabilización VL</h2>
           </div>
-          <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+          <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
             Control de pedidos cuya <strong>Fecha de Almacenamiento Sello</strong> es anterior a la <strong>Fecha de Contabilización de la VL</strong>.
           </p>
         </div>
 
         <div>
-          <a href="pedidos_inconsistencias_almacenamiento.xlsx" download="pedidos_inconsistencias_almacenamiento.xlsx" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 8px; background: #1e3a8a; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 0.84rem; box-shadow: 0 2px 4px rgba(30, 58, 138, 0.25); transition: background 0.15s ease;" onmouseover="this.style.background='#172554'" onmouseout="this.style.background='#1e3a8a'">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <a href="pedidos_inconsistencias_almacenamiento.xlsx" download="pedidos_inconsistencias_almacenamiento.xlsx" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 7px; background: #1e3a8a; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 0.82rem; box-shadow: 0 2px 4px rgba(30, 58, 138, 0.25); transition: background 0.15s ease;" onmouseover="this.style.background='#172554'" onmouseout="this.style.background='#1e3a8a'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Descargar Detalle en Excel (1.976 Pedidos)
           </a>
         </div>
       </div>
 
       <!-- KPI CARDS SUMMARY -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Total Pedidos Base</div>
-          <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;">46.332</div>
-          <div style="font-size: 0.74rem; color: #64748b; margin-top: 4px;">Noviembre 2025 a Noviembre 2026</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 13px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px;">Total Pedidos Base</div>
+          <div style="font-size: 1.35rem; font-weight: 800; color: #0f172a;">46.332</div>
+          <div style="font-size: 0.7rem; color: #64748b; margin-top: 2px;">Noviembre 2025 a Noviembre 2026</div>
         </div>
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Con Fecha Almacenamiento</div>
-          <div style="font-size: 1.5rem; font-weight: 800; color: #0284c7;">25.148</div>
-          <div style="font-size: 0.74rem; color: #64748b; margin-top: 2px;">54,3% con sello de almacenamiento</div>
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 13px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px;">Con Fecha Almacenamiento</div>
+          <div style="font-size: 1.35rem; font-weight: 800; color: #0284c7;">25.148</div>
+          <div style="font-size: 0.7rem; color: #64748b; margin-top: 2px;">54,3% con sello de almacenamiento</div>
         </div>
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Alm. Sello &lt; Contab. VL</div>
-          <div style="font-size: 1.5rem; font-weight: 800; color: #d97706;">1.976</div>
-          <div style="font-size: 0.74rem; color: #b45309; margin-top: 2px;">Pedidos con desfasaje VL</div>
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 13px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px;">Alm. Sello &lt; Contab. VL</div>
+          <div style="font-size: 1.35rem; font-weight: 800; color: #d97706;">1.976</div>
+          <div style="font-size: 0.7rem; color: #b45309; margin-top: 2px;">Pedidos con desfasaje VL</div>
         </div>
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">% Total Inconsistencias</div>
-          <div style="font-size: 1.5rem; font-weight: 800; color: #d97706;">7,86%</div>
-          <div style="font-size: 0.74rem; color: #b45309; margin-top: 2px;">1.976 de 25.148 pedidos almacenados</div>
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 13px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px;">% Total Inconsistencias</div>
+          <div style="font-size: 1.35rem; font-weight: 800; color: #d97706;">7,86%</div>
+          <div style="font-size: 0.7rem; color: #b45309; margin-top: 2px;">1.976 de 25.148 almacenados</div>
         </div>
       </div>
 
-      <!-- TABLA CUADRO PRINCIPAL (ORDENADA POR TOP % INCONSISTENCIAS) -->
-      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); overflow: hidden;">
-        <div style="padding: 14px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 8px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-            Inconsistencias por Obra / Cliente (Top % Inconsistencias)
-          </h3>
-          
+      <!-- DUAL ROW: TABLA COMPACTA (IZQUIERDA) + GRÁFICO TENDENCIA POR OBRA (DERECHA) -->
+      <div style="display: grid; grid-template-columns: minmax(480px, 1.12fr) minmax(450px, 1fr); gap: 18px; align-items: start;">
+        
+        <!-- COLUMNA IZQUIERDA: TABLA COMPACTA -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden;">
+          <div style="padding: 10px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 7px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              Inconsistencias por Obra (Top %)
+            </h3>
+            <span style="font-size: 0.68rem; color: #64748b; font-weight: 600;">Clic en fila para ver en gráfico</span>
+          </div>
+
+          <div style="width: 100%; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.76rem; text-align: left;">
+              <thead>
+                <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1; color: #334155; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.03em;">
+                  <th style="padding: 8px 10px; font-weight: 700;">Obra / Cliente</th>
+                  <th style="padding: 8px 8px; font-weight: 700; text-align: right;">Pedidos Base</th>
+                  <th style="padding: 8px 8px; font-weight: 700; text-align: right;">Con Almacén</th>
+                  <th style="padding: 8px 8px; font-weight: 700; text-align: right;">Alm &lt; VL</th>
+                  <th style="padding: 8px 10px; font-weight: 700; text-align: right;">% Inconsist.</th>
+                </tr>
+              </thead>
+              <tbody>
+              <tr class="ctrl-ped-row selected" data-code="00378" onclick="window.selectCtrlPedObra('00378')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00378 YPF – Oleoducto Cnel. Pringle</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">2.224</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">1.241</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">413</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #fee2e2; color: #991b1b; font-weight: 800; font-size: 0.72rem; border: 1px solid #fecaca;">33,28%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00377" onclick="window.selectCtrlPedObra('00377')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00377-YPF 3° loop</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">6.387</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">3.206</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">630</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.72rem; border: 1px solid #fde68a;">19,65%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00368" onclick="window.selectCtrlPedObra('00368')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00368-YPF Acueducto TBH</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">1.407</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">1.061</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">148</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.72rem; border: 1px solid #fde68a;">13,95%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="0376" onclick="window.selectCtrlPedObra('0376')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">0376 VELADERO FASE 8B /SAN JUAN</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">3.177</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">3.129</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">297</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.72rem; border: 1px solid #fde68a;">9,49%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00314" onclick="window.selectCtrlPedObra('00314')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00314 CASA Olavarría</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">3.565</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">2.581</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">219</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.72rem; border: 1px solid #fde68a;">8,49%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00375" onclick="window.selectCtrlPedObra('00375')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00375 YPF OLEODUCTO PR-LP</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">2.100</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">1.279</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">63</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 800; font-size: 0.72rem; border: 1px solid #e2e8f0;">4,93%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00365" onclick="window.selectCtrlPedObra('00365')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00365 RIO TINTO</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">6.657</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">1.330</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">58</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 800; font-size: 0.72rem; border: 1px solid #e2e8f0;">4,36%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00341" onclick="window.selectCtrlPedObra('00341')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00341 Mov. Suelos San Luis</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">3.023</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">2.305</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">84</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 800; font-size: 0.72rem; border: 1px solid #e2e8f0;">3,64%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00379" onclick="window.selectCtrlPedObra('00379')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00379 – VELADERO FASE 8C</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">2.129</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">827</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">15</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 800; font-size: 0.72rem; border: 1px solid #e2e8f0;">1,81%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00223" onclick="window.selectCtrlPedObra('00223')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00223 Comp Amb Santa Fe</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">1.174</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">901</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">10</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 800; font-size: 0.72rem; border: 1px solid #e2e8f0;">1,11%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00374" onclick="window.selectCtrlPedObra('00374')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00374 TERMINAL PUNTA COLORADA</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">11.220</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">6.257</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">34</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 800; font-size: 0.72rem; border: 1px solid #e2e8f0;">0,54%</span></td>
+              </tr>
+              <tr class="ctrl-ped-row" data-code="00372" onclick="window.selectCtrlPedObra('00372')" title="Clic para ver tendencia en el gráfico">
+                <td style="padding: 7px 10px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">00372 UTE 372 GEO POSCO II</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">3.269</td>
+                <td style="padding: 7px 8px; text-align: right; color: #334155;">1.031</td>
+                <td style="padding: 7px 8px; text-align: right; font-weight: 700; color: #d97706;">5</td>
+                <td style="padding: 7px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 800; font-size: 0.72rem; border: 1px solid #e2e8f0;">0,48%</span></td>
+              </tr>
+              </tbody>
+              <tfoot>
+                <tr style="background: #e2e8f0; font-weight: 800; color: #0f172a; border-top: 2px solid #cbd5e1;">
+                  <td style="padding: 9px 10px;">TOTAL GENERAL</td>
+                  <td style="padding: 9px 8px; text-align: right;">46.332</td>
+                  <td style="padding: 9px 8px; text-align: right;">25.148</td>
+                  <td style="padding: 9px 8px; text-align: right; color: #b45309;">1.976</td>
+                  <td style="padding: 9px 10px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.74rem; border: 1.2px solid #fde68a;">7,86%</span></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
 
-        <div style="width: 100%; overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.84rem; text-align: left;">
-            <thead>
-              <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1; color: #334155; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em;">
-                <th style="padding: 11px 18px; font-weight: 700;">Obra / Cliente</th>
-                <th style="padding: 11px 16px; font-weight: 700; text-align: right;">Total Pedidos Base</th>
-                <th style="padding: 11px 16px; font-weight: 700; text-align: right;">Pedidos con Fecha Almacenamiento</th>
-                <th style="padding: 11px 16px; font-weight: 700; text-align: right;">Alm. Sello &lt; Contab. VL</th>
-                <th style="padding: 11px 18px; font-weight: 700; text-align: right;">% Total Inconsistencias</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- 1. 33,28% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00378 - YPF Oleoducto Cnel. Pringles</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.224</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.241</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">413</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fee2e2; color: #991b1b; font-weight: 800; font-size: 0.76rem; border: 1px solid #fecaca;">33,28%</span></td>
-              </tr>
-              <!-- 2. 19,65% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00377 - YPF 3° loop</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">6.387</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.206</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">630</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">19,65%</span></td>
-              </tr>
-              <!-- 3. 13,95% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00368 - YPF Acueducto TBH</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.407</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.061</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">148</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">13,95%</span></td>
-              </tr>
-              <!-- 4. 9,49% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">0376 - VELADERO FASE 8B / SAN JUAN</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.177</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.129</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">297</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">9,49%</span></td>
-              </tr>
-              <!-- 5. 8,49% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00314 - CASA Olavarría</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.565</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.581</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">219</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">8,49%</span></td>
-              </tr>
-              <!-- 6. 4,93% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00375 - YPF OLEODUCTO PR-LP</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.100</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.279</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">63</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">4,93%</span></td>
-              </tr>
-              <!-- 7. 4,36% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00365 - RIO TINTO</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">6.657</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.330</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">58</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">4,36%</span></td>
-              </tr>
-              <!-- 8. 3,64% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00341 - Mov. Suelos San Luis</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.023</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.305</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">84</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">3,64%</span></td>
-              </tr>
-              <!-- 9. 1,81% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00379 - VELADERO FASE 8C</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.129</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">827</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">15</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">1,81%</span></td>
-              </tr>
-              <!-- 10. 1,11% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00223 - Comp Amb Santa Fe</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.174</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">901</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">10</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">1,11%</span></td>
-              </tr>
-              <!-- 11. 0,54% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00374 - TERMINAL PUNTA COLORADA</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">11.220</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">6.257</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">34</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">0,54%</span></td>
-              </tr>
-              <!-- 12. 0,48% -->
-              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00372 - UTE 372 GEO POSCO II</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.269</td>
-                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.031</td>
-                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">5</td>
-                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">0,48%</span></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr style="background: #e2e8f0; font-weight: 800; color: #0f172a; border-top: 2px solid #cbd5e1;">
-                <td style="padding: 12px 18px;">TOTAL GENERAL</td>
-                <td style="padding: 12px 16px; text-align: right;">46.332</td>
-                <td style="padding: 12px 16px; text-align: right;">25.148</td>
-                <td style="padding: 12px 16px; text-align: right; color: #b45309;">1.976</td>
-                <td style="padding: 12px 18px; text-align: right;"><span style="display: inline-block; padding: 3px 10px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.8rem; border: 1.2px solid #fde68a;">7,86%</span></td>
-              </tr>
-            </tfoot>
-          </table>
+        <!-- COLUMNA DERECHA: GRÁFICO INTERACTIVO DE TENDENCIA POR OBRA -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); padding: 12px 16px; display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <h3 style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 7px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                Tendencia Mensual por Obra
+              </h3>
+              <p style="font-size: 0.7rem; color: #64748b; margin: 1px 0 0 0;">% Inconsistencias (Alm &lt; VL) mes a mes (Nov 2025 - Nov 2026)</p>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <select id="ctrlPed_obraSelect" onchange="window.selectCtrlPedObra(this.value)" style="font-size: 0.72rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; color: #1e293b; outline: none; cursor: pointer;">
+                <option value="__TOP5__">Top 5 Obras</option>
+                <option value="__ALL__">Todas las Obras</option>
+                <optgroup label="Obra puntual (Top %)">
+                  <option value="00378" selected>00378 YPF – Oleoducto Cnel. Pringle (33,28% - 413 ped.)</option>
+                  <option value="00377">00377-YPF 3° loop (19,65% - 630 ped.)</option>
+                  <option value="00368">00368-YPF Acueducto TBH (13,95% - 148 ped.)</option>
+                  <option value="0376">0376 VELADERO FASE 8B /SAN JUAN (9,49% - 297 ped.)</option>
+                  <option value="00314">00314 CASA Olavarría (8,49% - 219 ped.)</option>
+                  <option value="00375">00375 YPF OLEODUCTO PR-LP (4,93% - 63 ped.)</option>
+                  <option value="00365">00365 RIO TINTO (4,36% - 58 ped.)</option>
+                  <option value="00341">00341 Mov. Suelos San Luis (3,64% - 84 ped.)</option>
+                  <option value="00379">00379 – VELADERO FASE 8C (1,81% - 15 ped.)</option>
+                  <option value="00223">00223 Comp Amb Santa Fe (1,11% - 10 ped.)</option>
+                  <option value="00374">00374 TERMINAL PUNTA COLORADA (0,54% - 34 ped.)</option>
+                  <option value="00372">00372 UTE 372 GEO POSCO II (0,48% - 5 ped.)</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div id="ctrlPed_chartTrend"  style="width: 100%; height: 385px; min-height: 360px;"></div>
         </div>
+
       </div>
 
     </section>
@@ -2338,7 +2396,216 @@
       }
     };
 
-    window.switchSedeTab = function(sedeTab) { document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active')); const activeBtn = document.querySelector(`.tabs .sede-tab[data-sede-tab="${sedeTab}"]`); if (activeBtn) activeBtn.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(el => el.style.display = 'none'); const wasCollapsed = document.body.classList.contains('sidebar-collapsed'); document.body.className = 'page-cumplimiento has-st-sidebar' + (wasCollapsed ? ' sidebar-collapsed' : ''); const subtitleEl = document.getElementById('topbarSubtitle'); const sedeTitles = { sede: 'Sede — Análisis de cumplimiento acumulado', sede_reap: 'Sede (REAP) — Análisis de cumplimiento acumulado', sede_pi: 'Sede (Pedidos de información) — Análisis de cumplimiento acumulado', sede_servicios: 'Sede — Análisis de servicios y subcontratos' }; if (subtitleEl) subtitleEl.textContent = sedeTitles[sedeTab] || sedeTitles.sede; if (typeof window.syncTopScheduleBadge === 'function') window.syncTopScheduleBadge('sede'); if (sedeTab === 'sede_servicios') { const p = document.getElementById('panel-servicios'); if (p) p.style.display = 'block'; if (typeof window.loadServiciosSector === 'function') window.loadServiciosSector('sede'); } else { const p = document.getElementById('panel-cumplimiento'); if (p) p.style.display = 'block'; if (typeof window.setCumplimientoSector === 'function') window.setCumplimientoSector(sedeTab); } setTimeout(() => { window.dispatchEvent(new Event('resize')); window.scrollTo({ top: 0, behavior: 'instant' }); }, 50); }; window.switchTab = function(tabName) {
+    window.switchSedeTab = function(sedeTab) { document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active')); const activeBtn = document.querySelector(`.tabs .sede-tab[data-sede-tab="${sedeTab}"]`); if (activeBtn) activeBtn.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(el => el.style.display = 'none'); const wasCollapsed = document.body.classList.contains('sidebar-collapsed'); document.body.className = 'page-cumplimiento has-st-sidebar' + (wasCollapsed ? ' sidebar-collapsed' : ''); const subtitleEl = document.getElementById('topbarSubtitle'); const sedeTitles = { sede: 'Sede — Análisis de cumplimiento acumulado', sede_reap: 'Sede (REAP) — Análisis de cumplimiento acumulado', sede_pi: 'Sede (Pedidos de información) — Análisis de cumplimiento acumulado', sede_servicios: 'Sede — Análisis de servicios y subcontratos' }; if (subtitleEl) subtitleEl.textContent = sedeTitles[sedeTab] || sedeTitles.sede; if (typeof window.syncTopScheduleBadge === 'function') window.syncTopScheduleBadge('sede'); if (sedeTab === 'sede_servicios') { const p = document.getElementById('panel-servicios'); if (p) p.style.display = 'block'; if (typeof window.loadServiciosSector === 'function') window.loadServiciosSector('sede'); } else { const p = document.getElementById('panel-cumplimiento'); if (p) p.style.display = 'block'; if (typeof window.setCumplimientoSector === 'function') window.setCumplimientoSector(sedeTab); } setTimeout(() => { window.dispatchEvent(new Event('resize')); window.scrollTo({ top: 0, behavior: 'instant' }); }, 50); }; 
+  /* ==============================================================================
+     CONTROL DE PEDIDOS: GRÁFICO INTERACTIVO DE TENDENCIA POR OBRA (ECHART)
+     ============================================================================== */
+  let ctrlPedChartInstance = null;
+  const ctrlPedMonths = ['Nov 25', 'Dic 25', 'Ene 26', 'Feb 26', 'Mar 26', 'Abr 26', 'May 26', 'Jun 26', 'Jul 26', 'Ago 26', 'Sep 26', 'Oct 26', 'Nov 26'];
+
+  const ctrlPedObras = [
+    { code: "00378", name: "00378 YPF – Oleoducto Cnel. Pringle", short: "YPF Pringles", color: "#ef4444", pct: 33.28, inc: 413, points: [{ value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 2.2, count: 2 }, { value: 56.2, count: 207 }, { value: 14.0, count: 37 }, { value: 60.9, count: 165 }, { value: 0.5, count: 1 }, { value: 1.9, count: 1 }] },
+    { code: "00377", name: "00377-YPF 3° loop", short: "YPF 3° Loop", color: "#f97316", pct: 19.65, inc: 630, points: [{ value: 0.0, count: 0 }, { value: 100.0, count: 13 }, { value: 39.8, count: 313 }, { value: 9.0, count: 15 }, { value: 11.3, count: 27 }, { value: 2.0, count: 7 }, { value: 6.9, count: 28 }, { value: 3.6, count: 8 }, { value: 14.4, count: 54 }, { value: 1.8, count: 3 }, { value: 15.7, count: 42 }, { value: 53.6, count: 120 }, { value: 0.0, count: 0 }] },
+    { code: "00368", name: "00368-YPF Acueducto TBH", short: "YPF TBH", color: "#f59e0b", pct: 13.95, inc: 148, points: [{ value: 4.0, count: 10 }, { value: 4.7, count: 9 }, { value: 16.7, count: 28 }, { value: 29.2, count: 70 }, { value: 17.5, count: 25 }, { value: 10.9, count: 5 }, { value: 6.2, count: 1 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }] },
+    { code: "0376", name: "0376 VELADERO FASE 8B /SAN JUAN", short: "Veladero 8B", color: "#8b5cf6", pct: 9.49, inc: 297, points: [{ value: 2.0, count: 10 }, { value: 12.6, count: 81 }, { value: 0.6, count: 3 }, { value: 4.9, count: 28 }, { value: 27.7, count: 138 }, { value: 9.3, count: 36 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 50.0, count: 1 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }] },
+    { code: "00314", name: "00314 CASA Olavarría", short: "CASA Olavarría", color: "#06b6d4", pct: 8.49, inc: 219, points: [{ value: 2.9, count: 6 }, { value: 1.8, count: 4 }, { value: 1.3, count: 3 }, { value: 41.8, count: 59 }, { value: 3.5, count: 7 }, { value: 6.2, count: 16 }, { value: 13.5, count: 31 }, { value: 22.2, count: 53 }, { value: 9.5, count: 16 }, { value: 4.3, count: 9 }, { value: 0.5, count: 1 }, { value: 4.9, count: 10 }, { value: 4.7, count: 4 }] },
+    { code: "00375", name: "00375 YPF OLEODUCTO PR-LP", short: "YPF PR-LP", color: "#10b981", pct: 4.93, inc: 63, points: [{ value: 6.7, count: 18 }, { value: 5.4, count: 13 }, { value: 24.2, count: 23 }, { value: 0.8, count: 2 }, { value: 1.2, count: 2 }, { value: 2.2, count: 3 }, { value: 1.0, count: 1 }, { value: 9.1, count: 1 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }] },
+    { code: "00365", name: "00365 RIO TINTO", short: "Rio Tinto", color: "#3b82f6", pct: 4.36, inc: 58, points: [{ value: 6.5, count: 2 }, { value: 0.0, count: 0 }, { value: 2.7, count: 1 }, { value: 0.0, count: 0 }, { value: 9.7, count: 9 }, { value: 6.8, count: 8 }, { value: 4.5, count: 4 }, { value: 20.7, count: 23 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 4.4, count: 9 }, { value: 0.8, count: 1 }, { value: 1.8, count: 1 }] },
+    { code: "00341", name: "00341 Mov. Suelos San Luis", short: "San Luis", color: "#ec4899", pct: 3.64, inc: 84, points: [{ value: 0.0, count: 0 }, { value: 0.6, count: 1 }, { value: 0.0, count: 0 }, { value: 0.6, count: 1 }, { value: 0.9, count: 2 }, { value: 0.0, count: 0 }, { value: 4.7, count: 11 }, { value: 0.0, count: 0 }, { value: 19.5, count: 50 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 12.2, count: 18 }, { value: 1.2, count: 1 }] },
+    { code: "00379", name: "00379 – VELADERO FASE 8C", short: "Veladero 8C", color: "#6366f1", pct: 1.81, inc: 15, points: [{ value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 1.8, count: 15 }] },
+    { code: "00223", name: "00223 Comp Amb Santa Fe", short: "Santa Fe", color: "#14b8a6", pct: 1.11, inc: 10, points: [{ value: 1.6, count: 1 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 1.1, count: 1 }, { value: 1.1, count: 1 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 8.0, count: 7 }, { value: 0.0, count: 0 }] },
+    { code: "00374", name: "00374 TERMINAL PUNTA COLORADA", short: "Pta. Colorada", color: "#64748b", pct: 0.54, inc: 34, points: [{ value: 0.0, count: 0 }, { value: 0.5, count: 2 }, { value: 0.8, count: 2 }, { value: 2.7, count: 11 }, { value: 0.2, count: 1 }, { value: 0.0, count: 0 }, { value: 0.8, count: 5 }, { value: 0.9, count: 5 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 1.6, count: 8 }, { value: 0.0, count: 0 }] },
+    { code: "00372", name: "00372 UTE 372 GEO POSCO II", short: "POSCO II", color: "#a855f7", pct: 0.48, inc: 5, points: [{ value: 1.4, count: 1 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 1.6, count: 1 }, { value: 0.0, count: 0 }, { value: 0.9, count: 1 }, { value: 0.0, count: 0 }, { value: 0.6, count: 1 }, { value: 1.0, count: 1 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }, { value: 0.0, count: 0 }] }
+  ];
+
+  window.initControlPedidos = function() {
+    const chartDom = document.getElementById('ctrlPed_chartTrend');
+    if (!chartDom) return;
+    if (typeof echarts === 'undefined') {
+      setTimeout(window.initControlPedidos, 150);
+      return;
+    }
+
+    setTimeout(function() {
+      try {
+        if (!ctrlPedChartInstance) {
+          ctrlPedChartInstance = echarts.init(chartDom);
+        } else {
+          ctrlPedChartInstance.resize();
+        }
+        // Iniciar en la obra #1 del Top por % (00378 - YPF Pringles 33,28%)
+        const selEl = document.getElementById('ctrlPed_obraSelect');
+        const codeToSelect = (selEl && selEl.value && selEl.value !== '__TOP5__' && selEl.value !== '__ALL__') ? selEl.value : '00378';
+        window.selectCtrlPedObra(codeToSelect);
+        setTimeout(function() {
+          if (ctrlPedChartInstance) ctrlPedChartInstance.resize();
+        }, 50);
+      } catch (err) {
+        console.error('Error initializing Control Pedidos ECharts:', err);
+      }
+    }, 60);
+  };
+
+  window.addEventListener('resize', function() {
+    if (ctrlPedChartInstance) {
+      ctrlPedChartInstance.resize();
+    }
+  });
+
+  window.selectCtrlPedObra = function(code) {
+    if (!ctrlPedChartInstance) {
+      const chartDom = document.getElementById('ctrlPed_chartTrend');
+      if (chartDom && typeof echarts !== 'undefined') {
+        ctrlPedChartInstance = echarts.init(chartDom);
+      }
+    }
+    const sel = document.getElementById('ctrlPed_obraSelect');
+    if (sel && sel.value !== code) {
+      sel.value = code;
+    }
+
+    window.updateCtrlPedChart(code);
+
+    // Actualizar RECUADRO en la tabla para la obra activa
+    document.querySelectorAll('.ctrl-ped-row').forEach(tr => {
+      if (tr.getAttribute('data-code') === code) {
+        tr.classList.add('selected');
+      } else {
+        tr.classList.remove('selected');
+      }
+    });
+  };
+
+  window.updateCtrlPedChart = function(mode) {
+    const chartDom = document.getElementById('ctrlPed_chartTrend');
+    if (!ctrlPedChartInstance && chartDom && typeof echarts !== 'undefined') {
+      ctrlPedChartInstance = echarts.init(chartDom);
+    }
+    if (!ctrlPedChartInstance) return;
+
+    let seriesConfig = [];
+    let legendData = [];
+
+    if (mode === '__ALL__') {
+      seriesConfig = ctrlPedObras.map(o => ({
+        name: o.short,
+        type: 'line',
+        smooth: false,
+        data: o.points,
+        itemStyle: { color: o.color },
+        lineStyle: { width: 1.8 },
+        symbol: 'circle',
+        symbolSize: 5,
+        label: {
+          show: false
+        }
+      }));
+      legendData = ctrlPedObras.map(o => o.short);
+    } else if (mode === '__TOP5__') {
+      const top5 = ctrlPedObras.slice(0, 5);
+      seriesConfig = top5.map(o => ({
+        name: o.short,
+        type: 'line',
+        smooth: false,
+        data: o.points,
+        itemStyle: { color: o.color },
+        lineStyle: { width: 2.2 },
+        symbol: 'circle',
+        symbolSize: 6,
+        label: {
+          show: false
+        }
+      }));
+      legendData = top5.map(o => o.short);
+    } else {
+      // Obra puntual seleccionada: eje % y ETIQUETAS con porcentaje y cantidad
+      const found = ctrlPedObras.find(o => o.code === mode) || ctrlPedObras[0];
+      seriesConfig = [
+        {
+          name: found.short,
+          type: 'line',
+          smooth: false,
+          data: found.points,
+          itemStyle: { color: found.color },
+          lineStyle: { width: 2.8 },
+          symbol: 'circle',
+          symbolSize: 7,
+          label: {
+            show: false
+          },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: found.color + '44' },
+              { offset: 1, color: found.color + '05' }
+            ])
+          }
+        }
+      ];
+      legendData = [found.short];
+    }
+
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        formatter: function (params) {
+          let str = '<div style="font-weight:700; margin-bottom:4px; font-size:12px; color:#0f172a;">' + params[0].axisValue + '</div>';
+          params.forEach(p => {
+            const cnt = (p.data && p.data.count !== undefined) ? p.data.count : 0;
+            const pct = Number(p.value).toFixed(1).replace('.', ',') + '%';
+            str += '<div style="display:flex; align-items:center; gap:6px; font-size:11px; margin-top:2px;">' +
+              '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:' + p.color + ';"></span>' +
+              '<span style="flex:1; color:#334155;">' + p.seriesName + ':</span>' +
+              '<strong style="color:#0f172a;">' + cnt + ' pedidos <span style="font-weight:600; color:#2563eb;">(' + pct + ')</span></strong>' +
+            '</div>';
+          });
+          return str;
+        }
+      },
+      legend: {
+        data: legendData,
+        top: 0,
+        textStyle: { fontSize: 10, color: '#475569' },
+        itemWidth: 14,
+        itemHeight: 8
+      },
+      grid: {
+        left: '2%',
+        right: '5%',
+        bottom: '8%',
+        top: '16%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: ctrlPedMonths,
+        axisLine: { lineStyle: { color: '#cbd5e1' } },
+        axisLabel: { color: '#64748b', fontSize: 10 }
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: '{value}%',
+          color: '#64748b',
+          fontSize: 10
+        },
+        splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } }
+      },
+      series: seriesConfig
+    };
+
+    ctrlPedChartInstance.setOption(option, true);
+    ctrlPedChartInstance.resize();
+  };
+
+  // Auto-init Control de Pedidos si la pestaña está activa
+  document.addEventListener('DOMContentLoaded', function() {
+    const activeTab = document.querySelector('.tabs .tab.active')?.getAttribute('data-tab');
+    if (activeTab === 'control-pedidos' && typeof window.initControlPedidos === 'function') {
+      window.initControlPedidos();
+    }
+  });
+
+  window.switchTab = function(tabName) {
       // 1. Quitar clase active de todas las pestañas de navegación
       document.querySelectorAll('.tabs .tab').forEach(el => el.classList.remove('active'));
       
@@ -2419,6 +2686,10 @@
         } else if (tabName === 'emrf') {
           if (typeof window.initEMRF === 'function') {
             window.initEMRF();
+          }
+        } else if (tabName === 'control-pedidos') {
+          if (typeof window.initControlPedidos === 'function') {
+            window.initControlPedidos();
           }
         }
       }, 50);

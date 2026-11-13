@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 
 <head>
@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="css/demoras.css?v=20261112_162500" />
   <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261112_162500" />
   <link rel="stylesheet" href="css/control-emrf.css?v=20261112_162500" />
+  <link rel="stylesheet" href="css/tablero.css?v=20261113_095500" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -28,6 +29,12 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
+    /* Reset defensivo para anillos SVG en Tablero */
+    .radial-circle-box { width: 68px; height: 68px; min-width: 68px; min-height: 68px; max-width: 68px; max-height: 68px; flex-shrink: 0; position: relative; display: inline-flex; }
+    .radial-circle-box svg { transform: rotate(-90deg); width: 100% !important; height: 100% !important; display: block; }
+    .radial-circle-bg, circle.radial-circle-bg { fill: none !important; stroke: #cbd5e1; stroke-width: 6; }
+    .radial-circle-progress, circle.radial-circle-progress { fill: none !important; stroke: #0d9488; stroke-width: 6.5; stroke-linecap: round; stroke-dasharray: 188.5; stroke-dashoffset: 21.8; }
+    .radial-value-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 800; font-family: monospace; color: #0f172a; pointer-events: none; }
     /* Estilos para el panel de Servicios (Scoped to #panel-servicios to prevent style bleeding) */
     #panel-servicios .kpi-mini-box {
       height: 70px !important;
@@ -1575,9 +1582,16 @@
               <!-- Radial Hero KPI de Disponibilidad General -->
               <div class="kpi-radial-hero">
                 <div class="radial-circle-box">
-                  <svg viewBox="0 0 70 70">
-                    <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
-                    <circle class="radial-circle-progress" id="res_radial_circle" cx="35" cy="35" r="30"></circle>
+                  <svg viewBox="0 0 70 70" width="68" height="68">
+                    <defs>
+                      <linearGradient id="radialGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#0f766e"/>
+                        <stop offset="50%" stop-color="#0d9488"/>
+                        <stop offset="100%" stop-color="#14b8a6"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="radial-circle-bg" cx="35" cy="35" r="30" fill="none"></circle>
+                    <circle class="radial-circle-progress" id="res_radial_circle" cx="35" cy="35" r="30" fill="none"></circle>
                   </svg>
                   <div class="radial-value-center" id="res_txtPct">-</div>
                 </div>
@@ -1701,9 +1715,9 @@
                 <div class="cumpl-box" style="padding: 0.55rem 0.7rem; gap: 0.25rem;">
                   <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0; background: transparent; border: none; gap: 0.65rem;">
                     <div class="radial-circle-box" style="width: 54px; height: 54px; flex-shrink: 0;">
-                      <svg viewBox="0 0 70 70">
-                        <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
-                        <circle class="radial-circle-progress" id="res_radial_circle_acum" cx="35" cy="35" r="30"></circle>
+                      <svg viewBox="0 0 70 70" width="54" height="54">
+                        <circle class="radial-circle-bg" cx="35" cy="35" r="30" fill="none"></circle>
+                        <circle class="radial-circle-progress" id="res_radial_circle_acum" cx="35" cy="35" r="30" fill="none"></circle>
                       </svg>
                       <div class="radial-value-center" id="res_cumplAcumATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
                     </div>
@@ -1740,9 +1754,9 @@
                 <div class="cumpl-box" style="padding: 0.55rem 0.7rem; gap: 0.25rem;">
                   <div class="kpi-radial-hero" style="margin-bottom: 0; padding: 0; background: transparent; border: none; gap: 0.65rem;">
                     <div class="radial-circle-box" style="width: 54px; height: 54px; flex-shrink: 0;">
-                      <svg viewBox="0 0 70 70">
-                        <circle class="radial-circle-bg" cx="35" cy="35" r="30"></circle>
-                        <circle class="radial-circle-progress" id="res_radial_circle_curr" cx="35" cy="35" r="30"></circle>
+                      <svg viewBox="0 0 70 70" width="54" height="54">
+                        <circle class="radial-circle-bg" cx="35" cy="35" r="30" fill="none"></circle>
+                        <circle class="radial-circle-progress" id="res_radial_circle_curr" cx="35" cy="35" r="30" fill="none"></circle>
                       </svg>
                       <div class="radial-value-center" id="res_cumplATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
                     </div>
@@ -1943,7 +1957,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
   <script src="js/demoras.js?v=20261112_162500"></script>
-  <script src="js/resumen.js?v=20261112_162500"></script>
+  <script src="js/resumen.js?v=20261113_095500"></script>
   <script src="js/cumplimiento.js?v=20261112_162500"></script>
   <script src="js/cumplimiento-arriba.js?v=20261112_162500"></script>
   <script src="js/analisis-mm.js?v=20261112_162500"></script>

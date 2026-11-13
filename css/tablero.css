@@ -1,0 +1,480 @@
+/* ==========================================================================
+   TABLERO - BENTO MASTER GRID & DESIGN SYSTEM SAAS EJECUTIVO
+   ========================================================================== */
+
+:root,
+#panel-resumen,
+.bento-master-grid {
+  /* Paleta Light (Clean SaaS) */
+  --bg-app: #f4f7fb;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f8fafc;
+  --border-subtle: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --text-main: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  /* Acentos de Marca (Verde Institucional #0d9488 / #0f766e / #14b8a6) */
+  --brand: #0d9488;
+  --brand-hover: #0f766e;
+  --brand-light: #ccfbf1;
+  --brand-border: #99f6e4;
+  --brand-gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #0d9488 100%);
+
+  /* Estados Semánticos */
+  --success: #0d9488;
+  --success-bg: #f0fdfa;
+  --success-text: #0f766e;
+  --success-border: #99f6e4;
+
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+  --warning-text: #b45309;
+  --warning-border: #fde68a;
+
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --danger-text: #b91c1c;
+  --danger-border: #fecaca;
+
+  --purple: #8b5cf6;
+  --purple-bg: #f5f3ff;
+  --purple-text: #6d28d9;
+  --purple-border: #ddd6fe;
+
+  /* Sombras Suaves */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.08);
+
+  /* Radios de curvatura */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+
+  /* Fuentes */
+  --font-sans: 'Source Sans 3', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ÁREA DE TRABAJO TABLERO */
+#panel-resumen .main-workspace {
+  flex: 1;
+  padding: 0.75rem 1rem 1.5rem 1rem;
+  overflow-y: auto;
+  max-width: 1750px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* BENTO GRID PRINCIPAL (2 Columnas Maestras: 1.8fr / 3.2fr) */
+.bento-master-grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 1.8fr) minmax(480px, 3.2fr);
+  gap: 0.85rem;
+  align-items: start;
+}
+
+@media (max-width: 1180px) {
+  .bento-master-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bento-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* TARJETA BENTO EJECUTIVA */
+.bento-card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1rem 1.15rem;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.06));
+  transition: var(--transition);
+  position: relative;
+}
+
+.bento-card:hover {
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.08));
+  border-color: var(--border-hover, #cbd5e1);
+}
+
+/* Cabecera de Tarjeta Bento */
+.bento-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.bento-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bento-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--bg-subtle, #f8fafc);
+  color: var(--text-secondary, #475569);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bento-title {
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-main, #0f172a);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.bento-action-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--bg-subtle, #f8fafc);
+  color: var(--text-secondary, #475569);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   ANILLO SVG DE PROGRESO CIRCULAR (RADIAL HERO)
+   ========================================================================== */
+
+.kpi-radial-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  background: var(--bg-subtle, #f8fafc);
+  border-radius: var(--radius-md, 8px);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.radial-circle-box {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
+  max-width: 68px;
+  max-height: 68px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radial-circle-box svg {
+  transform: rotate(-90deg);
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* CRUCIAL: Prevenir que los círculos SVG se muestren negros */
+.radial-circle-bg,
+circle.radial-circle-bg {
+  fill: none !important;
+  stroke: var(--border-hover, #cbd5e1);
+  stroke-width: 6;
+}
+
+.radial-circle-progress,
+circle.radial-circle-progress {
+  fill: none !important;
+  stroke: var(--brand, #0d9488);
+  stroke: url(#radialGreen);
+  stroke-width: 6.5;
+  stroke-linecap: round;
+  stroke-dasharray: 188.5;
+  stroke-dashoffset: 21.8; /* Valor inicial / fallback */
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(13, 148, 136, 0.25));
+}
+
+.radial-value-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-main, #0f172a);
+  pointer-events: none;
+}
+
+.kpi-hero-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.kpi-hero-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted, #94a3b8);
+}
+
+.kpi-hero-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 3px 0;
+}
+
+.kpi-hero-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--success-text, #0f766e);
+  background: var(--success-bg, #f0fdfa);
+  border: 1px solid var(--success-border, #99f6e4);
+  padding: 1px 6px;
+  border-radius: var(--radius-pill, 9999px);
+}
+
+.kpi-hero-sub {
+  font-size: 0.74rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.25;
+}
+
+/* ==========================================================================
+   GRID DE MICRO KPIS & STAT PILL CARDS
+   ========================================================================== */
+
+.metrics-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-pill-card {
+  background: var(--bg-subtle, #f8fafc);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: var(--transition);
+}
+
+.stat-pill-card:hover {
+  border-color: var(--border-hover, #cbd5e1);
+  background: var(--bg-surface, #ffffff);
+}
+
+.stat-pill-card.danger-card {
+  background: var(--danger-bg, #fef2f2);
+  border-color: var(--danger-border, #fecaca);
+}
+
+.stat-pill-card.warning-card {
+  background: var(--warning-bg, #fffbeb);
+  border-color: var(--warning-border, #fde68a);
+}
+
+.stat-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+}
+
+.stat-pill-card.danger-card .stat-title {
+  color: var(--danger-text, #b91c1c);
+  font-weight: 700;
+}
+
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-main, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+.stat-pill-card.danger-card .stat-value {
+  color: var(--danger-text, #b91c1c);
+}
+
+.stat-hint {
+  font-size: 0.68rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.stat-pill-card.danger-card .stat-hint {
+  color: var(--danger-text, #b91c1c);
+}
+
+/* MINI BARRAS DE PROGRESO LINEAL */
+.progress-bar-wrap {
+  width: 100%;
+  height: 5px;
+  background: var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-pill, 9999px);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill, 9999px);
+  transition: width 0.6s ease;
+}
+
+/* ==========================================================================
+   CUMPLIMIENTO: TARJETA DUAL (12M ACUMULADO vs PERÍODO EVALUADO)
+   ========================================================================== */
+
+.cumpl-dual-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-bottom: 0.65rem;
+}
+
+@media (max-width: 768px) {
+  .cumpl-dual-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cumpl-box {
+  background: var(--bg-subtle, #f8fafc);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cumpl-meta-chip {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill, 9999px);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ==========================================================================
+   SERVICIOS & PARTIDAS EN HORIZONTAL
+   ========================================================================== */
+
+.services-dual-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .services-dual-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.service-stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+.strip-pill {
+  background: var(--bg-subtle, #f8fafc);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-sm, 6px);
+  padding: 5px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.strip-lbl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+  text-transform: uppercase;
+}
+
+.strip-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-main, #0f172a);
+}
+
+/* TABLA DE TIEMPOS Y PRIORIDAD MODERNA */
+.table-responsive-box {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.modern-tiempos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  text-align: center;
+}
+
+.modern-tiempos-table th {
+  background: var(--bg-subtle, #f8fafc);
+  color: var(--text-secondary, #475569);
+  font-weight: 700;
+  padding: 5px 6px;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  text-transform: uppercase;
+  font-size: 0.66rem;
+}
+
+.modern-tiempos-table td {
+  padding: 5px 6px;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.73rem;
+}
+
+/* CAJA DE GRÁFICOS */
+.chart-box-frame {
+  width: 100%;
+  height: 160px;
+  border-radius: var(--radius-md, 8px);
+}

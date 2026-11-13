@@ -1277,12 +1277,30 @@
       }
     }
 
+    function updateRadialProgress(id, pct01) {
+      const circle = document.getElementById(id);
+      if (!circle) return;
+      const clamped = Math.max(0, Math.min(1, Number(pct01) || 0));
+      const circumference = 188.5; // 2 * PI * 30
+      circle.style.strokeDashoffset = (circumference * (1 - clamped)).toFixed(1);
+    }
+
     setText("res_txtTotal", fmtInt(totalMat));
+    setText("res_txtTotal_card", fmtInt(totalMat));
     setText("res_txtDisp", fmtInt(dispMat));
     setText("res_txtPct", fmtPct01(pctDisp));
+    updateRadialProgress("res_radial_circle", pctDisp);
+
     const isDispGood = (Math.round(pctDisp * 1000) / 10 >= 90);
     const elDisp = document.getElementById("res_txtPct");
     if (elDisp) elDisp.style.setProperty("color", isDispGood ? "#16a34a" : "#dc2626", "important");
+    const tagDisp = document.getElementById("res_tagDispStatus");
+    if (tagDisp) {
+      tagDisp.textContent = isDispGood ? "En Objetivo" : "Bajo Objetivo";
+      tagDisp.style.color = isDispGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
+      tagDisp.style.background = isDispGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
+      tagDisp.style.borderColor = isDispGood ? "var(--success-border, #99f6e4)" : "var(--danger-border, #fecaca)";
+    }
     const rowDisp = document.getElementById("res_rowDispPct");
     if (rowDisp) {
       rowDisp.style.border = isDispGood ? "1.5px solid #16a34a" : "1.5px solid #dc2626";
@@ -1306,10 +1324,19 @@
       </ul>
     `;
     setHTML("res_wrapNulo", txtNuloHTML);
+    const nuloCard = document.getElementById("res_txtNulo");
+    if (nuloCard && nuloCard.tagName !== "UL") setText("res_txtNulo", fmtInt(cantStockNulo));
 
     setText("res_txtMenorPP", `${fmtInt(cantMenorPP)} (${fmtPct01(pctMenorPP)})`);
     setText("res_txtMayorPP", `${fmtInt(cantMayorPP)} (${fmtPct01(pctMayorPP)})`);
     setText("res_txtMayorMax", `${fmtInt(cantMayorMax)} (${fmtPct01(pctMayorMax)})`);
+
+    const barMenor = document.getElementById("res_barMenorPP");
+    if (barMenor) barMenor.style.width = fmtPct01(pctMenorPP);
+    const barMayor = document.getElementById("res_barMayorPP");
+    if (barMayor) barMayor.style.width = fmtPct01(pctMayorPP);
+    const barMax = document.getElementById("res_barMayorMax");
+    if (barMax) barMax.style.width = fmtPct01(pctMayorMax);
 
     renderMiniEvolMMChart(selectedObras);
   }
@@ -1550,7 +1577,19 @@
 
     setText("res_cumplAcumATpct", fmtPct01(mLTM.pctAt));
     setText("res_cumplAcumATqty", fmtInt(mLTM.at));
+    const circleAcum = document.getElementById("res_radial_circle_acum");
+    if (circleAcum) {
+      const clamped = Math.max(0, Math.min(1, Number(mLTM.pctAt) || 0));
+      circleAcum.style.strokeDashoffset = (188.5 * (1 - clamped)).toFixed(1);
+    }
     const isAcumGood = (Math.round(mLTM.pctAt * 1000) / 10 >= 78);
+    const tagAcum = document.getElementById("res_tagAcumStatus");
+    if (tagAcum) {
+      tagAcum.textContent = isAcumGood ? "En Objetivo" : "Bajo Objetivo";
+      tagAcum.style.color = isAcumGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
+      tagAcum.style.background = isAcumGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
+      tagAcum.style.borderColor = isAcumGood ? "var(--success-border, #99f6e4)" : "var(--danger-border, #fecaca)";
+    }
     const elAcumAT = document.getElementById("res_cumplAcumATpct");
     if (elAcumAT) elAcumAT.style.setProperty("color", isAcumGood ? "#16a34a" : "#dc2626", "important");
     const rowAcumAT = document.getElementById("res_cumplAcumRowAT");
@@ -1633,7 +1672,20 @@
     const elATdiff = document.getElementById("res_cumplATdiff");
     if (elATdiff) elATdiff.style.color = diffATInfo.color;
 
+    const circleCurr = document.getElementById("res_radial_circle_curr");
+    if (circleCurr) {
+      const clamped = Math.max(0, Math.min(1, Number(mCurr.pctAt) || 0));
+      circleCurr.style.strokeDashoffset = (188.5 * (1 - clamped)).toFixed(1);
+    }
+
     const isCurrGood = (Math.round(mCurr.pctAt * 1000) / 10 >= 78);
+    const tagCurr = document.getElementById("res_tagCurrStatus");
+    if (tagCurr) {
+      tagCurr.textContent = isCurrGood ? "En Objetivo" : "Bajo Objetivo";
+      tagCurr.style.color = isCurrGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
+      tagCurr.style.background = isCurrGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
+      tagCurr.style.borderColor = isCurrGood ? "var(--success-border, #99f6e4)" : "var(--danger-border, #fecaca)";
+    }
     const elAT = document.getElementById("res_cumplATpct");
     if (elAT) elAT.style.setProperty("color", isCurrGood ? "#16a34a" : "#dc2626", "important");
     const rowCurrAT = document.getElementById("res_cumplRowAT");

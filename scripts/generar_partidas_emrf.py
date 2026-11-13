@@ -271,11 +271,9 @@ def process_data(data_dir=None, corte_str=None):
 
     def venc_status(fec):
         if pd.isna(fec):
-            return 'SIN FECHA OC'
-        elif fec < today_date:
-            return 'VENCIDA'
-        else:
-            return 'VIGENTE'
+            return 'SIN FECHA'
+        delta = (today_date - fec).days
+        return 'VENCIDA' if delta > 30 else 'VIGENTE'
 
     def dias_atraso(fec):
         if pd.isna(fec):
@@ -288,21 +286,21 @@ def process_data(data_dir=None, corte_str=None):
         venc = r['Estado_Vencimiento']
         if emrf == 'TIENE FACTURA - FALTA RECEPCIÓN':
             if venc == 'VENCIDA':
-                return '🔴 URGENTE: OC Vencida sin Recepción'
+                return '🔴 URGENTE: Factura con más de 1 mes sin Recepción'
             else:
-                return '🟠 Factura sin Recepción (En plazo)'
+                return '🟠 Factura sin Recepción (< 30 días)'
         elif emrf == 'TIENE RECEPCIÓN - FALTA FACTURA':
             if venc == 'VENCIDA':
-                return '🟡 RECLAMAR: OC Vencida sin Factura'
+                return '🟡 RECLAMAR: Recepción con más de 1 mes sin Factura'
             else:
-                return '🔵 Recepción en plazo (Pendiente Factura)'
+                return '🔵 Recepción en plazo (< 30 días)'
         else:
             return '🟢 Listo para compensar (F.13)'
 
     grouped['Diagnostico_EMRF'] = grouped.apply(diag_emrf, axis=1)
     grouped['Grupo_EMRF'] = grouped['Diagnostico_EMRF'].apply(group_emrf)
-    grouped['Estado_Vencimiento'] = grouped['Fecha_Entrega_OC'].apply(venc_status)
-    grouped['Dias_Atraso'] = grouped['Fecha_Entrega_OC'].apply(dias_atraso)
+    grouped['Estado_Vencimiento'] = grouped['Fe_Contabilizacion'].apply(venc_status)
+    grouped['Dias_Atraso'] = grouped['Fe_Contabilizacion'].apply(dias_atraso)
     grouped['Prioridad_Accion'] = grouped.apply(calc_prioridad, axis=1)
 
     def fmt_date(d):

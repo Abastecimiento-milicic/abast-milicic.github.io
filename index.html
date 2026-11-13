@@ -278,6 +278,7 @@
     <button class="tab" data-tab="servicios" onclick="window.switchTab('servicios')">SERVICIOS</button>
     <button class="tab" data-tab="tiempos" onclick="window.switchTab('tiempos')">TIEMPOS / PRIORIDAD</button>
     <button class="tab" data-tab="emrf" onclick="window.switchTab('emrf')">CONTROL EM/RF</button>
+    <button class="tab" data-tab="control-pedidos" onclick="window.switchTab('control-pedidos')">CONTROL DE PEDIDOS</button>
     <button class="tab sede-tab" data-sede-tab="sede" onclick="window.switchSedeTab('sede')" style="display: none;">SEDE</button><button class="tab sede-tab" data-sede-tab="sede_reap" onclick="window.switchSedeTab('sede_reap')" style="display: none;">REAP</button><button class="tab sede-tab" data-sede-tab="sede_pi" onclick="window.switchSedeTab('sede_pi')" style="display: none;">PEDIDOS DE INFORMACIÓN</button><button class="tab sede-tab" data-sede-tab="sede_servicios" onclick="window.switchSedeTab('sede_servicios')" style="display: none;">SERVICIOS</button>
   </nav>
 
@@ -1726,7 +1727,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 4px;">
                   <span class="bento-action-badge" id="res_emrf_gc_badge" style="display: none;"></span>
-                  <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar OC" style="margin: 0; padding: 1px 4px; display: inline-flex; align-items: center; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
+                  <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar por Vencimiento (> 1 mes de demora)" style="margin: 0; padding: 1px 4px; display: inline-flex; align-items: center; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
                     <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" style="font-size: 0.65rem; border: none; background: transparent; color: #475569; font-weight: 700; cursor: pointer; outline: none; height: 16px;">
                       <option value="VENCIDA" selected>🔴 Vencidas</option>
                       <option value="NO_VENCIDA">🔵 No Vencidas</option>
@@ -1973,6 +1974,188 @@
       </div>
     </section>
 
+    <!-- PANEL: CONTROL DE PEDIDOS -->
+    <section id="panel-control-pedidos" class="tab-panel" style="display: none; padding: 24px 30px; max-width: 1400px; margin: 0 auto;">
+      
+      <!-- ENCABEZADO Y ACCIONES -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <div style="width: 34px; height: 34px; border-radius: 8px; background: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">Control de Pedidos: Almacenamiento Sello &lt; Contabilización VL</h2>
+          </div>
+          <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+            Control de pedidos cuya <strong>Fecha de Almacenamiento Sello</strong> es anterior a la <strong>Fecha de Contabilización de la VL</strong>.
+          </p>
+        </div>
+
+        <div>
+          <a href="pedidos_inconsistencias_almacenamiento.xlsx" download="pedidos_inconsistencias_almacenamiento.xlsx" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 8px; background: #1e3a8a; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 0.84rem; box-shadow: 0 2px 4px rgba(30, 58, 138, 0.25); transition: background 0.15s ease;" onmouseover="this.style.background='#172554'" onmouseout="this.style.background='#1e3a8a'">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar Detalle en Excel (1.976 Pedidos)
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI CARDS SUMMARY -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Total Pedidos Base</div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;">46.332</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Con Fecha Almacenamiento</div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: #0284c7;">25.148</div>
+          <div style="font-size: 0.74rem; color: #64748b; margin-top: 2px;">54,3% con sello de almacenamiento</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Alm. Sello &lt; Contab. VL</div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: #d97706;">1.976</div>
+          <div style="font-size: 0.74rem; color: #b45309; margin-top: 2px;">Pedidos con desfasaje VL</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">% Total Inconsistencias</div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: #d97706;">7,86%</div>
+          <div style="font-size: 0.74rem; color: #b45309; margin-top: 2px;">1.976 de 25.148 pedidos almacenados</div>
+        </div>
+      </div>
+
+      <!-- TABLA CUADRO PRINCIPAL (ORDENADA POR TOP % INCONSISTENCIAS) -->
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); overflow: hidden;">
+        <div style="padding: 14px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Inconsistencias por Obra / Cliente (Top % Inconsistencias)
+          </h3>
+          <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">12 Obras auditadas</span>
+        </div>
+
+        <div style="width: 100%; overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.84rem; text-align: left;">
+            <thead>
+              <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1; color: #334155; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em;">
+                <th style="padding: 11px 18px; font-weight: 700;">Obra / Cliente</th>
+                <th style="padding: 11px 16px; font-weight: 700; text-align: right;">Total Pedidos Base</th>
+                <th style="padding: 11px 16px; font-weight: 700; text-align: right;">Pedidos con Fecha Almacenamiento</th>
+                <th style="padding: 11px 16px; font-weight: 700; text-align: right;">Alm. Sello &lt; Contab. VL</th>
+                <th style="padding: 11px 18px; font-weight: 700; text-align: right;">% Total Inconsistencias</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 1. 33,28% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00378 - YPF Oleoducto Cnel. Pringles</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.224</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.241</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">413</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fee2e2; color: #991b1b; font-weight: 800; font-size: 0.76rem; border: 1px solid #fecaca;">33,28%</span></td>
+              </tr>
+              <!-- 2. 19,65% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00377 - YPF 3° loop</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">6.387</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.206</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">630</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">19,65%</span></td>
+              </tr>
+              <!-- 3. 13,95% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00368 - YPF Acueducto TBH</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.407</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.061</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">148</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">13,95%</span></td>
+              </tr>
+              <!-- 4. 9,49% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">0376 - VELADERO FASE 8B / SAN JUAN</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.177</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.129</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">297</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">9,49%</span></td>
+              </tr>
+              <!-- 5. 8,49% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00314 - CASA Olavarría</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.565</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.581</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">219</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.76rem; border: 1px solid #fde68a;">8,49%</span></td>
+              </tr>
+              <!-- 6. 4,93% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00375 - YPF OLEODUCTO PR-LP</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.100</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.279</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">63</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">4,93%</span></td>
+              </tr>
+              <!-- 7. 4,36% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00365 - RIO TINTO</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">6.657</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.330</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">58</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">4,36%</span></td>
+              </tr>
+              <!-- 8. 3,64% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00341 - Mov. Suelos San Luis</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.023</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.305</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">84</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">3,64%</span></td>
+              </tr>
+              <!-- 9. 1,81% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00379 - VELADERO FASE 8C</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">2.129</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">827</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">15</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">1,81%</span></td>
+              </tr>
+              <!-- 10. 1,11% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00223 - Comp Amb Santa Fe</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.174</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">901</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">10</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">1,11%</span></td>
+              </tr>
+              <!-- 11. 0,54% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00374 - TERMINAL PUNTA COLORADA</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">11.220</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">6.257</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">34</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">0,54%</span></td>
+              </tr>
+              <!-- 12. 0,48% -->
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                <td style="padding: 10px 18px; font-weight: 700; color: #0f172a;">00372 - UTE 372 GEO POSCO II</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">3.269</td>
+                <td style="padding: 10px 16px; text-align: right; color: #334155;">1.031</td>
+                <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: #d97706;">5</td>
+                <td style="padding: 10px 18px; text-align: right;"><span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0;">0,48%</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr style="background: #e2e8f0; font-weight: 800; color: #0f172a; border-top: 2px solid #cbd5e1;">
+                <td style="padding: 12px 18px;">TOTAL GENERAL</td>
+                <td style="padding: 12px 16px; text-align: right;">46.332</td>
+                <td style="padding: 12px 16px; text-align: right;">25.148</td>
+                <td style="padding: 12px 16px; text-align: right; color: #b45309;">1.976</td>
+                <td style="padding: 12px 18px; text-align: right;"><span style="display: inline-block; padding: 3px 10px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.8rem; border: 1.2px solid #fde68a;">7,86%</span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
   </main>
 
   <script src="js/last-update-obras.js?v=20261112_162500"></script><script src="js/last-update-sede.js?v=20261112_162500"></script><script src="js/last-update-compras.js?v=20261112_162500"></script><script src="js/last-update-almacen.js?v=20261112_162500"></script><script src="js/last-update.js?v=20261112_162500"></script>
@@ -1988,7 +2171,7 @@
   <script src="js/evolucion.js?v=20261112_162500"></script>
   <script src="js/servicios.js?v=20261113_113000"></script>
   <script src="js/tiempos-entrega.js?v=20261112_162500"></script>
-  <script src="js/control-emrf.js?v=20261112_162500"></script>
+  <script src="js/control-emrf.js?v=20261113_135500"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2001,7 +2184,8 @@
       'demoras': 'Análisis de demoras y desglose por área',
       'servicios': 'Análisis de servicios y subcontratos de obra',
       'tiempos': 'Cumplimiento por criticidad y tiempos de entrega',
-      'emrf': 'Control de partidas abiertas SAP - Cuenta EM/RF (2101011001)'
+      'emrf': 'Control de partidas abiertas SAP - Cuenta EM/RF (2101011001)',
+      'control-pedidos': 'Control de pedidos e inconsistencias de fechas (VL vs Almacenamiento)'
     };
 
     let wasSidebarCollapsedBeforeFs = false;
@@ -2189,6 +2373,7 @@
       else if (tabName === 'servicios') body.classList.add('page-cumplimiento', 'has-st-sidebar');
       else if (tabName === 'tiempos') body.classList.add('page-cumplimiento', 'has-st-sidebar');
       else if (tabName === 'emrf') body.classList.add('page-emrf', 'has-st-sidebar');
+      else if (tabName === 'control-pedidos') body.classList.add('page-cumplimiento');
       if (wasCollapsed) body.classList.add('sidebar-collapsed');
 
       // Sincronizar fecha de actualización en la barra lateral

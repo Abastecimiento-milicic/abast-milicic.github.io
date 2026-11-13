@@ -645,12 +645,11 @@
           <li style="margin-top:6px;"><strong>🟢 COMPENSABLE (Saldo $0):</strong> Lo facturado coincide exactamente con lo recepcionado (Saldo Neto $0,00).<br>👉 <strong>Acción:</strong> Listo para depurar y cerrar en SAP mediante la transacción <strong>F.13</strong>.</li>
         </ul>
 
-        <h4>⚠️ Columna ESTADO de Entrega</h4>
-        <p>Mide el cumplimiento de la <strong>fecha de entrega pactada de la OC</strong> (FE OC):</p>
+        <h4>⚠️ Columna ESTADO de Vencimiento</h4>
+        <p>Mide la antigüedad de la partida (recepción o factura) respecto a la fecha de corte (umbral de 1 mes / 30 días):</p>
         <ul>
-          <li><strong>VENCIDA:</strong> La fecha prometida de entrega expiró respecto a la fecha de corte.</li>
-          <li><strong>VIGENTE:</strong> El pedido aún se encuentra en plazo para su entrega.</li>
-          <li><strong>SIN FECHA OC:</strong> El pedido no posee fecha de entrega registrada en SAP.</li>
+          <li><strong>VENCIDA:</strong> La recepción física o la factura fue contabilizada hace más de 1 mes (30 días) y continúa pendiente su contraparte (sin factura o sin recepción).</li>
+          <li><strong>VIGENTE:</strong> La partida tiene 30 días o menos desde su contabilización (se encuentra en plazo habitual administrativo).</li>
         </ul>
 
         <h4>⚙️ Filtros Iniciales por Defecto</h4>

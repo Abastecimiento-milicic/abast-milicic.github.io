@@ -160,14 +160,19 @@
   }
 
   function applyAll() {
-      const selClientes = getSelValues("serv_clienteSelect");
+      let selClientes = getSelValues("serv_clienteSelect");
+      // Si no hay selección explícita, mantener por defecto cliente fijo 00223
+      if (!selClientes.length) {
+          const opt223 = [...(document.getElementById("serv_clienteSelect")?.options || [])].find(o => o.value.includes("223"));
+          if (opt223) selClientes = [opt223.value];
+      }
       const selPeriodos = getSelValues("serv_clasif2Select");
       const selEstados = getSelValues("serv_gcocSelect");
       const selGrupos = getSelValues("serv_grupoCompraSelect");
       const selItemEst = getSelValues("serv_estadoItemSelect"); 
       
       const filtered = data.filter(r => {
-          const matchClie = !selClientes.length || selClientes.includes(r[CLIENT_COL_NAME]);
+          const matchClie = !selClientes.length || selClientes.some(c => r[CLIENT_COL_NAME] && r[CLIENT_COL_NAME].includes(c));
           const matchPeri = !selPeriodos.length || selPeriodos.includes(r[PERIODO_COL_NAME]);
           const matchEsta = !selEstados.length || selEstados.includes(r[ESTADO_COL_NAME]);
           const matchGrup = !selGrupos.length || selGrupos.includes(r[G_COMPRA_COL_NAME]);
@@ -191,6 +196,9 @@
       values.forEach(v => {
           const opt = document.createElement("option");
           opt.value = v; opt.textContent = v;
+          if (id === "serv_clienteSelect" && (v.startsWith("00223") || v.includes("223"))) {
+              opt.selected = true;
+          }
           sel.appendChild(opt);
       });
   }
@@ -239,7 +247,26 @@
           const loader = document.getElementById("serv_loader") || document.getElementById("loader");
           if (loader) loader.style.display = "none";
       });
-  }; window.initServicios = function() { window.loadServiciosSector(window.currentAppSector === "sede" ? "sede" : "abastecimiento"); };
+  };
+
+  window.resetServiciosFilters = function() {
+      ["serv_clasif2Select", "serv_gcocSelect", "serv_grupoCompraSelect", "serv_estadoItemSelect"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+              [...el.options].forEach((o, i) => o.selected = (i === 0 || o.value === "__ALL__"));
+          }
+      });
+      const elClie = document.getElementById("serv_clienteSelect");
+      if (elClie) {
+          [...elClie.options].forEach(o => {
+              o.selected = (o.value.startsWith("00223") || o.value.includes("223"));
+          });
+      }
+      if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
+      applyAll();
+  };
+
+  window.initServicios = function() { window.loadServiciosSector(window.currentAppSector === "sede" ? "sede" : "abastecimiento"); };
 
   // Auto-init if running on standalone servicios.html
   if (document.getElementById('panel-servicios') === null && (document.getElementById('serv_clienteSelect') || document.getElementById('clienteSelect'))) {

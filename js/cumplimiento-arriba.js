@@ -1151,23 +1151,46 @@
   ============================ */
   async function toggleArribaMode() {
     const btn = document.getElementById("cumpl_btnArriba");
+    const sw = document.getElementById("cumpl_switchArriba");
+    const row = document.getElementById("cumpl_toggleRowArriba");
 
     if (!isArribaActive) {
-      await loadArribaData();
-      isArribaActive = true;
+      if (sw) sw.classList.add("loading");
+      try {
+        await loadArribaData();
+        isArribaActive = true;
 
-      if (btn) {
-        btn.classList.add("btn-active");
-        btn.innerHTML = "↩ Volver a cumplimiento estándar";
+        if (btn) {
+          btn.classList.add("btn-active");
+          btn.innerHTML = "↩ Volver a cumplimiento estándar";
+        }
+        if (sw) {
+          sw.classList.add("active");
+        }
+        if (row) {
+          row.classList.add("active");
+        }
+
+        applyArribaAll();
+      } catch (err) {
+        console.error("[Cumplimiento Arriba] Error al activar modo arriba:", err);
+        alert("Error al cargar datos de Medición Arriba: " + err.message);
+      } finally {
+        if (sw) sw.classList.remove("loading");
       }
-
-      applyArribaAll();
     } else {
       isArribaActive = false;
 
       if (btn) {
         btn.classList.remove("btn-active");
         btn.innerHTML = "🏔️ Medir cumplimiento arriba";
+      }
+      if (sw) {
+        sw.classList.remove("active");
+        sw.classList.remove("loading");
+      }
+      if (row) {
+        row.classList.remove("active");
       }
 
       const colAcumTag = document.querySelector(".col-acum .cumpl-col-tag");
@@ -1181,6 +1204,9 @@
       }
     }
   }
+
+  window.toggleCumplArribaMode = toggleArribaMode;
+  window.isCumplArribaActive = () => isArribaActive;
 
   /* ============================
      INIT & EVENT LISTENERS

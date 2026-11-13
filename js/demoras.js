@@ -242,16 +242,48 @@
   }
 
   async function downloadFilteredCsv() {
-      if (!headers.length || !data.length) return;
+      const btn = getEl("dem2_btnDownloadFiltrado");
+      const origText = btn ? btn.innerHTML : "";
+      try {
+          if (!headers.length || !data.length) {
+              alert("Los datos de demoras aún se están cargando. Por favor aguarde unos segundos.");
+              return;
+          }
 
-      const rows = filteredRowsByClienteYMes();
+          if (btn) {
+              btn.disabled = true;
+              btn.innerHTML = "⏳ Generando Excel...";
+          }
 
-      const cliente = selLabel("dem2_clienteSelect").replace(/[^\w\-]+/g, "_");
-      const mes = selLabel("dem2_mesSelect").replace(/[^\w\-]+/g, "_");
+          const rows = filteredRowsByClienteYMes();
+          
+          // Filtrar únicamente los pedidos que presentan demoras
+          const demRows = rows.filter(r => (r["_sumAreas"] || 0) > 0 || toNumber(r["ENTREGADOS FT"]) > 0 || toNumber(r["DIAS DE DEMORA"]) > 0);
+          const finalRows = demRows.length > 0 ? demRows : rows;
 
-      const filename = `DEMORAS_filtrado_${cliente}_${mes}.xlsx`;
-      await window.saveAsExcel(filename, "Demoras", headers, rows);
+          if (!finalRows.length) {
+              alert("No hay demoras para los filtros seleccionados.");
+              return;
+          }
+
+          const cliente = selLabel("dem2_clienteSelect").replace(/[^\w\-]+/g, "_");
+          const mes = selLabel("dem2_mesSelect").replace(/[^\w\-]+/g, "_");
+
+          const filename = `DEMORAS_filtrado_${cliente}_${mes}.xlsx`;
+          const cleanHeaders = headers.filter(h => !h.startsWith("_"));
+          await window.saveAsExcel(filename, "Demoras", cleanHeaders, finalRows);
+      } catch (err) {
+          console.error("[downloadFilteredCsv] Error:", err);
+          alert("Error al descargar demoras: " + (err.message || err));
+      } finally {
+          if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = origText || "⬇ Descargar Demoras Filtradas";
+          }
+      }
   }
+  window.downloadFilteredDemoras = downloadFilteredCsv;
+  window.downloadNoAreaOrders = downloadNoAreaOrders;
 
   function monthSortKey(m) {
       if (!m) return new Date(0);

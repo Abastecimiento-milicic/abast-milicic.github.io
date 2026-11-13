@@ -15,13 +15,13 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=20261112_162500" />
-  <link rel="stylesheet" href="css/cumplimiento.css?v=20261112_162500" />
+  <link rel="stylesheet" href="css/base.css?v=20261113_113000" />
+  <link rel="stylesheet" href="css/cumplimiento.css?v=20261113_103500" />
   <link rel="stylesheet" href="css/analisis-mm.css?v=20261112_162500" />
   <link rel="stylesheet" href="css/demoras.css?v=20261112_162500" />
   <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261112_162500" />
   <link rel="stylesheet" href="css/control-emrf.css?v=20261112_162500" />
-  <link rel="stylesheet" href="css/tablero.css?v=20261113_095500" />
+  <link rel="stylesheet" href="css/tablero.css?v=20261113_122800" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -312,7 +312,7 @@
             <span>Filtros de Control</span>
           </div>
           <div style="display: flex; align-items: center; gap: 4px;">
-            <button id="cumpl_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
+            <button id="cumpl_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">🔄 Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros — Cumplimiento', `
               <h4>Cliente / Obra</h4>
               <p>Filtrá los pedidos por el nombre de la obra o cliente. Podés seleccionar varios con <strong>Ctrl + clic</strong>.</p>
@@ -373,12 +373,12 @@
 
           <!-- Interruptor Toggle: Medir Cumplimiento Arriba -->
           <div id="cumpl_arribaWrap" style="width: 100%;">
-            <div class="toggle-row">
+            <div class="toggle-row" id="cumpl_toggleRowArriba" onclick="window.toggleCumplArribaSwitch()" title="Alternar entre Base y Mina" style="cursor: pointer;">
               <div class="toggle-info">
                 <span class="toggle-title">Medición Arriba</span>
                 <span class="toggle-desc">Mina Obras 365 y 372 (2026)</span>
               </div>
-              <div class="switch-ui" id="cumpl_switchArriba" onclick="window.toggleCumplArribaSwitch()" title="Alternar entre Base y Mina"></div>
+              <div class="switch-ui" id="cumpl_switchArriba"></div>
             </div>
             <button id="cumpl_btnArriba" class="btn btn-arriba" type="button" style="display: none;" title="Alternar entre Base y Mina"></button>
           </div>
@@ -703,7 +703,7 @@
             <span>Filtros de Control</span>
           </div>
           <div style="display: flex; align-items: center; gap: 4px;">
-            <button id="mm_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetMMFilters()" title="Restablecer filtros">Restablecer</button>
+            <button id="mm_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetMMFilters()" title="Restablecer filtros">🔄 Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros y Disponibilidad — Análisis MM', `
               <h4>Cliente (Almacén)</h4>
               <p>Seleccioná uno o varios almacenes para filtrar.</p>
@@ -889,7 +889,7 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             <span>Filtros de Control</span>
           </div>
-          <button id="dem_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetDemorasFilters()" title="Restablecer filtros">Restablecer</button>
+          <button id="dem_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetDemorasFilters()" title="Restablecer filtros">🔄 Restablecer</button>
         </div>
 
         <div class="st-filters-stack">
@@ -915,7 +915,7 @@
 
           <hr class="st-divider" />
 
-          <button id="dem_btnDownloadFiltrado" class="btn" type="button" style="width: 100%;">
+          <button id="dem_btnDownloadFiltrado" class="btn" type="button" style="width: 100%;" onclick="window.downloadFilteredDemoras()">
             ⬇ Descargar Demoras Filtradas
           </button>
         </div>
@@ -926,7 +926,7 @@
           <div style="display:flex; align-items:center;">
             <div class="status-dot blue" style="background:#fff; margin-right:8px;"></div><span>RESUMEN DE DEMORAS</span><span id="dem_activeFiltersSummary" class="st-active-filters-summary"></span>
           </div>
-          <button id="dem_btnDownloadNoArea" title="Descargar pedidos sin área asignada (Excel)" style="background: none; border: none; cursor: pointer; color: #fff; padding: 4px; display: flex; align-items: center; justify-content: center; outline: none; margin-right: 15px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+          <button id="dem_btnDownloadNoArea" title="Descargar pedidos sin área asignada (Excel)" style="background: none; border: none; cursor: pointer; color: #fff; padding: 4px; display: flex; align-items: center; justify-content: center; outline: none; margin-right: 15px; transition: transform 0.2s;" onclick="window.downloadNoAreaOrders()" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           </button>
         </div>
@@ -1044,7 +1044,7 @@
         <div class="loading-text">Cargando servicios...</div>
       </div>
 
-      <!-- Banner Informativo Estilo SaaS -->
+      <!-- Banner Informativo Estilo SaaS (Recuadro Azul) -->
       <div class="serv-notice-banner">
         <div class="serv-notice-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1142,7 +1142,7 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             <span>Filtros de Control</span>
           </div>
-          <button id="tiempos_btnReset" class="sidebar-reset-btn" onclick="window.resetTiemposFilters()" title="Restablecer filtros">Restablecer</button>
+          <button id="tiempos_btnReset" class="sidebar-reset-btn" onclick="window.resetTiemposFilters()" title="Restablecer filtros">🔄 Restablecer</button>
         </div>
 
         <div class="st-filters-stack">
@@ -1341,7 +1341,7 @@
             <span>Filtros de Control</span>
           </div>
           <div style="display: flex; align-items: center; gap: 4px;">
-            <button id="emrf_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">Restablecer</button>
+            <button id="emrf_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">🔄 Restablecer</button>
             <button id="emrf_btnHelp" class="help-btn" title="Ayuda y Guía Operativa de la Cuenta EM/RF">ℹ</button>
           </div>
         </div>
@@ -1490,7 +1490,7 @@
         <div class="st-filters-header">
           <h4 class="st-filters-title">Filtros de Búsqueda</h4>
           <div class="st-filters-actions">
-            <button id="resumen_btnClearFilters" class="btn-clear" title="Restablecer todos los filtros">🔄 Limpiar</button>
+            <button id="resumen_btnClearFilters" class="sidebar-reset-btn" title="Restablecer todos los filtros">🔄 Restablecer</button>
             <button class="help-btn" onclick="openHelp('Filtros — Resumen Ejecutivo', `
               <h4>Cliente / Obra</h4>
               <p>Filtrá el resumen por obra o almacén para visualizar el estado de stock y el cumplimiento de pedidos correspondiente.</p>
@@ -1539,19 +1539,21 @@
               <option value="C07" selected>C07</option>
               <option value="C02" selected>C02</option>
             </select>
-            <div class="hint">Solo afecta a Control de Partidas</div>
+            <div class="hint" style="color: var(--purple-text, #6d28d9); font-weight: 600;">(Afecta únicamente a 5. Control Partidas)</div>
           </div>
 
           <hr class="st-divider" />
 
-          <!-- Botón Medir Cumplimiento Arriba en Resumen -->
-          <div id="resumen_arribaWrap" style="width: 100%; display: flex; flex-direction: column; gap: 3px;">
-            <button id="resumen_btnArriba" class="btn btn-arriba" type="button" style="width: 100%;" title="Alternar entre medición en Base y medición en Mina (Arriba)">
-              🏔️ Medir cumplimiento arriba
-            </button>
-            <div class="hint" style="color: #475569; font-size: 0.68rem; font-weight: 600; text-align: center; line-height: 1.2;">
-              Obras 365 y 372 (año 2026)
+          <!-- Interruptor Toggle: Medir Cumplimiento Arriba en Resumen -->
+          <div id="resumen_arribaWrap" style="width: 100%;">
+            <div class="toggle-row" id="resumen_toggleRowArriba" onclick="window.toggleResumenArribaSwitch()" title="Alternar entre medición en Base y medición en Mina (Arriba)" style="cursor: pointer;">
+              <div class="toggle-info">
+                <span class="toggle-title">Medición Arriba</span>
+                <span class="toggle-desc">Mina Obras 365 y 372 (2026)</span>
+              </div>
+              <div class="switch-ui" id="resumen_switchArriba"></div>
             </div>
+            <button id="resumen_btnArriba" class="btn btn-arriba" type="button" style="display: none;" title="Alternar entre Base y Mina"></button>
           </div>
         </div>
       </aside>
@@ -1576,7 +1578,6 @@
                   </div>
                   <h3 class="bento-title">1. Disponibilidad & Materiales</h3>
                 </div>
-                <span class="bento-action-badge">Inventario Activo</span>
               </div>
 
               <!-- Radial Hero KPI de Disponibilidad General -->
@@ -1596,97 +1597,159 @@
                   <div class="radial-value-center" id="res_txtPct">-</div>
                 </div>
                 <div class="kpi-hero-details">
-                  <span class="kpi-hero-label">Disponibilidad General</span>
-                  <div class="kpi-hero-status">
-                    <span class="kpi-hero-tag" id="res_tagDispStatus">En Rango</span>
-                    <span style="font-size: 0.72rem; color: var(--text-muted);">Obj: 90%</span>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <span class="kpi-hero-label" style="font-size: 0.85rem; font-weight: 800; color: var(--text-main);">Disponibilidad General</span>
+                    <span class="bento-action-badge" style="background: #e6f7f5; color: #0d9488; border-color: #99f6e4; font-weight: 800; font-size: 0.72rem; padding: 1px 8px;">Obj: 90%</span>
                   </div>
-                  <span class="kpi-hero-sub"><strong id="res_txtDisp">-</strong> de <strong id="res_txtTotal">-</strong> materiales con disponibilidad inmediata.</span>
+                  <span class="kpi-hero-sub" style="margin-top: 4px; display: block;"><strong id="res_txtDisp">-</strong> de <strong id="res_txtTotal">-</strong> materiales disponibles.</span>
                 </div>
               </div>
 
-              <!-- Métricas Secundarias en Grid -->
-              <div class="metrics-card-grid">
-                <div class="stat-pill-card">
-                  <div class="stat-header-row">
-                    <span class="stat-title">Total Materiales</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              <!-- Tarjeta Stock Nulo Organizada -->
+              <div class="stat-pill-card danger-card" style="margin-bottom: 0.75rem; padding: 0.75rem 0.9rem;">
+                <div class="stat-header-row" style="margin-bottom: 0.35rem;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span class="stat-title" style="font-size: 0.78rem; font-weight: 800; color: #991b1b; text-transform: uppercase;">Stock Nulo</span>
                   </div>
-                  <span class="stat-value" id="res_txtTotal_card">-</span>
-                  <span class="stat-hint">Ítems catalogados</span>
+                  <div style="display: flex; align-items: baseline; gap: 5px;">
+                    <span class="stat-value" id="res_txtNulo" style="font-size: 1.15rem; font-weight: 800; color: #dc2626; font-family: var(--font-mono); line-height: 1;">-</span>
+                    <span id="res_txtNuloPct" style="font-size: 0.75rem; font-weight: 700; color: #b91c1c; font-family: var(--font-mono);">(-)</span>
+                  </div>
                 </div>
 
-                <div class="stat-pill-card danger-card">
-                  <div class="stat-header-row">
-                    <span class="stat-title">Stock Nulo</span>
-                    <span style="font-size: 0.65rem; background: #dc2626; color: white; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Crítico</span>
+                <!-- Desglose ordenado en 3 micro-bloques: CON PEDIDO, SIN PEDIDO, FE VENCIDA -->
+                <div id="res_wrapNulo" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #ffffff; border: 1px solid #fecaca; border-radius: 6px; padding: 6px 8px;">
+                  <div style="display: flex; flex-direction: column; gap: 1px;">
+                    <span style="font-size: 0.62rem; font-weight: 700; color: #1e3a5f; text-transform: uppercase;">CON PEDIDO</span>
+                    <span id="res_nuloConPedido" style="font-size: 0.88rem; font-weight: 800; color: #0f172a; font-family: var(--font-mono); line-height: 1.1;">-</span>
                   </div>
-                  <span class="stat-value" id="res_txtNulo">-</span>
-                  <div id="res_wrapNulo" style="width: 100%;">
-                    <span class="stat-hint" id="res_txtNulo_sub">-</span>
+                  <div style="display: flex; flex-direction: column; gap: 1px; border-left: 1px solid #fee2e2; padding-left: 6px;">
+                    <span style="font-size: 0.62rem; font-weight: 700; color: #854d0e; text-transform: uppercase;">SIN PEDIDO</span>
+                    <span id="res_nuloSinPedido" style="font-size: 0.88rem; font-weight: 800; color: #854d0e; font-family: var(--font-mono); line-height: 1.1;">-</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 1px; border-left: 1px solid #fee2e2; padding-left: 6px;">
+                    <span style="font-size: 0.62rem; font-weight: 700; color: #b91c1c; text-transform: uppercase;">FE VENCIDA</span>
+                    <span id="res_nuloVencidos" style="font-size: 0.88rem; font-weight: 800; color: #dc2626; font-family: var(--font-mono); line-height: 1.1;">-</span>
                   </div>
                 </div>
               </div>
 
               <!-- Desglose de Planificación con barras sutiles -->
-              <div style="background: var(--bg-subtle); border-radius: var(--radius-md); padding: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.75rem;">
+              <div style="background: var(--bg-subtle); border-radius: var(--radius-md); padding: 0.65rem 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.75rem;">
                 <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px; display: block;">Clasificación de Planificación</span>
                 
-                <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
                   <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem;">
                       <span style="color: var(--warning-text); font-weight: 600;">● Menor al Punto de Pedido</span>
                       <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMenorPP">-</span>
                     </div>
-                    <div class="progress-bar-wrap">
-                      <div class="progress-bar-fill" id="res_barMenorPP" style="width: 0%; background: var(--warning);"></div>
-                    </div>
                   </div>
 
                   <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem;">
                       <span style="color: var(--success-text); font-weight: 600;">● Mayor al Punto de Pedido</span>
                       <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMayorPP">-</span>
                     </div>
-                    <div class="progress-bar-wrap">
-                      <div class="progress-bar-fill" id="res_barMayorPP" style="width: 0%; background: var(--success);"></div>
-                    </div>
                   </div>
 
                   <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem;">
                       <span style="color: #ea580c; font-weight: 600;">● Sobre Stock Máximo</span>
                       <span style="font-weight: 700; font-family: var(--font-mono);" id="res_txtMayorMax">-</span>
                     </div>
-                    <div class="progress-bar-wrap">
-                      <div class="progress-bar-fill" id="res_barMayorMax" style="width: 0%; background: #ea580c;"></div>
-                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Sparkline MM -->
+              <!-- Sparkline MM / Evolución de Disponibilidad -->
               <div>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Evolución de Stock</span>
-                  <span style="font-size: 0.68rem; color: #0f766e; font-weight: 700;">Tendencia</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+                  <span style="font-size: 0.68rem; font-weight: 700; color: #1e3a5f; text-transform: uppercase; letter-spacing: 0.02em;">EVOLUCIÓN</span>
+                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 600;">
+                    <span style="display: inline-flex; align-items: center; gap: 3px; color: #0d9488;"><span style="display: inline-block; width: 10px; height: 3px; background: #0d9488; border-radius: 2px; position: relative;"><span style="position: absolute; top: -2px; left: 2px; width: 5px; height: 5px; background: #fff; border: 1.2px solid #0d9488; border-radius: 50%;"></span></span> % Disp.</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px; color: #0d9488;"><span style="display: inline-block; width: 12px; height: 0; border-top: 1.5px dashed #0d9488;"></span> Obj 90%</span>
+                  </div>
                 </div>
-                <div id="res_chartEvolMM" style="width: 100%; height: 85px;"></div>
+                <div id="res_chartEvolMM" style="width: 100%; height: 110px;"></div>
               </div>
             </section>
 
-            <!-- 3. DEMORAS -->
-            <section class="bento-card res-div2">
-              <div class="bento-header">
+            <!-- 4. SERVICIOS -->
+            <section class="bento-card" style="padding: 0.85rem 0.95rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
                 <div class="bento-title-group">
-                  <div class="bento-icon-wrapper" style="color: var(--danger);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                  <div class="bento-icon-wrapper" style="color: var(--brand);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                   </div>
-                  <h3 class="bento-title">3. Demoras por Área Responsable</h3>
+                  <h3 class="bento-title" style="font-size: 0.8rem;">4. Servicios</h3>
                 </div>
-                <span class="bento-action-badge" id="res_lblTotalAreas">-</span>
+                <span class="bento-action-badge" id="res_serv_total_badge" style="display: none;"></span>
               </div>
-              <div id="res_chartAreas" class="chart-box-frame" style="height: 160px; width: 100%;"></div>
+
+              <div class="service-stat-strip" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%;">
+                <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
+                  <span class="strip-lbl res-serv-lbl">Total</span>
+                  <span class="strip-val res-serv-num" id="res_servTotal" style="color: var(--brand);">-</span>
+                </div>
+                <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: var(--success-bg); border-color: var(--success-border);">
+                  <span class="strip-lbl res-serv-lbl">En Curso</span>
+                  <span class="strip-val res-serv-num" id="res_servEnCurso" style="color: var(--success-text);">-</span>
+                </div>
+                <div class="strip-pill res-serv-pill res-has-tooltip" id="res_servRowVencido" data-serv-cat="VENCIDOS" style="background: var(--danger-bg); border-color: var(--danger-border);">
+                  <span class="strip-lbl res-serv-lbl">Vencidos</span>
+                  <span class="strip-val res-serv-num" id="res_servVencido" style="color: var(--danger-text);">-</span>
+                </div>
+                <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                  <span class="strip-lbl res-serv-lbl">Próx.</span>
+                  <span class="strip-val res-serv-num" id="res_servProxVencer" style="color: var(--warning-text);">-</span>
+                </div>
+                <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL" style="display: none;">
+                  <span id="res_servTotRecep">0</span>
+                </div>
+                <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO" style="display: none;">
+                  <span id="res_servSinTrat">0</span>
+                  <span id="res_servSinTratNote"></span>
+                </div>
+              </div>
+            </section>
+
+            <!-- 5. CONTROL PARTIDAS -->
+            <section class="bento-card" style="padding: 0.85rem 0.95rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+                <div class="bento-title-group">
+                  <div class="bento-icon-wrapper" style="color: var(--purple);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  </div>
+                  <h3 class="bento-title" style="font-size: 0.8rem;">5. Control Partidas</h3>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <span class="bento-action-badge" id="res_emrf_gc_badge" style="display: none;"></span>
+                  <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar OC" style="margin: 0; padding: 1px 4px; display: inline-flex; align-items: center; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
+                    <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" style="font-size: 0.65rem; border: none; background: transparent; color: #475569; font-weight: 700; cursor: pointer; outline: none; height: 16px;">
+                      <option value="VENCIDA" selected>🔴 Vencidas</option>
+                      <option value="NO_VENCIDA">🔵 No Vencidas</option>
+                      <option value="__ALL__">📋 Todas</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div class="service-stat-strip res-emrf-strip-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%;">
+                <div class="strip-pill res-serv-pill">
+                  <span class="strip-lbl res-serv-lbl">Total</span>
+                  <span class="strip-val res-serv-num" id="res_emrfTotal" style="color: var(--brand);">-</span>
+                </div>
+                <div class="strip-pill res-serv-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
+                  <span class="strip-lbl res-serv-lbl">Falta Fact.</span>
+                  <span class="strip-val res-serv-num" id="res_emrfFaltaFact" style="color: var(--warning-text);">-</span>
+                </div>
+                <div class="strip-pill res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
+                  <span class="strip-lbl res-serv-lbl">Falta Recep.</span>
+                  <span class="strip-val res-serv-num" id="res_emrfFaltaRecep" style="color: #ea580c;">-</span>
+                </div>
+              </div>
             </section>
 
           </div>
@@ -1701,11 +1764,8 @@
                   <div class="bento-icon-wrapper" style="color: var(--success);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                   </div>
-                  <h3 class="bento-title">2. Cumplimiento de Pedidos (Nivel de Servicio)</h3>
+                  <h3 class="bento-title">2. Cumplimiento de Pedidos</h3>
                 </div>
-                <span class="cumpl-meta-chip" style="background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border);">
-                  Obj: 78%
-                </span>
               </div>
 
               <!-- Doble Tarjeta: Acumulado 12M vs Período Evaluado -->
@@ -1721,16 +1781,15 @@
                       </svg>
                       <div class="radial-value-center" id="res_cumplAcumATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
                     </div>
-                    <div class="kpi-hero-details" style="min-width: 0;">
+                    <div class="kpi-hero-details" style="min-width: 0; flex: 1;">
                       <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; line-height: 1.1;">
                         <span class="kpi-hero-label" id="res_cumplAcumTitle" style="font-size: 0.67rem; font-weight: 700; text-transform: uppercase;">Acumulado 12 Meses</span>
-                        <span id="res_cumplAcumRango" style="font-size: 0.60rem; color: var(--text-muted);">-</span>
+                        <span id="res_cumplAcumRango" class="bento-action-badge" style="font-size: 0.62rem; font-weight: 800; color: #1e3a8a; background: #eff6ff; border: 1.2px solid #bfdbfe; padding: 1px 6px; border-radius: 9999px;">-</span>
                       </div>
-                      <div class="kpi-hero-status" style="margin: 1px 0 2px 0; gap: 4px; line-height: 1;">
-                        <span class="kpi-hero-tag" id="res_tagAcumStatus" style="padding: 1px 4px; font-size: 0.65rem;">En Objetivo</span>
-                        <span style="font-size: 0.67rem; color: var(--text-muted);">Obj: 78%</span>
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: 4px;">
+                        <span class="kpi-hero-sub" style="font-size: 0.66rem; line-height: 1.15; color: var(--text-muted);"><strong id="res_cumplAcumATqty" style="color: var(--text-main);">-</strong> de <strong id="res_cumplAcumComprometidos" style="color: var(--text-main);">-</strong> pedidos a tiempo.</span>
+                        <span class="bento-action-badge" style="font-size: 0.62rem; font-weight: 800; color: #0d9488; background: #e6f7f5; border: 1.2px solid #99f6e4; padding: 1px 6px; border-radius: 9999px; white-space: nowrap;">Obj: 78%</span>
                       </div>
-                      <span class="kpi-hero-sub" style="font-size: 0.67rem; line-height: 1.15;"><strong id="res_cumplAcumATqty">-</strong> de <strong id="res_cumplAcumComprometidos">-</strong> pedidos a tiempo.</span>
                     </div>
                   </div>
 
@@ -1760,7 +1819,7 @@
                       </svg>
                       <div class="radial-value-center" id="res_cumplATpct" style="font-size: 0.78rem; font-weight: 800;">-</div>
                     </div>
-                    <div class="kpi-hero-details" style="min-width: 0;">
+                    <div class="kpi-hero-details" style="min-width: 0; flex: 1;">
                       <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; line-height: 1.1;">
                         <span class="kpi-hero-label" style="font-size: 0.67rem; font-weight: 700; text-transform: uppercase;">Período Seleccionado</span>
                         <label class="res-inline-mes-btn" for="res_cumplInlineMesSelect" title="Clic para elegir el Mes Evaluado" style="cursor: pointer; margin: 0;">
@@ -1770,11 +1829,10 @@
                         </label>
                         <span id="res_cumplMesLabel" style="display: none;"></span>
                       </div>
-                      <div class="kpi-hero-status" style="margin: 1px 0 2px 0; gap: 4px; line-height: 1;">
-                        <span class="kpi-hero-tag" id="res_tagCurrStatus" style="padding: 1px 4px; font-size: 0.65rem;">En Objetivo</span>
-                        <span style="font-size: 0.67rem; color: var(--text-muted);">Obj: 78%</span>
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: 4px;">
+                        <span class="kpi-hero-sub" style="font-size: 0.66rem; line-height: 1.15; color: var(--text-muted);"><strong id="res_cumplATqty" style="color: var(--text-main);">-</strong> de <strong id="res_cumplComprometidos" style="color: var(--text-main);">-</strong> pedidos a tiempo.</span>
+                        <span class="bento-action-badge" style="font-size: 0.62rem; font-weight: 800; color: #0d9488; background: #e6f7f5; border: 1.2px solid #99f6e4; padding: 1px 6px; border-radius: 9999px; white-space: nowrap;">Obj: 78%</span>
                       </div>
-                      <span class="kpi-hero-sub" style="font-size: 0.67rem; line-height: 1.15;"><strong id="res_cumplATqty">-</strong> de <strong id="res_cumplComprometidos">-</strong> pedidos a tiempo.</span>
                     </div>
                   </div>
 
@@ -1788,8 +1846,8 @@
                       <span style="font-weight: 700; color: var(--danger-text);"><span id="res_cumplNEpct">-</span> (<span id="res_cumplNEqty">-</span>)</span>
                     </div>
                     <div>
-                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">vs Mes Ant.</span>
-                      <span style="font-weight: 700; color: var(--success-text);" id="res_cumplATdiff">-</span>
+                      <span style="color: var(--text-muted); font-size: 0.58rem; display: block; text-transform: uppercase;">Demora</span>
+                      <span style="font-weight: 700; color: var(--text-main);" id="res_cumplDemoraAvg">-</span>
                     </div>
                   </div>
                 </div>
@@ -1798,94 +1856,60 @@
 
               <!-- Spline Chart Cumplimiento -->
               <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Curva de Evolución Mensual (% AT vs Meta)</span>
-                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.67rem; font-weight: 600;">
-                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 3px; background: #0f766e; border-radius: 2px;"></span> %AT</span>
-                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 3px; background: #7c3aed; border-radius: 2px;"></span> %AT ACUM</span>
-                    <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="display: inline-block; width: 9px; height: 0; border-top: 2px dashed #0f766e;"></span> Meta 78%</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                  <span style="font-size: 0.68rem; font-weight: 700; color: #1e3a5f; text-transform: uppercase; letter-spacing: 0.02em;">CURVA DE EVOLUCIÓN MENSUAL (% AT VS META)</span>
+                  <div style="display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 600;">
+                    <span style="display: inline-flex; align-items: center; gap: 3px; color: #0d9488;"><span style="display: inline-block; width: 10px; height: 3px; background: #0d9488; border-radius: 2px; position: relative;"><span style="position: absolute; top: -2px; left: 2px; width: 5px; height: 5px; background: #fff; border: 1.2px solid #0d9488; border-radius: 50%;"></span></span> %AT Real</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px; color: #7c3aed;"><span style="display: inline-block; width: 10px; height: 3px; background: #7c3aed; border-radius: 2px; position: relative;"><span style="position: absolute; top: -2px; left: 2px; width: 5px; height: 5px; background: #fff; border: 1.2px solid #7c3aed; border-radius: 50%;"></span></span> %AT ACUM</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px; color: #0d9488;"><span style="display: inline-block; width: 12px; height: 0; border-top: 1.5px dashed #0d9488;"></span> Meta 78%</span>
                   </div>
                 </div>
-                <div id="res_chartTendenciaCumpl" class="chart-box-frame" style="height: 145px; width: 100%;"></div>
+                <div id="res_chartTendenciaCumpl" class="chart-box-frame" style="height: 110px; width: 100%;"></div>
               </div>
             </section>
 
-            <!-- SERVICIOS + PARTIDAS -->
-            <div class="services-dual-row res-row-serv-emrf">
+            <!-- DUAL ROW: DEMORAS POR ÁREA + ANÁLISIS FT PRINCIPALES (DOS TARJETAS SEPARADAS) -->
+            <div class="res-demoras-dual-row" style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 0.75rem; align-items: stretch;">
               
-              <!-- 4. SERVICIOS -->
-              <section class="bento-card res-div5" style="padding: 0.95rem;">
-                <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+              <!-- TARJETA 1: 3. DEMORAS POR ÁREA RESPONSABLE -->
+              <section class="bento-card res-div2" style="padding: 0.85rem 0.95rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="bento-header" style="margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
                   <div class="bento-title-group">
-                    <div class="bento-icon-wrapper" style="color: var(--brand);">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    <div class="bento-icon-wrapper" style="color: var(--danger);">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
                     </div>
-                    <h3 class="bento-title" style="font-size: 0.8rem;">4. Servicios</h3>
+                    <h3 class="bento-title" style="font-size: 0.8rem;">3. Demoras por Área Responsable</h3>
                   </div>
-                  <span class="bento-action-badge" id="res_serv_total_badge">Activos</span>
+                  <span class="bento-action-badge" id="res_lblTotalAreas">-</span>
                 </div>
-
-                <div class="service-stat-strip res-serv-strip">
-                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="TOTAL">
-                    <span class="strip-lbl res-serv-lbl">Total</span>
-                    <span class="strip-val res-serv-num" id="res_servTotal" style="color: var(--brand);">-</span>
-                  </div>
-                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="EN_CURSO" style="background: var(--success-bg); border-color: var(--success-border);">
-                    <span class="strip-lbl res-serv-lbl">En Curso</span>
-                    <span class="strip-val res-serv-num" id="res_servEnCurso" style="color: var(--success-text);">-</span>
-                  </div>
-                  <div class="strip-pill res-serv-pill res-has-tooltip" id="res_servRowVencido" data-serv-cat="VENCIDOS" style="background: var(--danger-bg); border-color: var(--danger-border);">
-                    <span class="strip-lbl res-serv-lbl">Vencidos</span>
-                    <span class="strip-val res-serv-num" id="res_servVencido" style="color: var(--danger-text);">-</span>
-                  </div>
-                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="PROX_VENCER" style="background: var(--warning-bg); border-color: var(--warning-border);">
-                    <span class="strip-lbl res-serv-lbl">Próx.</span>
-                    <span class="strip-val res-serv-num" id="res_servProxVencer" style="color: var(--warning-text);">-</span>
-                  </div>
-                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="RECEP_TOTAL" style="display: none;">
-                    <span id="res_servTotRecep">0</span>
-                  </div>
-                  <div class="strip-pill res-serv-pill res-has-tooltip" data-serv-cat="SIN_TRAT_INFO" style="display: none;">
-                    <span id="res_servSinTrat">0</span>
-                    <span id="res_servSinTratNote"></span>
-                  </div>
-                </div>
+                <div id="res_chartAreas" class="chart-box-frame" style="height: 155px; width: 100%;"></div>
               </section>
 
-              <!-- 5. CONTROL PARTIDAS -->
-              <section class="bento-card res-div6" style="padding: 0.95rem;">
-                <div class="bento-header" style="margin-bottom: 0.6rem; padding-bottom: 0.4rem;">
+              <!-- TARJETA 2: ANÁLISIS FT: PRINCIPALES -->
+              <section class="bento-card" style="padding: 0.85rem 0.95rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="bento-header" style="margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
                   <div class="bento-title-group">
-                    <div class="bento-icon-wrapper" style="color: var(--purple);">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <div class="bento-icon-wrapper" style="color: #ea580c;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
-                    <h3 class="bento-title" style="font-size: 0.8rem;">5. Control Partidas</h3>
+                    <h3 class="bento-title" style="font-size: 0.8rem;">ANÁLISIS FT: Principales</h3>
                   </div>
-                  <div style="display: flex; align-items: center; gap: 4px;">
-                    <span class="bento-action-badge" id="res_emrf_gc_badge" style="background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border);">GC: C01, C07, C02</span>
-                    <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar OC" style="margin: 0;">
-                      <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" style="font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
-                        <option value="VENCIDA" selected>🔴 VENCIDAS</option>
-                        <option value="NO_VENCIDA">🔵 NO VENCIDAS</option>
-                        <option value="__ALL__">📋 TODAS</option>
-                      </select>
-                    </label>
-                  </div>
+                  <span class="bento-action-badge" style="font-size: 0.62rem; color: var(--text-muted); font-weight: 700; background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1px 6px; border-radius: 9999px;">% del Total (FT + NE)</span>
                 </div>
 
-                <div class="service-stat-strip res-serv-strip res-emrf-strip-3" style="grid-template-columns: repeat(3, 1fr);">
-                  <div class="strip-pill res-serv-pill">
-                    <span class="strip-lbl res-serv-lbl">Total</span>
-                    <span class="strip-val res-serv-num" id="res_emrfTotal" style="color: var(--brand);">-</span>
-                  </div>
-                  <div class="strip-pill res-serv-pill" style="background: var(--warning-bg); border-color: var(--warning-border);">
-                    <span class="strip-lbl res-serv-lbl">Falta Fact.</span>
-                    <span class="strip-val res-serv-num" id="res_emrfFaltaFact" style="color: var(--warning-text);">-</span>
-                  </div>
-                  <div class="strip-pill res-serv-pill" style="background: #fff7ed; border-color: #fed7aa;">
-                    <span class="strip-lbl res-serv-lbl">Falta Recep.</span>
-                    <span class="strip-val res-serv-num" id="res_emrfFaltaRecep" style="color: #ea580c;">-</span>
-                  </div>
+                <!-- Tabla con diseño moderno de Dashboard (sin formato Excel) -->
+                <div style="width: 100%; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 8px; overflow: hidden; background: #ffffff;">
+                  <table class="res-ft-table" style="width: 100%; border-collapse: collapse; font-size: 0.74rem;">
+                    <thead>
+                      <tr style="background: #f8fafc; border-bottom: 1px solid var(--border-subtle, #e2e8f0);">
+                        <th style="padding: 6px 10px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.03em; text-align: left;">Obra</th>
+                        <th style="padding: 6px 10px; font-weight: 700; color: #475569; font-size: 0.65rem; letter-spacing: 0.02em; text-align: right;" id="res_ft_table_month">Meses: Todos</th>
+                      </tr>
+                    </thead>
+                    <tbody id="res_ft_table_body">
+                      <!-- Filas dinámicas -->
+                    </tbody>
+                  </table>
                 </div>
               </section>
 
@@ -1956,13 +1980,13 @@
   <script src="js/cache-utils.js?v=20261112_162500"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  <script src="js/demoras.js?v=20261112_162500"></script>
-  <script src="js/resumen.js?v=20261113_095500"></script>
-  <script src="js/cumplimiento.js?v=20261112_162500"></script>
-  <script src="js/cumplimiento-arriba.js?v=20261112_162500"></script>
+  <script src="js/demoras.js?v=20261113_131700"></script>
+  <script src="js/resumen.js?v=20261113_131700"></script>
+  <script src="js/cumplimiento.js?v=20261113_103500"></script>
+  <script src="js/cumplimiento-arriba.js?v=20261113_103500"></script>
   <script src="js/analisis-mm.js?v=20261112_162500"></script>
   <script src="js/evolucion.js?v=20261112_162500"></script>
-  <script src="js/servicios.js?v=20261112_162500"></script>
+  <script src="js/servicios.js?v=20261113_113000"></script>
   <script src="js/tiempos-entrega.js?v=20261112_162500"></script>
   <script src="js/control-emrf.js?v=20261112_162500"></script>
 
@@ -2519,13 +2543,21 @@
       };
       // Helper global para alternar Medición Arriba con switch UI en Cumplimiento
       window.toggleCumplArribaSwitch = function() {
-        const btn = document.getElementById("cumpl_btnArriba");
-        if (btn) btn.click();
-        const sw = document.getElementById("cumpl_switchArriba");
-        if (sw && btn) {
-          setTimeout(() => {
-            sw.classList.toggle("active", btn.classList.contains("btn-active"));
-          }, 20);
+        if (typeof window.toggleCumplArribaMode === "function") {
+          window.toggleCumplArribaMode();
+        } else {
+          const btn = document.getElementById("cumpl_btnArriba");
+          if (btn) btn.click();
+        }
+      };
+
+      // Helper global para alternar Medición Arriba con switch UI en Tablero (Resumen)
+      window.toggleResumenArribaSwitch = function() {
+        if (typeof window.toggleResumenArribaMode === "function") {
+          window.toggleResumenArribaMode();
+        } else {
+          const btn = document.getElementById("resumen_btnArriba");
+          if (btn) btn.click();
         }
       };
 

@@ -1170,21 +1170,30 @@ body.has-st-sidebar.sidebar-collapsed .st-expand-btn {
   width: 100%;
 }
 
-/* Cabecera "Filtros de Búsqueda" */
-.st-filters-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  margin-bottom: 0.75rem;
+/* Cabeceras de Filtros en Sidebar */
+.st-filters-header,
+.sidebar-header,
+.st-sidebar .sidebar-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  margin-bottom: 0.65rem !important;
+  padding-bottom: 0.45rem !important;
+  border-bottom: 1px solid var(--border-light, #e2e8f0) !important;
 }
 
-.st-filters-title {
-  font-family: var(--font-main);
-  font-size: 1.02rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0;
+.st-filters-title,
+.sidebar-title,
+.st-sidebar .sidebar-title {
+  font-family: var(--font-main, sans-serif) !important;
+  font-size: 0.88rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 !important;
 }
 
 .st-filters-actions {
@@ -1193,22 +1202,138 @@ body.has-st-sidebar.sidebar-collapsed .st-expand-btn {
   gap: 6px;
 }
 
+/* Botón Restablecer / Limpiar Filtros Unificado */
+.sidebar-reset-btn,
+.st-sidebar .sidebar-reset-btn,
 .st-sidebar .btn-clear {
   margin-left: 0 !important;
   background: #ffffff !important;
   color: #0f766e !important;
-  border: 1px solid #99f6e4 !important;
-  padding: 3px 8px !important;
+  border: 1.5px solid #99f6e4 !important;
+  padding: 3px 9px !important;
   font-size: 0.72rem !important;
   font-weight: 700 !important;
-  border-radius: 5px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  line-height: 1.2 !important;
+  user-select: none !important;
 }
 
+.sidebar-reset-btn:hover,
+.st-sidebar .sidebar-reset-btn:hover,
 .st-sidebar .btn-clear:hover {
   background: #0d9488 !important;
   color: #ffffff !important;
   border-color: #0d9488 !important;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.sidebar-reset-btn:active,
+.st-sidebar .sidebar-reset-btn:active,
+.st-sidebar .btn-clear:active {
+  transform: translateY(0) !important;
+}
+
+/* Interruptor Toggle: Medición Arriba Mina (Obras 365 y 372) */
+.toggle-card,
+#cumpl_arribaWrap,
+#resumen_arribaWrap {
+  width: 100% !important;
+  margin-top: 6px !important;
+}
+
+.toggle-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 7px 10px !important;
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  border: 1.5px solid #cbd5e1 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.toggle-row:hover {
+  border-color: #0d9488 !important;
+  background: #f0fdfa !important;
+}
+
+.toggle-row.active {
+  background: #f0fdfa !important;
+  border-color: #0d9488 !important;
+  box-shadow: 0 0 0 1px #0d9488, 0 2px 5px rgba(13, 148, 136, 0.15) !important;
+}
+
+.toggle-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+  pointer-events: none !important;
+}
+
+.toggle-title {
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: -0.01em !important;
+}
+
+.toggle-desc {
+  font-size: 0.67rem !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  line-height: 1.15 !important;
+}
+
+.switch-ui {
+  position: relative !important;
+  width: 38px !important;
+  height: 22px !important;
+  background: #cbd5e1 !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  transition: background 0.25s ease, transform 0.1s ease !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+
+.switch-ui:hover {
+  background: #94a3b8 !important;
+}
+
+.switch-ui.active {
+  background: #0d9488 !important;
+}
+
+.switch-ui::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: #ffffff !important;
+  border-radius: 50% !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+.switch-ui.active::after {
+  transform: translateX(16px) !important;
+}
+
+.switch-ui.loading {
+  opacity: 0.6 !important;
+  pointer-events: none !important;
 }
 
 .st-sidebar .help-btn {
@@ -2071,12 +2196,41 @@ body {
   background: #2563eb !important;
 }
 
-/* Banner informativo en Servicios en tono azul corporativo suave en lugar de naranja fuerte */
+/* Banner informativo en Servicios (Recuadro azul corporativo destacado) */
+.serv-notice-banner,
+#panel-servicios > .serv-notice-banner,
 #panel-servicios > .topbar-badge {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
   background-color: #eff6ff !important;
-  border: 1px solid #bfdbfe !important;
+  border: 1.5px solid #bfdbfe !important;
+  border-left: 4.5px solid #2563eb !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  margin: 12px 16px 14px 16px !important;
   color: #1e3a8a !important;
-  box-shadow: none !important;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08) !important;
+}
+
+.serv-notice-icon,
+.serv-notice-banner .serv-notice-icon {
+  color: #2563eb !important;
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+}
+
+.serv-notice-text,
+.serv-notice-banner .serv-notice-text {
+  color: #1e40af !important;
+  font-size: 0.84rem !important;
+  line-height: 1.45 !important;
+}
+
+.serv-notice-text strong,
+.serv-notice-banner .serv-notice-text strong {
+  color: #1e3a8a !important;
+  font-weight: 700 !important;
 }
 
 
@@ -2985,8 +3139,8 @@ body:has(#panel-resumen[style*="block"]) main.container {
 
 #panel-resumen .res-row-serv-emrf {
   display: grid !important;
-  grid-template-columns: 1.15fr 0.85fr !important;
-  gap: 6px !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.75rem !important;
   align-items: stretch !important;
   flex: 0 0 auto !important;
 }
@@ -3225,8 +3379,8 @@ body:has(#panel-resumen[style*="block"]) main.container {
 /* Tiras horizontales para .res-div5 (5. SERVICIOS) y .res-div6 (6. CONTROL DE PARTIDAS) */
 #panel-resumen .res-serv-strip {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 6px;
   align-items: stretch;
   flex: 1 1 auto;
 }
@@ -3379,7 +3533,8 @@ body:has(#panel-resumen[style*="block"]) main.container {
   padding: 4px 8px !important;
 }
 
-/* Bordes marcados para distinguir claramente cada uno de los 6 grids en #panel-resumen */
+/* Bordes para cards legacy (desactivado para compatibilidad con Bento Grid moderno) */
+/*
 #panel-resumen .res-div1,
 #panel-resumen .res-div2,
 #panel-resumen .res-div3,
@@ -3393,6 +3548,7 @@ body:has(#panel-resumen[style*="block"]) main.container {
   background: #ffffff !important;
   overflow: hidden !important;
 }
+*/
 
 #panel-resumen .res-panel-title {
   background: linear-gradient(90deg, #e0f2fe 0%, #ccfbf1 50%, #e0f2fe 100%) !important;

@@ -705,6 +705,8 @@
   function setResumenArribaMode(active) {
     isResumenArribaActive = !!active;
     const btn = document.getElementById("resumen_btnArriba");
+    const sw = document.getElementById("resumen_switchArriba");
+    const row = document.getElementById("resumen_toggleRowArriba");
     if (btn) {
       if (isResumenArribaActive) {
         btn.classList.add("btn-active");
@@ -714,10 +716,14 @@
         btn.innerHTML = "🏔️ Medir cumplimiento arriba";
       }
     }
+    if (sw) sw.classList.toggle("active", isResumenArribaActive);
+    if (row) row.classList.toggle("active", isResumenArribaActive);
 
     updateCumplimientoBlock();
     updateTiemposBlock();
   }
+
+  window.toggleResumenArribaMode = () => setResumenArribaMode(!isResumenArribaActive);
 
   function hookArribaButtons() {
     const btn = document.getElementById("resumen_btnArriba");
@@ -782,6 +788,7 @@
 
     const badgeEl = document.getElementById("res_emrf_gc_badge");
     if (badgeEl) {
+      badgeEl.style.display = "none";
       if (selectedGCs.length === 0) {
         badgeEl.textContent = "GC: TODOS LOS GRUPOS";
       } else if (selectedGCs.length <= 4) {
@@ -967,7 +974,7 @@
     const pctVenc = total ? (vencido / total) : 0;
     const pctTotRec = total ? (totRecep / total) : 0;
 
-    setText("res_serv_total_badge", `${fmtInt(total)} pos.`);
+    setText("res_serv_total_badge", "");
     setText("res_servTotal", fmtInt(total));
     setText("res_servEnCurso", `${fmtInt(enCurso)} (${fmtPct01(pctEnCurso)})`);
     setText("res_servTotRecep", `${fmtInt(totRecep)} (${fmtPct01(pctTotRec)})`);
@@ -1174,6 +1181,125 @@
     if (typeof window.renderResumenDemoras === "function") {
       window.renderResumenDemoras("res_chartMotivos", "res_chartAreas", selectedObras, effectiveMeses);
     }
+    updateAnalisisFTBlock(effectiveMeses, selectedObras);
+  }
+
+  /* --- 3.1 ANÁLISIS FT: PRINCIPALES (OBRAS CON MÁS DEMORAS) --- */
+  function updateAnalisisFTBlock(effectiveMeses, selectedObras) {
+    const tbody = document.getElementById("res_ft_table_body");
+    const thMonth = document.getElementById("res_ft_table_month");
+    if (!tbody) return;
+    if (!cumplRawData || !cumplRawData.length) {
+      tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:10px; color:var(--text-muted); font-size:0.75rem;">Cargando...</td></tr>`;
+      return;
+    }
+
+    let sourceData = cumplRawData;
+    if (isResumenArribaActive && arribaRawData && arribaRawData.length > 0) {
+      const nonArribaBase = cumplRawData.filter(r => {
+        const c = getCanonicalObraCode(r["CLIENTE"]);
+        return c !== "365" && c !== "372";
+      });
+      const mappedArriba = arribaRawData.map(r => ({
+        ...r,
+        "ENTREGADOS FT": r["ENTREGADOS FT FINAL"] ?? r["ENTREGADOS FT"],
+        "NO ENTREGADOS": r["NO ENTREGADOS FINAL"] ?? r["NO ENTREGADOS"],
+      }));
+      sourceData = [...nonArribaBase, ...mappedArriba];
+    }
+
+    // Filtrar filas según los meses efectivos seleccionados en el tablero
+    let rows = sourceData;
+    if (effectiveMeses && effectiveMeses.length > 0) {
+      const mesSet = new Set(effectiveMeses);
+      rows = rows.filter(r => mesSet.has(r._ym));
+    }
+
+    // Filtrar por obras si hay seleccionadas
+    if (selectedObras && selectedObras.length > 0) {
+      const obraSet = new Set(selectedObras.map(getCanonicalObraCode));
+      if (isObraExcludeMode) {
+        rows = rows.filter(r => !obraSet.has(getCanonicalObraCode(r["CLIENTE"])));
+      } else {
+        rows = rows.filter(r => obraSet.has(getCanonicalObraCode(r["CLIENTE"])));
+      }
+    }
+
+    // Nombre de mes dinámico para la cabecera (ej: "Meses: Todos", "Mes: Octubre")
+    let monthHeader = "Meses: Todos";
+    if (effectiveMeses && effectiveMeses.length === 1) {
+      const [y, m] = effectiveMeses[0].split("-");
+      monthHeader = `Mes: ${MES_NOMBRES[m] || m}`;
+    } else if (effectiveMeses && effectiveMeses.length > 1) {
+      if (effectiveMeses.length <= 2) {
+        monthHeader = `Meses: ${effectiveMeses.map(ym => {
+          const [y, m] = ym.split("-");
+          return (MES_NOMBRES[m] || m).slice(0, 3);
+        }).join(", ")}`;
+      } else {
+        monthHeader = `Meses: ${effectiveMeses.length} Sel.`;
+      }
+    } else {
+      monthHeader = "Meses: Todos";
+    }
+    if (thMonth) thMonth.textContent = monthHeader;
+
+    // Agrupar pedidos FT + No Entregados por obra
+    const ftByObra = {};
+    let totalFT = 0;
+    for (const r of rows) {
+      const ft = toNumber(r["ENTREGADOS FT"]);
+      const ne = toNumber(r["NO ENTREGADOS"]);
+      const fallas = ft + ne;
+      if (fallas > 0) {
+        const rawCli = r["CLIENTE"] || "";
+        const code = getCanonicalObraCode(rawCli);
+        if (!code) continue;
+        ftByObra[code] = (ftByObra[code] || 0) + fallas;
+        totalFT += fallas;
+      }
+    }
+
+    const sorted = Object.entries(ftByObra)
+      .map(([code, count]) => ({
+        code: code.replace("_", "/"),
+        count,
+        pct: totalFT > 0 ? (count / totalFT) * 100 : 0
+      }))
+      .sort((a, b) => b.pct - a.pct);
+
+    if (sorted.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:12px; color:var(--text-muted); font-size:0.75rem;">Sin demoras registradas</td></tr>`;
+      return;
+    }
+
+    // Top 4 obras con más demoras (diseño moderno y limpio de Dashboard, sin líneas de Excel)
+    const topObras = sorted.slice(0, 4);
+    let html = "";
+    topObras.forEach((item, index) => {
+      const isTop1 = (index === 0);
+      const rowBorder = index < topObras.length - 1 ? 'border-bottom: 1px solid #f1f5f9;' : '';
+      const badgeStyle = isTop1
+        ? 'display: inline-block; background: #fff7ed; color: #ea580c; border: 1.2px solid #ffedd5; padding: 2px 8px; border-radius: 9999px; font-weight: 800; font-size: 0.76rem;'
+        : 'display: inline-block; color: #334155; font-weight: 700; font-size: 0.76rem; padding: 2px 4px;';
+      const pctFormatted = item.pct.toFixed(2).replace(".", ",") + "%";
+
+      html += `
+        <tr style="${rowBorder} transition: background 0.15s ease;">
+          <td style="padding: 7px 10px; font-weight: 700; color: #1e293b; font-size: 0.78rem;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${isTop1 ? '#ea580c' : '#94a3b8'};"></span>
+              <span>Obra ${item.code}</span>
+            </div>
+          </td>
+          <td style="padding: 7px 10px; text-align: right;">
+            <span style="${badgeStyle}">${pctFormatted}</span>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
   }
 
   /* --- 1. BLOQUE ANÁLISIS MM --- */
@@ -1295,37 +1421,19 @@
     const elDisp = document.getElementById("res_txtPct");
     if (elDisp) elDisp.style.setProperty("color", isDispGood ? "#16a34a" : "#dc2626", "important");
     const tagDisp = document.getElementById("res_tagDispStatus");
-    if (tagDisp) {
-      tagDisp.textContent = isDispGood ? "En Objetivo" : "Bajo Objetivo";
-      tagDisp.style.color = isDispGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
-      tagDisp.style.background = isDispGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
-      tagDisp.style.borderColor = isDispGood ? "var(--success-border, #99f6e4)" : "var(--danger-border, #fecaca)";
-    }
+    if (tagDisp) tagDisp.style.display = "none";
+
     const rowDisp = document.getElementById("res_rowDispPct");
     if (rowDisp) {
       rowDisp.style.border = isDispGood ? "1.5px solid #16a34a" : "1.5px solid #dc2626";
       rowDisp.style.background = isDispGood ? "#f0fdf4" : "#fef2f2";
     }
 
-    const txtNuloHTML = `
-      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; font-size: 10.5px; color: #334155;">
-        <li style="display: flex; align-items: center; gap: 5px;">
-          <span style="color: #dc2626; font-weight: 900;">•</span>
-          <span id="res_txtNulo" class="res-val" style="color: #dc2626; margin: 0 !important;">${fmtInt(cantStockNulo)} (${fmtPct01(pctNulo)})</span>
-        </li>
-        <li style="display: flex; align-items: center; gap: 5px;">
-          <span style="color: #dc2626; font-weight: 900;">•</span>
-          <mark style="background-color: #fef08a; color: #854d0e; padding: 0px 5px; font-size: 10px; border-radius: 3px; font-weight: 800; border: 1px solid #facc15;">${fmtInt(nuloSinPedido)} SIN PEDIDO</mark>
-        </li>
-        <li style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
-          <span style="color: #dc2626; font-weight: 900;">•</span>
-          <span>de los <strong style="color: #0f172a;">${fmtInt(nuloConPedido)}</strong> pedidos &rarr; <strong style="color: #dc2626;">${fmtInt(nuloVencidos)} con fecha de entrega vencida.</strong></span>
-        </li>
-      </ul>
-    `;
-    setHTML("res_wrapNulo", txtNuloHTML);
-    const nuloCard = document.getElementById("res_txtNulo");
-    if (nuloCard && nuloCard.tagName !== "UL") setText("res_txtNulo", fmtInt(cantStockNulo));
+    setText("res_txtNulo", fmtInt(cantStockNulo));
+    setText("res_txtNuloPct", `(${fmtPct01(pctNulo)})`);
+    setText("res_nuloSinPedido", fmtInt(nuloSinPedido));
+    setText("res_nuloConPedido", fmtInt(nuloConPedido));
+    setText("res_nuloVencidos", fmtInt(nuloVencidos));
 
     setText("res_txtMenorPP", `${fmtInt(cantMenorPP)} (${fmtPct01(pctMenorPP)})`);
     setText("res_txtMayorPP", `${fmtInt(cantMayorPP)} (${fmtPct01(pctMayorPP)})`);
@@ -1347,6 +1455,8 @@
 
     if (!chartEvolMMInstance) {
       chartEvolMMInstance = window.echarts.init(el, null, { renderer: "canvas" });
+    } else {
+      chartEvolMMInstance.resize();
     }
 
     let rows = evolRawData;
@@ -1358,7 +1468,7 @@
     const monthMap = {};
     for (const r of rows) {
       const ym = parseYearMonth(r["Fecha"] || r["FECHA"]);
-      if (!ym) continue;
+      if (!ym || ym < "2025-01" || ym > "2026-12") continue;
       const rawPct = clean(r["% disponibilidad"] || r["% DISPONIBILIDAD"]).replace("%", "");
       const val = toNumber(rawPct);
       if (!monthMap[ym]) monthMap[ym] = { sum: 0, count: 0 };
@@ -1372,48 +1482,81 @@
       return obj.count ? +(obj.sum / obj.count).toFixed(1) : 0;
     });
 
-    const shortLabels = months.map(ym => {
-      const [y, m] = ym.split("-");
-      return `${m}/${y.slice(-2)}`;
+    // Calcular índices medios de 2025 y 2026 para centrar las etiquetas de referencia
+    const y2025Indices = [];
+    const y2026Indices = [];
+    months.forEach((ym, idx) => {
+      if (ym.startsWith("2025-")) y2025Indices.push(idx);
+      else if (ym.startsWith("2026-")) y2026Indices.push(idx);
     });
+    const mid2025 = y2025Indices.length ? y2025Indices[Math.floor(y2025Indices.length / 2)] : -1;
+    const mid2026 = y2026Indices.length ? y2026Indices[Math.floor(y2026Indices.length / 2)] : -1;
 
     chartEvolMMInstance.setOption({
       animation: true,
       animationDuration: 400,
-      grid: { left: 6, right: 6, top: 8, bottom: 16, containLabel: false },
+      grid: { left: 34, right: 54, top: 10, bottom: 18, containLabel: false },
       tooltip: {
         trigger: "axis",
         confine: true,
-        backgroundColor: "rgba(15, 23, 42, 0.92)",
-        borderColor: "#0d9488",
+        backgroundColor: "rgba(15, 23, 42, 0.94)",
+        borderColor: "#334155",
         borderWidth: 1,
         padding: [4, 8],
-        textStyle: { color: "#ffffff", fontSize: 10.5 },
+        textStyle: { color: "#ffffff", fontSize: 10 },
         formatter: (params) => {
           const p = params && params[0];
           if (!p) return "";
-          return `<b>${p.name}</b><br/>Disponibilidad: <b>${String(p.value).replace(".", ",")}%</b>`;
+          let labelDate = p.name;
+          if (p.name && p.name.includes("-")) {
+            const [y, m] = p.name.split("-");
+            labelDate = `${MES_NOMBRES[m] || m} ${y}`;
+          }
+          return `<div style="font-weight: 700; margin-bottom: 2px; color: #94a3b8; font-size: 9.5px; text-transform: uppercase;">Período ${labelDate}</div>${p.marker} <b>Disponibilidad:</b> ${String(p.value).replace(".", ",")}%<br/><span style="color: #0d9488; font-size: 9.5px;">--- Objetivo: <b>90,0%</b></span>`;
         }
       },
       xAxis: {
         type: "category",
-        data: shortLabels,
+        data: months,
         boundaryGap: false,
-        axisLine: { lineStyle: { color: "#cbd5e1" } },
+        axisLine: { lineStyle: { color: "#e2e8f0" } },
         axisTick: { show: false },
         axisLabel: {
           show: true,
-          fontSize: 8.5,
-          color: "#64748b",
-          interval: Math.max(0, Math.floor(shortLabels.length / 4) - 1)
+          fontSize: 9.5,
+          fontWeight: 700,
+          color: "#475569",
+          interval: 0,
+          margin: 6,
+          formatter: (value, idx) => {
+            if (idx === mid2025) return "2025";
+            if (idx === mid2026) return "2026";
+            return "";
+          }
         }
       },
       yAxis: {
         type: "value",
-        min: (v) => Math.max(0, Math.floor(v.min - 8)),
-        max: 100,
-        splitLine: { show: true, lineStyle: { color: "#f1f5f9", type: "dashed" } },
-        axisLabel: { show: false },
+        min: (value) => {
+          const vMin = (value.min != null && !isNaN(value.min)) ? value.min : 90;
+          const validMin = Math.min(vMin, 85);
+          if (validMin >= 65) return 65;
+          const floor = Math.floor((validMin - 5) / 10) * 10 + 5;
+          return Math.max(0, floor);
+        },
+        max: 95,
+        interval: 10,
+        splitLine: {
+          show: true,
+          lineStyle: { color: "#e5e9ed", type: "solid" }
+        },
+        axisLabel: {
+          show: true,
+          formatter: "{value}%",
+          fontSize: 8.5,
+          color: "#94a3b8",
+          margin: 6
+        },
         axisLine: { show: false },
         axisTick: { show: false }
       },
@@ -1422,33 +1565,39 @@
           name: "% Disponibilidad",
           type: "line",
           smooth: 0.35,
+          showSymbol: true,
           symbol: "circle",
-          symbolSize: 4,
-          label: { show: false },
+          symbolSize: 4.5,
+          itemStyle: {
+            color: "#ffffff",
+            borderColor: "#0d9488",
+            borderWidth: 1.5
+          },
           lineStyle: { width: 2.2, color: "#0d9488" },
-          itemStyle: { color: "#0d9488" },
           areaStyle: {
             color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(13, 148, 136, 0.32)" },
-              { offset: 1, color: "rgba(13, 148, 136, 0.03)" }
+              { offset: 0, color: "rgba(13, 148, 136, 0.20)" },
+              { offset: 1, color: "rgba(13, 148, 136, 0.01)" }
             ])
           },
           markLine: {
             silent: true,
             symbol: "none",
+            data: [{ yAxis: 90 }],
+            lineStyle: {
+              color: "#0d9488",
+              type: "dashed",
+              width: 1.2
+            },
             label: {
               show: true,
-              position: "insideEndTop",
+              position: "end",
               formatter: "Obj 90%",
-              fontSize: 8,
-              fontWeight: 600,
-              color: "rgba(100, 116, 139, 0.85)",
-              backgroundColor: "rgba(255, 255, 255, 0.65)",
-              padding: [0, 2],
-              borderRadius: 2
-            },
-            lineStyle: { color: "rgba(100, 116, 139, 0.55)", type: "dashed", width: 1.1 },
-            data: [{ yAxis: 90 }]
+              color: "#0d9488",
+              fontWeight: 700,
+              fontSize: 9.5,
+              distance: 5
+            }
           },
           data: values
         }
@@ -1584,12 +1733,7 @@
     }
     const isAcumGood = (Math.round(mLTM.pctAt * 1000) / 10 >= 78);
     const tagAcum = document.getElementById("res_tagAcumStatus");
-    if (tagAcum) {
-      tagAcum.textContent = isAcumGood ? "En Objetivo" : "Bajo Objetivo";
-      tagAcum.style.color = isAcumGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
-      tagAcum.style.background = isAcumGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
-      tagAcum.style.borderColor = isAcumGood ? "var(--success-border, #99f6e4)" : "var(--danger-border, #fecaca)";
-    }
+    if (tagAcum) tagAcum.style.display = "none";
     const elAcumAT = document.getElementById("res_cumplAcumATpct");
     if (elAcumAT) elAcumAT.style.setProperty("color", isAcumGood ? "#16a34a" : "#dc2626", "important");
     const rowAcumAT = document.getElementById("res_cumplAcumRowAT");
@@ -1672,6 +1816,11 @@
     const elATdiff = document.getElementById("res_cumplATdiff");
     if (elATdiff) elATdiff.style.color = diffATInfo.color;
 
+    // Demora promedio período
+    setText("res_cumplDemoraAvg", Math.round(mCurr.avgDem || 0) + " d");
+    const elCurrDem = document.getElementById("res_cumplDemoraAvg");
+    if (elCurrDem) elCurrDem.style.color = (mCurr.avgDem > 7) ? "#dc2626" : "#16a34a";
+
     const circleCurr = document.getElementById("res_radial_circle_curr");
     if (circleCurr) {
       const clamped = Math.max(0, Math.min(1, Number(mCurr.pctAt) || 0));
@@ -1680,12 +1829,7 @@
 
     const isCurrGood = (Math.round(mCurr.pctAt * 1000) / 10 >= 78);
     const tagCurr = document.getElementById("res_tagCurrStatus");
-    if (tagCurr) {
-      tagCurr.textContent = isCurrGood ? "En Objetivo" : "Bajo Objetivo";
-      tagCurr.style.color = isCurrGood ? "var(--success-text, #0f766e)" : "var(--danger-text, #b91c1c)";
-      tagCurr.style.background = isCurrGood ? "var(--success-bg, #f0fdfa)" : "var(--danger-bg, #fef2f2)";
-      tagCurr.style.borderColor = isCurrGood ? "var(--success-border, #99f6e4)" : "var(--danger-border, #fecaca)";
-    }
+    if (tagCurr) tagCurr.style.display = "none";
     const elAT = document.getElementById("res_cumplATpct");
     if (elAT) elAT.style.setProperty("color", isCurrGood ? "#16a34a" : "#dc2626", "important");
     const rowCurrAT = document.getElementById("res_cumplRowAT");
@@ -1723,6 +1867,8 @@
 
     if (!chartTendCumplInstance) {
       chartTendCumplInstance = window.echarts.init(el, null, { renderer: "canvas" });
+    } else {
+      chartTendCumplInstance.resize();
     }
 
     const months = (ltmMonths && ltmMonths.length) ? ltmMonths : [];
@@ -1755,122 +1901,150 @@
 
     const pctAtData = [];
     const pctAtAcumData = [];
-    const pctFtData = [];
 
     let runAt = 0;
     let runTot = 0;
 
     months.forEach(m => {
       const s = monthStats[m];
-      const pAt = s.tot ? +((s.at / s.tot) * 100).toFixed(1) : 0;
-      const pFt = s.tot ? +((s.ft / s.tot) * 100).toFixed(1) : 0;
+      const pAt = s.tot ? +((s.at / s.tot) * 100).toFixed(1) : null;
       runAt += s.at;
       runTot += s.tot;
-      const pAcum = runTot ? +((runAt / runTot) * 100).toFixed(1) : 0;
+      const pAcum = runTot ? +((runAt / runTot) * 100).toFixed(1) : null;
 
       pctAtData.push(pAt);
       pctAtAcumData.push(pAcum);
-      pctFtData.push(pFt);
     });
 
     chartTendCumplInstance.setOption({
       animation: true,
       animationDuration: 400,
-      grid: { left: 14, right: 14, top: 8, bottom: 18, containLabel: false },
+      grid: { left: 34, right: 54, top: 10, bottom: 18, containLabel: false },
       tooltip: {
         trigger: "axis",
         confine: true,
         backgroundColor: "rgba(15, 23, 42, 0.94)",
         borderColor: "#334155",
         borderWidth: 1,
-        padding: [5, 8],
-        textStyle: { color: "#ffffff", fontSize: 10.5 },
+        padding: [4, 8],
+        textStyle: { color: "#ffffff", fontSize: 10 },
         formatter: (params) => {
           if (!params || !params.length) return "";
           const name = params[0].name || "";
-          const lines = params.map(p => `${p.marker} ${p.seriesName}: <b>${String(p.value).replace(".", ",")}%</b>`);
-          return `<b>Período ${name}</b><br/>` + lines.join("<br/>");
+          const lines = params.map(p => {
+            const val = (p.value !== null && p.value !== undefined) ? String(p.value).replace(".", ",") + "%" : "-";
+            return `${p.marker} <b>${p.seriesName}</b>: ${val}`;
+          });
+          return `<div style="font-weight: 700; margin-bottom: 2px; color: #94a3b8; font-size: 9.5px; text-transform: uppercase;">Período ${name}</div>` + lines.join("<br/>") + `<br/><span style="color: #0d9488; font-size: 9.5px;">--- Meta: <b>78,0%</b></span>`;
         }
       },
       xAxis: {
         type: "category",
         data: shortLabels,
         boundaryGap: false,
-        axisLine: { lineStyle: { color: "#cbd5e1" } },
+        axisLine: { lineStyle: { color: "#e2e8f0" } },
         axisTick: { show: false },
         axisLabel: {
           show: true,
-          fontSize: 8.5,
-          color: "#64748b",
+          fontSize: 9,
+          fontWeight: 600,
+          color: "#475569",
           interval: 0,
-          hideOverlap: true
+          margin: 6
         }
       },
       yAxis: {
         type: "value",
-        min: 0,
-        max: 100,
-        splitLine: { show: true, lineStyle: { color: "#f1f5f9", type: "dashed" } },
-        axisLabel: { show: false },
+        min: (value) => {
+          const vMin = (value.min != null && !isNaN(value.min)) ? value.min : 78;
+          const validMin = Math.min(vMin, 75);
+          if (validMin >= 65) return 65;
+          const floor = Math.floor((validMin - 5) / 10) * 10 + 5;
+          return Math.max(0, floor);
+        },
+        max: (value) => {
+          const vMax = (value.max != null && !isNaN(value.max)) ? value.max : 78;
+          const validMax = Math.max(vMax, 80);
+          if (validMax <= 95) return 95;
+          const ceil = Math.ceil((validMax + 5) / 10) * 10 + 5;
+          return Math.min(100, ceil);
+        },
+        interval: 10,
+        splitLine: {
+          show: true,
+          lineStyle: { color: "#e5e9ed", type: "solid" }
+        },
+        axisLabel: {
+          show: true,
+          formatter: "{value}%",
+          fontSize: 8.5,
+          color: "#94a3b8",
+          margin: 6
+        },
         axisLine: { show: false },
         axisTick: { show: false }
       },
       series: [
         {
-          name: "% AT",
+          name: "% AT Real",
           type: "line",
           smooth: 0.35,
-          symbol: "none",
-          showSymbol: false,
-          label: { show: false },
-          lineStyle: { width: 2.2, color: "#16a34a" },
-          itemStyle: { color: "#16a34a" },
+          showSymbol: true,
+          symbol: "circle",
+          symbolSize: 4.5,
+          itemStyle: {
+            color: "#ffffff",
+            borderColor: "#0d9488",
+            borderWidth: 1.5
+          },
+          lineStyle: {
+            width: 2.2,
+            color: "#0d9488"
+          },
           areaStyle: {
             color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(22, 163, 74, 0.18)" },
-              { offset: 1, color: "rgba(22, 163, 74, 0.02)" }
+              { offset: 0, color: "rgba(13, 148, 136, 0.20)" },
+              { offset: 1, color: "rgba(13, 148, 136, 0.01)" }
             ])
           },
           markLine: {
             silent: true,
             symbol: "none",
+            data: [{ yAxis: 78 }],
+            lineStyle: {
+              color: "#0d9488",
+              type: "dashed",
+              width: 1.2
+            },
             label: {
               show: true,
-              position: "insideEndTop",
-              formatter: "Obj 78%",
-              fontSize: 8,
-              fontWeight: 600,
-              color: "rgba(100, 116, 139, 0.85)",
-              backgroundColor: "rgba(255, 255, 255, 0.65)",
-              padding: [0, 2],
-              borderRadius: 2
-            },
-            lineStyle: { color: "rgba(100, 116, 139, 0.55)", type: "dashed", width: 1.1 },
-            data: [{ yAxis: 78 }]
+              position: "end",
+              formatter: "Meta 78%",
+              color: "#0d9488",
+              fontWeight: 700,
+              fontSize: 9.5,
+              distance: 5
+            }
           },
           data: pctAtData
         },
         {
-          name: "% AT Acum.",
+          name: "% AT ACUM",
           type: "line",
           smooth: 0.35,
-          symbol: "none",
-          showSymbol: false,
-          label: { show: false },
-          lineStyle: { width: 2.2, color: "#7c3aed" },
-          itemStyle: { color: "#7c3aed" },
+          showSymbol: true,
+          symbol: "circle",
+          symbolSize: 4,
+          itemStyle: {
+            color: "#ffffff",
+            borderColor: "#7c3aed",
+            borderWidth: 1.5
+          },
+          lineStyle: {
+            width: 1.8,
+            color: "#7c3aed"
+          },
           data: pctAtAcumData
-        },
-        {
-          name: "% FT",
-          type: "line",
-          smooth: 0.35,
-          symbol: "none",
-          showSymbol: false,
-          label: { show: false },
-          lineStyle: { width: 2, color: "#f59e0b" },
-          itemStyle: { color: "#f59e0b" },
-          data: pctFtData
         }
       ]
     }, true);

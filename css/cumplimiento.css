@@ -95,8 +95,8 @@
   background: #94a3b8;
 }
 
-/* Estilos para el botón Limpiar Filtros */
-.page-cumplimiento .btn-clear {
+/* Estilos para el botón Limpiar Filtros en cabeceras oscuras */
+.page-cumplimiento .panel-title .btn-clear {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.4);
   color: #ffffff;
@@ -113,7 +113,7 @@
   gap: 4px;
 }
 
-.page-cumplimiento .btn-clear:hover {
+.page-cumplimiento .panel-title .btn-clear:hover {
   background: rgba(255, 255, 255, 0.2);
   border-color: #ffffff;
 }

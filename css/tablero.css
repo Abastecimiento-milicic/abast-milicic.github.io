@@ -108,14 +108,14 @@
   border-color: var(--border-hover, #cbd5e1);
 }
 
-/* Cabecera de Tarjeta Bento */
+/* Cabecera de Tarjeta Bento (Sin líneas divisorias inferiores para optimizar espacio) */
 .bento-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.55rem;
-  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+  margin-bottom: 0.45rem;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .bento-title-group {
@@ -393,37 +393,69 @@ circle.radial-circle-progress {
   gap: 3px;
 }
 
+.res-demoras-dual-row,
+#panel-resumen .res-demoras-dual-row {
+  display: grid !important;
+  grid-template-columns: 1.15fr 0.85fr !important;
+  gap: 0.75rem !important;
+  align-items: stretch !important;
+}
+
+@media (max-width: 900px) {
+  .res-demoras-dual-row,
+  #panel-resumen .res-demoras-dual-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.res-ft-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
 /* ==========================================================================
    SERVICIOS & PARTIDAS EN HORIZONTAL
    ========================================================================== */
 
-.services-dual-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+.services-dual-row,
+#panel-resumen .services-dual-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.75rem !important;
+  align-items: stretch !important;
 }
 
 @media (max-width: 900px) {
-  .services-dual-row {
-    grid-template-columns: 1fr;
+  .services-dual-row,
+  #panel-resumen .services-dual-row {
+    grid-template-columns: 1fr !important;
   }
 }
 
-.service-stat-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+.service-stat-strip,
+#panel-resumen .service-stat-strip {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+
+.service-stat-strip.res-emrf-strip-3,
+#panel-resumen .service-stat-strip.res-emrf-strip-3 {
+  grid-template-columns: repeat(3, 1fr) !important;
 }
 
 .strip-pill {
   background: var(--bg-subtle, #f8fafc);
   border: 1px solid var(--border-subtle, #e2e8f0);
   border-radius: var(--radius-sm, 6px);
-  padding: 5px 6px;
+  padding: 6px 8px;
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .strip-lbl {

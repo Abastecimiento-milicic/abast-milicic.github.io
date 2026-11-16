@@ -8,8 +8,8 @@
   const ESTADO_DOWNLOAD_FILES = {
     1: "data/STO NULO.csv",
     2: "data/MENOR A PP.csv",
-    3: "data/data ANALISIS MM/MAYOR AL PP.csv",
-    4: "data/data ANALISIS MM/MAYOR STOCK MAX.csv"
+    3: "data/MAYOR AL PP.csv",
+    4: "data/MAYOR STOCK MAX.csv"
   };
 
   const CLIENT_CANDIDATES = ["ALMACEN", "Almacén", "Almacen", "ALMACÉN", "Cliente", "CLIENTE", "CLIENTE (ALMACEN)"];
@@ -508,7 +508,7 @@
   function downloadByKind(kind) {
     if (kind === "stock_nulo") downloadExternalFilteredCSV("data/STO NULO.csv");
     if (kind === "menor_pp") downloadExternalFilteredCSV("data/MENOR A PP.csv");
-    if (kind === "mayor_stock_max") downloadByEstadoValue("Mayor a Stock Maximo", "data/data ANALISIS MM/MAYOR STOCK MAX.csv");
+    if (kind === "mayor_stock_max") downloadByEstadoValue("Mayor a Stock Maximo", "data/MAYOR STOCK MAX.csv");
   }
 
   function buildValorizacionStock(rows) {

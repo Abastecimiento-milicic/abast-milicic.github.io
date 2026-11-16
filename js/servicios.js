@@ -160,12 +160,7 @@
   }
 
   function applyAll() {
-      let selClientes = getSelValues("serv_clienteSelect");
-      // Si no hay selección explícita, mantener por defecto cliente fijo 00223
-      if (!selClientes.length) {
-          const opt223 = [...(document.getElementById("serv_clienteSelect")?.options || [])].find(o => o.value.includes("223"));
-          if (opt223) selClientes = [opt223.value];
-      }
+      const selClientes = getSelValues("serv_clienteSelect");
       const selPeriodos = getSelValues("serv_clasif2Select");
       const selEstados = getSelValues("serv_gcocSelect");
       const selGrupos = getSelValues("serv_grupoCompraSelect");
@@ -250,18 +245,12 @@
   };
 
   window.resetServiciosFilters = function() {
-      ["serv_clasif2Select", "serv_gcocSelect", "serv_grupoCompraSelect", "serv_estadoItemSelect"].forEach(id => {
+      ["serv_clienteSelect", "serv_clasif2Select", "serv_gcocSelect", "serv_grupoCompraSelect", "serv_estadoItemSelect"].forEach(id => {
           const el = document.getElementById(id);
           if (el) {
               [...el.options].forEach((o, i) => o.selected = (i === 0 || o.value === "__ALL__"));
           }
       });
-      const elClie = document.getElementById("serv_clienteSelect");
-      if (elClie) {
-          [...elClie.options].forEach(o => {
-              o.selected = (o.value.startsWith("00223") || o.value.includes("223"));
-          });
-      }
       if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
       applyAll();
   };

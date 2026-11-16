@@ -1495,7 +1495,7 @@
     chartEvolMMInstance.setOption({
       animation: true,
       animationDuration: 400,
-      grid: { left: 34, right: 54, top: 10, bottom: 18, containLabel: false },
+      grid: { left: 34, right: 54, top: 12, bottom: 18, containLabel: false },
       tooltip: {
         trigger: "axis",
         confine: true,
@@ -1544,7 +1544,11 @@
           const floor = Math.floor((validMin - 5) / 10) * 10 + 5;
           return Math.max(0, floor);
         },
-        max: 95,
+        max: (value) => {
+          const vMax = (value.max != null && !isNaN(value.max)) ? value.max : 90;
+          if (vMax <= 95) return 95;
+          return Math.max(100, Math.ceil(vMax));
+        },
         interval: 10,
         splitLine: {
           show: true,
@@ -1935,7 +1939,7 @@
             const val = (p.value !== null && p.value !== undefined) ? String(p.value).replace(".", ",") + "%" : "-";
             return `${p.marker} <b>${p.seriesName}</b>: ${val}`;
           });
-          return `<div style="font-weight: 700; margin-bottom: 2px; color: #94a3b8; font-size: 9.5px; text-transform: uppercase;">Período ${name}</div>` + lines.join("<br/>") + `<br/><span style="color: #0d9488; font-size: 9.5px;">--- Meta: <b>78,0%</b></span>`;
+          return `<div style="font-weight: 700; margin-bottom: 2px; color: #94a3b8; font-size: 9.5px; text-transform: uppercase;">Período ${name}</div>` + lines.join("<br/>") + `<br/><span style="color: #0d9488; font-size: 9.5px;">--- Obj: <b>78,0%</b></span>`;
         }
       },
       xAxis: {
@@ -2019,7 +2023,7 @@
             label: {
               show: true,
               position: "end",
-              formatter: "Meta 78%",
+              formatter: "Obj 78%",
               color: "#0d9488",
               fontWeight: 700,
               fontSize: 9.5,

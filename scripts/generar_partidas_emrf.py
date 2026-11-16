@@ -63,10 +63,7 @@ def process_data(data_dir=None, corte_str=None):
     if data_dir is None:
         data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
-    candidate_dirs = [
-        os.path.join(data_dir, 'data PARTIDAS ABIERTAS'),
-        data_dir
-    ]
+    candidate_dirs = [data_dir]
 
     fbl3n_path = find_data_file(candidate_dirs, 'FBL3N')
     me2l_path = find_data_file(candidate_dirs, 'ME2L')
@@ -376,10 +373,7 @@ def process_data(data_dir=None, corte_str=None):
     }
 
     # Guardar en data PARTIDAS ABIERTAS y en data como respaldo
-    target_paths = [
-        os.path.join(data_dir, 'data PARTIDAS ABIERTAS', 'partidas_emrf.json'),
-        os.path.join(data_dir, 'partidas_emrf.json')
-    ]
+    target_paths = [os.path.join(data_dir, 'partidas_emrf.json')]
 
     for out_file in target_paths:
         os.makedirs(os.path.dirname(out_file), exist_ok=True)

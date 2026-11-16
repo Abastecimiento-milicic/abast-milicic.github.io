@@ -336,11 +336,11 @@ def run_combination(base_dir=None):
     data_dir = os.path.join(base_dir, 'data')
     mb52_dir = os.path.join(data_dir, 'Almacen MB52')
     
-    mm_path = os.path.join(data_dir, 'data ANALISIS MM', 'ANALISIS-MM.csv')
+    mm_path = os.path.join(data_dir, 'ANALISIS-MM.csv')
     if not os.path.exists(mm_path):
         mm_path = os.path.join(data_dir, 'ANALISIS-MM.csv')
 
-    aux_path = os.path.join(data_dir, 'data CUMPLIMIENTO', 'Base_Final_365_372.csv')
+    aux_path = os.path.join(data_dir, 'Base_Final_365_372.csv')
     if not os.path.exists(aux_path):
         aux_path = os.path.join(data_dir, 'Base_Final_365_372.csv')
 

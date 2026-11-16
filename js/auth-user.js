@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const isGithubPages = window.location.hostname.endsWith('github.io');
         
-        if (isLocalhost) {
+        if (isLocalhost || isGithubPages) {
             const tabEnvio = document.getElementById('tab-envio');
             if (tabEnvio) tabEnvio.style.display = 'inline-block';
             return;

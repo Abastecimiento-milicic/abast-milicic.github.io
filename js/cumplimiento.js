@@ -35,8 +35,9 @@
     if (typeof v === "number") return v;
     const s = String(v).trim();
     if (!s) return NaN;
-    const norm = s.replace(/\./g, "").replace(/,/g, ".");
-    const n = parseFloat(norm);
+    let numStr = s;
+    if (numStr.includes(",")) numStr = numStr.replace(/\./g, "").replace(",", ".");
+    const n = parseFloat(numStr);
     return isNaN(n) ? NaN : n;
   }
 

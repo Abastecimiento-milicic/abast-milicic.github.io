@@ -49,10 +49,12 @@
   function toNumAny(v) {
     if (v == null) return NaN;
     if (typeof v === "number") return v;
-    const s = String(v).trim();
+    let s = String(v).trim();
     if (!s) return NaN;
-    const norm = s.replace(/\./g, "").replace(/,/g, ".");
-    const n = parseFloat(norm);
+    if (s.includes(",")) {
+      s = s.replace(/\./g, "").replace(",", ".");
+    }
+    const n = parseFloat(s);
     return isNaN(n) ? NaN : n;
   }
 

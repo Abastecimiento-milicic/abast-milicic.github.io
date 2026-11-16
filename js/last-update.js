@@ -33,7 +33,7 @@ window.syncSectorLastUpdate = function(sector) {
   }
 };
 
-const APP_CACHE_VERSION = "v147_20261116_142304";
+const APP_CACHE_VERSION = "v151_20261116_143546";
 try {
   const lastStoredVersion = localStorage.getItem("app_cache_version");
   if (lastStoredVersion !== APP_CACHE_VERSION) {

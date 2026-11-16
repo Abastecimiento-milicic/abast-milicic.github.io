@@ -1756,7 +1756,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 4px;">
                   <span class="bento-action-badge" id="res_emrf_gc_badge" style="display: none;"></span>
-                  <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar por Vencimiento (> 1 mes de demora)" style="margin: 0; padding: 1px 4px; display: inline-flex; align-items: center; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
+                  <label id="res_emrfVencBtnWrap" class="res-inline-venc-btn is-vencida" for="res_emrfInlineVencSelect" title="Filtrar por Vencimiento (Recepción >= 21 días o Factura con OC vencida)" style="margin: 0; padding: 1px 4px; display: inline-flex; align-items: center; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
                     <select id="res_emrfInlineVencSelect" class="res-inline-mes-select" style="font-size: 0.65rem; border: none; background: transparent; color: #475569; font-weight: 700; cursor: pointer; outline: none; height: 16px;">
                       <option value="VENCIDA" selected>🔴 Vencidas</option>
                       <option value="NO_VENCIDA">🔵 No Vencidas</option>
@@ -2224,13 +2224,13 @@
   
   <script src="js/demoras.js?v=20261113_131700"></script>
   <script src="js/resumen.js?v=20261113_131700"></script>
-  <script src="js/cumplimiento.js?v=20261113_103500"></script>
+  <script src="js/cumplimiento.js?v=20261116_080700"></script>
   <script src="js/cumplimiento-arriba.js?v=20261113_103500"></script>
   <script src="js/analisis-mm.js?v=20261112_162500"></script>
   <script src="js/evolucion.js?v=20261112_162500"></script>
   <script src="js/servicios.js?v=20261113_113000"></script>
   <script src="js/tiempos-entrega.js?v=20261112_162500"></script>
-  <script src="js/control-emrf.js?v=20261113_135500"></script>
+  <script src="js/control-emrf.js?v=20261113_164800"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2618,7 +2618,12 @@
       
       // 4. Mostrar el panel correspondiente
       const panel = document.getElementById(`panel-${tabName}`);
-      if (panel) panel.style.display = 'block';
+      if (panel) {
+        panel.style.display = 'block';
+        if (tabName === 'cumplimiento' && typeof window.resizeCumplimientoCharts === 'function') {
+          window.resizeCumplimientoCharts();
+        }
+      }
 
       // 5. Cambiar el subtítulo del Topbar dinámicamente
       const subtitleEl = document.getElementById('topbarSubtitle');
@@ -2666,6 +2671,9 @@
         } else if (tabName === 'cumplimiento') {
           if (typeof window.initCumplimiento === 'function') {
             window.initCumplimiento();
+          }
+          if (typeof window.resizeCumplimientoCharts === 'function') {
+            window.resizeCumplimientoCharts();
           }
         } else if (tabName === 'mm') {
           if (typeof window.initMM === 'function') {

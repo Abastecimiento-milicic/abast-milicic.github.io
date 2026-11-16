@@ -863,7 +863,8 @@
       if (!chartMesResizeBound) {
           chartMesResizeBound = true;
           window.addEventListener("resize", () => {
-              if (chartMes) chartMes.resize();
+              const el = document.getElementById("dem_chartMes");
+              if (el && el.clientWidth > 0 && chartMes) chartMes.resize();
           }, { passive: true });
       }
   }
@@ -983,7 +984,8 @@
       if (!chartAreasResizeBound) {
           chartAreasResizeBound = true;
           window.addEventListener("resize", () => {
-              if (chartAreas) chartAreas.resize();
+              const el = document.getElementById("dem_chartAreas");
+              if (el && el.clientWidth > 0 && chartAreas) chartAreas.resize();
           }, { passive: true });
       }
   }
@@ -1159,7 +1161,8 @@
       if (!chartMotivosResizeBound) {
           chartMotivosResizeBound = true;
           window.addEventListener("resize", () => {
-              if (chartMotivos) chartMotivos.resize();
+              const el = document.getElementById("dem_chartMotivos");
+              if (el && el.clientWidth > 0 && chartMotivos) chartMotivos.resize();
           }, { passive: true });
       }
   }

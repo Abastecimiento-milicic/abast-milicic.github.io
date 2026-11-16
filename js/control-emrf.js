@@ -635,21 +635,11 @@
   function showHelpModal() {
     if (typeof window.openHelp === 'function') {
       window.openHelp("Guía Operativa — Control de Partidas Abiertas SAP (EM/RF)", `
-        <h4>¿Qué analiza este tablero?</h4>
-        <p>Supervisa la cuenta puente de compensación de compras de SAP <strong>EM/RF (2101011001)</strong>, conciliando lo ingresado físicamente en almacén/obra (<strong>MIGO</strong>) contra lo facturado por el proveedor (<strong>MIRO</strong>), cruzado con las fechas pactadas en las Órdenes de Compra (OC).</p>
-        
-        <h4>📌 Estados Contables EM/RF</h4>
+        <h4>📌 Columna ESTADO de Vencimiento</h4>
+        <p>Criterio de vencimiento según la regla operativa:</p>
         <ul>
-          <li><strong>📦 TIENE RECEPCIÓN - FALTA FACTURA:</strong> El almacén ya recepcionó la mercadería o servicio (<em>Haber</em> con saldo negativo), pero el proveedor aún no facturó o la factura no fue cargada en el sistema (<em>Debe</em> en $0,00).<br>👉 <strong>Acción:</strong> Reclamar la factura al proveedor o gestionar la carga en Cuentas por Pagar.</li>
-          <li style="margin-top:6px;"><strong>📄 TIENE FACTURA - FALTA RECEPCIÓN:</strong> La factura del proveedor ya fue contabilizada en SAP (<em>Debe</em> positivo), pero en el almacén no consta el ingreso físico o remito (<em>Haber</em> en $0,00).<br>👉 <strong>Acción:</strong> Reclamar el remito o ingreso físico al almacén/obra para evitar riesgo financiero de pagar sin recibir.</li>
-          <li style="margin-top:6px;"><strong>🟢 COMPENSABLE (Saldo $0):</strong> Lo facturado coincide exactamente con lo recepcionado (Saldo Neto $0,00).<br>👉 <strong>Acción:</strong> Listo para depurar y cerrar en SAP mediante la transacción <strong>F.13</strong>.</li>
-        </ul>
-
-        <h4>⚠️ Columna ESTADO de Vencimiento</h4>
-        <p>Mide la antigüedad de la partida (recepción o factura) respecto a la fecha de corte (umbral de 1 mes / 30 días):</p>
-        <ul>
-          <li><strong>VENCIDA:</strong> La recepción física o la factura fue contabilizada hace más de 1 mes (30 días) y continúa pendiente su contraparte (sin factura o sin recepción).</li>
-          <li><strong>VIGENTE:</strong> La partida tiene 30 días o menos desde su contabilización (se encuentra en plazo habitual administrativo).</li>
+          <li><strong>TIENE RECEPCIÓN - FALTA FACTURA:</strong> Se considera <strong>VENCIDA</strong> si la recepción física fue contabilizada hace 21 días o más respecto a hoy (o fecha de corte), y <strong>VIGENTE</strong> si tiene menos de 21 días.</li>
+          <li><strong>TIENE FACTURA - FALTA RECEPCIÓN:</strong> Se considera <strong>VENCIDA</strong> si la fecha de entrega comprometida en la Orden de Compra (OC) ya venció, y <strong>VIGENTE</strong> si la fecha de entrega de la OC aún no venció (en plazo).</li>
         </ul>
 
         <h4>⚙️ Filtros Iniciales por Defecto</h4>

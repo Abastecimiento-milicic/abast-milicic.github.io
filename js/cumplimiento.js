@@ -113,6 +113,8 @@
 
   let chartMes = null;
   let chartTendencia = null;
+  let chartMesResizeBound = false;
+  let chartTendenciaResizeBound = false;
 
   let hiddenChartMonths = new Set();
   let currentChartRows = [];
@@ -1231,7 +1233,15 @@
     };
 
     chartMes.setOption(option, true);
-    window.addEventListener("resize", () => chartMes && chartMes.resize(), { passive: true });
+    if (!chartMesResizeBound) {
+      chartMesResizeBound = true;
+      window.addEventListener("resize", () => {
+        const el = document.getElementById("cumpl_chartMes");
+        if (el && el.clientWidth > 0 && chartMes) {
+          chartMes.resize();
+        }
+      }, { passive: true });
+    }
   }
 
   /* ============================
@@ -1423,7 +1433,15 @@
     };
 
     chartTendencia.setOption(option, true);
-    window.addEventListener("resize", () => chartTendencia && chartTendencia.resize(), { passive: true });
+    if (!chartTendenciaResizeBound) {
+      chartTendenciaResizeBound = true;
+      window.addEventListener("resize", () => {
+        const el = document.getElementById("cumpl_chartTendencia");
+        if (el && el.clientWidth > 0 && chartTendencia) {
+          chartTendencia.resize();
+        }
+      }, { passive: true });
+    }
   }
 
   /* ============================
@@ -1937,6 +1955,18 @@
       return;
     }
     loadSectorData(sector);
+  };
+
+
+  window.resizeCumplimientoCharts = function() {
+    const el1 = document.getElementById("cumpl_chartMes");
+    if (el1 && el1.clientWidth > 0 && chartMes) {
+      chartMes.resize();
+    }
+    const el2 = document.getElementById("cumpl_chartTendencia");
+    if (el2 && el2.clientWidth > 0 && chartTendencia) {
+      chartTendencia.resize();
+    }
   };
 
 })();

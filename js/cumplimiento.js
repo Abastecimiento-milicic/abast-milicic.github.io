@@ -967,8 +967,8 @@
         axisTick: { alignWithLabel: true },
         axisLabel: {
           interval: 0,
-          rotate: months.length > 8 ? 30 : 0,
-          fontSize: 10.5,
+          rotate: 0,
+          fontSize: 10,
           fontWeight: 700
         }
       },
@@ -1379,8 +1379,8 @@
         data: months,
         axisLabel: {
           interval: 0,
-          rotate: months.length > 8 ? 30 : 0,
-          fontSize: 10.5,
+          rotate: 0,
+          fontSize: 10,
           fontWeight: 700
         }
       },

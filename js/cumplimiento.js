@@ -507,6 +507,8 @@
     const prevValid = [...prevSet].filter(v => v && v !== "__ALL__" && months.includes(v));
     if (prevValid.length) {
       [...sel.options].forEach(o => { if (prevSet.has(o.value)) o.selected = true; });
+    } else if (prevSet.has("__ALL__")) {
+      optAll.selected = true;
     } else {
       const explicitMonth = window.MES_POR_DEFECTO;
       const last = (explicitMonth && months.includes(explicitMonth)) ? explicitMonth : (months.length > 0 ? months[months.length - 1] : null);
@@ -963,7 +965,12 @@
         type: "category",
         data: months,
         axisTick: { alignWithLabel: true },
-        axisLabel: { fontWeight: 700 }
+        axisLabel: {
+          interval: 0,
+          rotate: months.length > 8 ? 30 : 0,
+          fontSize: 10.5,
+          fontWeight: 700
+        }
       },
       yAxis: [
         {
@@ -1367,7 +1374,16 @@
         itemHeight: 10,
         textStyle: { fontWeight: 800 }
       },
-      xAxis: { type: "category", data: months, axisLabel: { fontWeight: 700 } },
+      xAxis: {
+        type: "category",
+        data: months,
+        axisLabel: {
+          interval: 0,
+          rotate: months.length > 8 ? 30 : 0,
+          fontSize: 10.5,
+          fontWeight: 700
+        }
+      },
       yAxis: {
         type: "value",
         min: 0,max: 100,
@@ -1863,6 +1879,7 @@
           renderClasif2(baseCliente);
           renderGcoc(baseCliente);
           applyAll();
+          if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
         });
 
         document.getElementById("cumpl_clasif2Select")?.addEventListener("change", (e) => {

@@ -1,4 +1,4 @@
-﻿// Inicialización global de fechas por sector (OBRAS, SEDE, COMPRAS, ALMACEN)
+// Inicialización global de fechas por sector (OBRAS, SEDE, COMPRAS, ALMACEN)
 window.LAST_UPDATE = window.LAST_UPDATE_OBRAS || "22/10/2026";
 window.MES_POR_DEFECTO = window.MES_POR_DEFECTO_OBRAS || "2026-09";
 
@@ -33,7 +33,7 @@ window.syncSectorLastUpdate = function(sector) {
   }
 };
 
-const APP_CACHE_VERSION = "v160_20261117_143915";
+const APP_CACHE_VERSION = "v161_20261117_153930";
 try {
   const lastStoredVersion = localStorage.getItem("app_cache_version");
   if (lastStoredVersion !== APP_CACHE_VERSION) {

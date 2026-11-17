@@ -479,6 +479,11 @@
     fillSelect("cumpl_gcocSelect", vals, "Todos");
   }
 
+  function isSedeSector() {
+    const sec = (currentSector || window.currentAppSector || "").toLowerCase();
+    return sec === "sede" || sec.startsWith("sede_");
+  }
+
   function buildMesSelect(rows) {
     const sel = document.getElementById("cumpl_mesSelect");
     if (!sel) return [];
@@ -500,8 +505,27 @@
       sel.appendChild(o);
     }
 
+    const isSede = isSedeSector();
+    const defaultSedeMonth = window.MES_POR_DEFECTO_SEDE || "2026-10";
     const prevValid = [...prevSet].filter(v => v && v !== "__ALL__" && months.includes(v));
-    if (prevValid.length) {
+
+    if (isSede) {
+      // En SEDE, el filtro Mes de Entrega queda fijo en el mes vigente (Octubre)
+      const targetMonth = (prevValid.length > 0 && prevValid[0])
+        ? prevValid[0]
+        : (months.includes(defaultSedeMonth) ? defaultSedeMonth : (months.length > 0 ? months[months.length - 1] : null));
+      if (targetMonth) {
+        const optTarget = [...sel.options].find(o => o.value === targetMonth);
+        if (optTarget) {
+          [...sel.options].forEach(o => o.selected = false);
+          optTarget.selected = true;
+        } else {
+          optAll.selected = true;
+        }
+      } else {
+        optAll.selected = true;
+      }
+    } else if (prevValid.length) {
       [...sel.options].forEach(o => { if (prevSet.has(o.value)) o.selected = true; });
     } else if (prevSet.has("__ALL__")) {
       optAll.selected = true;
@@ -1490,12 +1514,27 @@
 
   function clearAllFilters() {
     const selects = ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect", "cumpl_baseAlmacenSelect"];
+    const isSede = isSedeSector();
+    const defaultSedeMonth = window.MES_POR_DEFECTO_SEDE || "2026-10";
+
     selects.forEach(id => {
       const sel = document.getElementById(id);
       if (!sel) return;
-      [...sel.options].forEach((opt, idx) => {
-        opt.selected = (idx === 0 || opt.value === "__ALL__" || opt.value === "");
-      });
+      if (id === "cumpl_mesSelect" && isSede) {
+        const optOct = [...sel.options].find(o => o.value === defaultSedeMonth);
+        if (optOct) {
+          [...sel.options].forEach(o => o.selected = false);
+          optOct.selected = true;
+        } else {
+          [...sel.options].forEach((opt, idx) => {
+            opt.selected = (idx === 0 || opt.value === "__ALL__" || opt.value === "");
+          });
+        }
+      } else {
+        [...sel.options].forEach((opt, idx) => {
+          opt.selected = (idx === 0 || opt.value === "__ALL__" || opt.value === "");
+        });
+      }
       enforceAllOption(sel);
     });
 
@@ -1511,6 +1550,7 @@
 
     updateMesTitleFromSelect();
     applyAll();
+    if (typeof window.syncAllStMultiSelects === "function") window.syncAllStMultiSelects();
   }
 
   /* ============================
@@ -1714,10 +1754,20 @@
   }
 
   function resetSelectSelectionsForSectorSwitch() {
-    ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "cumpl_mesSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect", "cumpl_baseAlmacenSelect"].forEach(id => {
+    ["cumpl_clienteSelect", "cumpl_operadorSelect", "cumpl_clasif2Select", "cumpl_gcocSelect", "centroSelect", "cumpl_proveedorSelect", "cumpl_soloAbastSelect", "cumpl_baseAlmacenSelect"].forEach(id => {
       const sel = document.getElementById(id);
       if (sel) sel.innerHTML = '<option value="__ALL__" selected>Todos</option>';
     });
+    const mesSel = document.getElementById("cumpl_mesSelect");
+    if (mesSel) {
+      const isSede = isSedeSector();
+      const defMonth = isSede ? (window.MES_POR_DEFECTO_SEDE || "2026-10") : window.MES_POR_DEFECTO;
+      if (defMonth) {
+        mesSel.innerHTML = `<option value="${defMonth}" selected>${defMonth}</option>`;
+      } else {
+        mesSel.innerHTML = '<option value="__ALL__" selected>Todos</option>';
+      }
+    }
     hiddenChartMonths.clear();
   }
 
@@ -1978,6 +2028,9 @@
 
   window.setCumplimientoSector = function(sector) {
     window.currentAppSector = sector;
+    if (typeof window.syncSectorLastUpdate === "function") {
+      window.syncSectorLastUpdate(sector);
+    }
     if (!window.cumplimientoInitialized) {
       window.initCumplimiento();
       return;

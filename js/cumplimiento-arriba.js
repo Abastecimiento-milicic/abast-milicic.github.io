@@ -83,6 +83,19 @@
     const t = clean(s);
     if (!t) return null;
 
+    const slashIdx1 = t.indexOf("/");
+    if (slashIdx1 !== -1) {
+      const slashIdx2 = t.indexOf("/", slashIdx1 + 1);
+      if (slashIdx2 !== -1) {
+        const d = parseInt(t.substring(0, slashIdx1), 10);
+        const m = parseInt(t.substring(slashIdx1 + 1, slashIdx2), 10);
+        const y = parseInt(t.substring(slashIdx2 + 1, slashIdx2 + 5), 10);
+        if (y > 1900 && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+          return new Date(y, m - 1, d);
+        }
+      }
+    }
+
     if (/^\d{4,5}$/.test(t)) {
       const serial = parseInt(t, 10);
       if (serial > 30000 && serial < 60000) {
@@ -93,10 +106,7 @@
       }
     }
 
-    let m = t.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-    if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
-
-    m = t.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+    let m = t.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
     if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
 
     return null;
@@ -107,15 +117,33 @@
   }
 
   function getMonthKeyFromRow(r) {
-    const d = parseDateAny(r["FECHA ENTREGA ESPERADA"]);
+    if (r._ym) return r._ym;
+    const s = r["FECHA ENTREGA ESPERADA"];
+    if (!s) return null;
+    const t = clean(s);
+    if (!t) return null;
+
+    const slashIdx1 = t.indexOf("/");
+    if (slashIdx1 !== -1) {
+      const slashIdx2 = t.indexOf("/", slashIdx1 + 1);
+      if (slashIdx2 !== -1) {
+        const m = t.substring(slashIdx1 + 1, slashIdx2).padStart(2, "0");
+        const y = t.substring(slashIdx2 + 1, slashIdx2 + 5);
+        if (y.length === 4) return `${y}-${m}`;
+      }
+    }
+    const d = parseDateAny(t);
     return d ? monthKey(d) : null;
   }
 
   function avgDelay(rows) {
     let s = 0, c = 0;
-    for (const r of rows) {
-      const v = toNumAny(r["DEMORA FINAL"]);
-      if (!isNaN(v) && v > 0) { s += v; c++; }
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      if (r._hasDemora) {
+        s += r._demora;
+        c++;
+      }
     }
     return c ? (s / c) : NaN;
   }
@@ -142,149 +170,207 @@
   }
 
   /* ============================
-     FETCH DATA
+     FETCH & PRELOAD DATA
   ============================ */
-  async function loadArribaData() {
+  let arribaLoadingPromise = null;
+
+  async function loadArribaData(isPreload = false) {
     if (arribaRawRows) return arribaRawRows;
+    if (arribaLoadingPromise) return arribaLoadingPromise;
     isLoading = true;
 
     const btn = document.getElementById("cumpl_btnArriba");
     const origText = btn ? btn.innerHTML : "";
-    if (btn) btn.innerHTML = "⏳ Cargando datos arriba...";
+    if (btn && !isPreload) btn.innerHTML = "⏳ Cargando datos arriba...";
 
-    try {
-      let rawData = null;
-      let fields = [];
-
-      // 1. Intentar cargar CSV (ultrarrápido con PapaParse)
+    arribaLoadingPromise = (async () => {
       try {
-        const urlCsv = CSV_ARRIBA_URL + "?t=" + (window.CACHE_BUSTER || Date.now());
-        let text = "";
-        if (typeof window.fetchWithCache === "function") {
-          text = await window.fetchWithCache(urlCsv);
-        } else {
-          const resp = await fetch(urlCsv);
-          if (resp.ok) text = await resp.text();
+        let rawData = null;
+        let fields = [];
+
+        // 1. Usar dataset compartido en memoria si ya fue cargado por Tablero (resumen.js)
+        if (window._sharedArribaData && window._sharedArribaData.rows && window._sharedArribaData.rows.length) {
+          rawData = window._sharedArribaData.rows;
+          fields = window._sharedArribaData.headers || [];
         }
 
-        if (text && text.length > 50) {
-          const parsed = Papa.parse(text, {
-            header: true,
-            delimiter: ";",
-            skipEmptyLines: true,
-            transformHeader: (h) => (h || "").trim().replace(/^\ufeff/, "")
-          });
-          if (parsed.data && parsed.data.length) {
-            fields = parsed.meta.fields || [];
-            rawData = parsed.data;
-          }
-        }
-      } catch (eCsv) {
-        console.warn("[Cumplimiento Arriba] CSV no disponible, intentando XLSX...", eCsv);
-      }
+        // 2. Intentar cargar CSV con fetchWithCache + PapaParse
+        if (!rawData) {
+          try {
+            const urlCsv = CSV_ARRIBA_URL + "?t=" + (window.CACHE_BUSTER || Date.now());
+            let text = "";
+            if (typeof window.fetchWithCache === "function") {
+              text = await window.fetchWithCache(urlCsv);
+            } else {
+              const resp = await fetch(urlCsv);
+              if (resp.ok) text = await resp.text();
+            }
 
-      // 2. Si no se cargó el CSV, intentar cargar XLSX directamente con ExcelJS
-      if (!rawData && typeof ExcelJS !== "undefined") {
-        try {
-          const urlXlsx = XLSX_ARRIBA_URL + "?t=" + (window.CACHE_BUSTER || Date.now());
-          const resp = await fetch(urlXlsx);
-          if (resp.ok) {
-            const buffer = await resp.arrayBuffer();
-            const wb = new ExcelJS.Workbook();
-            await wb.xlsx.load(buffer);
-            const ws = wb.worksheets[0];
-            const headers = [];
-            const dataRows = [];
-            ws.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-              if (rowNumber === 1) {
-                row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-                  headers[colNumber - 1] = clean(cell.value).replace(/^\ufeff/, "");
-                });
-              } else {
-                const obj = {};
-                row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-                  const h = headers[colNumber - 1];
-                  if (h) {
-                    let v = cell.value;
-                    if (v instanceof Date) {
-                      v = `${String(v.getDate()).padStart(2, "0")}/${String(v.getMonth() + 1).padStart(2, "0")}/${v.getFullYear()}`;
-                    } else if (v && typeof v === "object" && v.text) {
-                      v = v.text;
-                    } else if (v && typeof v === "object" && v.result !== undefined) {
-                      v = v.result;
-                    }
-                    obj[h] = clean(v);
-                  }
-                });
-                dataRows.push(obj);
+            if (text && text.length > 50 && !text.trim().startsWith("<")) {
+              const parsed = Papa.parse(text, {
+                header: true,
+                delimiter: ";",
+                skipEmptyLines: true,
+                transformHeader: (h) => (h || "").trim().replace(/^\ufeff/, "")
+              });
+              if (parsed.data && parsed.data.length) {
+                fields = parsed.meta.fields || [];
+                rawData = parsed.data;
+                window._sharedArribaData = { headers: fields, rows: rawData };
               }
-            });
-            fields = headers;
-            rawData = dataRows;
+            }
+          } catch (eCsv) {
+            console.warn("[Cumplimiento Arriba] CSV no disponible o error al parsear:", eCsv);
           }
-        } catch (eXlsx) {
-          console.error("[Cumplimiento Arriba] Error cargando XLSX:", eXlsx);
         }
-      }
 
-      if (!rawData || !rawData.length) {
-        throw new Error("El archivo Base Final 365 372 no pudo cargarse o está vacío.");
-      }
+        // 3. Fallback a XLSX únicamente si CSV falló completamente
+        if (!rawData && typeof ExcelJS !== "undefined") {
+          try {
+            const urlXlsx = XLSX_ARRIBA_URL + "?t=" + (window.CACHE_BUSTER || Date.now());
+            const resp = await fetch(urlXlsx);
+            if (resp.ok) {
+              const buffer = await resp.arrayBuffer();
+              const wb = new ExcelJS.Workbook();
+              await wb.xlsx.load(buffer);
+              const ws = wb.worksheets[0];
+              const headers = [];
+              const dataRows = [];
+              ws.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+                if (rowNumber === 1) {
+                  row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                    headers[colNumber - 1] = clean(cell.value).replace(/^\ufeff/, "");
+                  });
+                } else {
+                  const obj = {};
+                  row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                    const h = headers[colNumber - 1];
+                    if (h) {
+                      let v = cell.value;
+                      if (v instanceof Date) {
+                        v = `${String(v.getDate()).padStart(2, "0")}/${String(v.getMonth() + 1).padStart(2, "0")}/${v.getFullYear()}`;
+                      } else if (v && typeof v === "object" && v.text) {
+                        v = v.text;
+                      } else if (v && typeof v === "object" && v.result !== undefined) {
+                        v = v.result;
+                      }
+                      obj[h] = clean(v);
+                    }
+                  });
+                  dataRows.push(obj);
+                }
+              });
+              fields = headers;
+              rawData = dataRows;
+              window._sharedArribaData = { headers: fields, rows: rawData };
+            }
+          } catch (eXlsx) {
+            console.error("[Cumplimiento Arriba] Error cargando XLSX:", eXlsx);
+          }
+        }
 
-      arribaHeaders = fields;
+        if (!rawData || !rawData.length) {
+          throw new Error("El archivo Base Final 365 372 no pudo cargarse o está vacío.");
+        }
 
-      const almacenNorm = "ALMACEN".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const equiposNorm = "EQUIPOS MENORES".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        arribaHeaders = fields;
 
-      // 1. Filas de Mina Arriba para las obras 365 y 372
-      const targetArribaRows = rawData
-        .filter(r => {
-          const mk = getMonthKeyFromRow(r);
-          return mk && mk !== "2025-09" && mk >= "2025-10";
-        })
-        .map(r => {
-          const c2 = clean(r["CLASIFICACION 2"]).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          const c2Norm = (c2 === almacenNorm || c2 === equiposNorm) ? "ALMACÉN" : r["CLASIFICACION 2"];
-          return {
+        // Normalización y pre-cálculo rápido de campos numéricos y claves
+        // 1. Filas de Mina Arriba para las obras 365 y 372
+        const targetArribaRows = [];
+        for (let i = 0; i < rawData.length; i++) {
+          const r = rawData[i];
+          const mk = r._ym || getMonthKeyFromRow(r);
+          if (!mk || mk === "2025-09" || mk < "2025-10") continue;
+
+          const c2Raw = clean(r["CLASIFICACION 2"]);
+          const c2Upper = c2Raw.toUpperCase();
+          const c2Norm = (c2Upper.includes("ALMACEN") || c2Upper.includes("ALMACÉN") || c2Upper.includes("EQUIPOS MENORES")) ? "ALMACÉN" : c2Raw;
+
+          const at = toNumber(r["ENTREGADOS AT FINAL"]);
+          const ft = toNumber(r["ENTREGADOS FT FINAL"]);
+          const no = toNumber(r["NO ENTREGADOS FINAL"]);
+          let comp = toNumber(r["COMPROMETIDOS"]);
+          if (!comp) comp = at + ft + no;
+          const dem = toNumAny(r["DEMORA FINAL"]);
+
+          targetArribaRows.push({
             ...r,
-            "CLASIFICACION 2": c2Norm
-          };
-        });
+            "CLASIFICACION 2": c2Norm,
+            _ym: mk,
+            _cliente: clean(r["CLIENTE"] || r["CLIENTE / OBRA"]),
+            _clasif2: c2Norm,
+            _gcoc: clean(r["GRUPO DE COMPRA OC"]),
+            _centro: clean(r["CENTRO"]),
+            _at: at,
+            _ft: ft,
+            _no: no,
+            _comp: comp,
+            _demora: isNaN(dem) ? 0 : dem,
+            _hasDemora: (!isNaN(dem) && dem > 0)
+          });
+        }
 
-      // 2. Filas de todas las demás obras desde la base estándar
-      const stdData = (window.getCumplimientoData ? window.getCumplimientoData() : []);
-      const otherStandardRows = stdData
-        .filter(r => {
+        // 2. Filas de todas las demás obras desde la base estándar
+        const stdData = (window.getCumplimientoData ? window.getCumplimientoData() : []);
+        const otherStandardRows = [];
+        for (let i = 0; i < stdData.length; i++) {
+          const r = stdData[i];
           const cli = clean(r["CLIENTE"] || r["CLIENTE / OBRA"]);
-          return !TARGET_OBRAS.some(t => cli.includes(t));
-        })
-        .map(r => {
-          const c2 = clean(r["CLASIFICACION 2"]).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          const c2Norm = (c2 === almacenNorm || c2 === equiposNorm) ? "ALMACÉN" : r["CLASIFICACION 2"];
-          return {
+          if (TARGET_OBRAS.some(t => cli.includes(t))) continue;
+
+          const c2Raw = clean(r["CLASIFICACION 2"]);
+          const c2Upper = c2Raw.toUpperCase();
+          const c2Norm = (c2Upper.includes("ALMACEN") || c2Upper.includes("ALMACÉN") || c2Upper.includes("EQUIPOS MENORES")) ? "ALMACÉN" : c2Raw;
+
+          const mk = r._ym || getMonthKeyFromRow(r);
+          const at = toNumber(r["ENTREGADOS AT"]);
+          const ft = toNumber(r["ENTREGADOS FT"]);
+          const no = toNumber(r["NO ENTREGADOS"]);
+          let comp = toNumber(r["COMPROMETIDOS"]);
+          if (!comp) comp = at + ft + no;
+          const dem = toNumAny(r["DIAS DE DEMORA"] || r["DEMORA FINAL"]);
+
+          otherStandardRows.push({
             ...r,
-            "CLIENTE": clean(r["CLIENTE"] || r["CLIENTE / OBRA"]),
+            "CLIENTE": cli,
             "CLASIFICACION 2": c2Norm,
             "ENTREGADOS AT FINAL": r["ENTREGADOS AT"],
             "ENTREGADOS FT FINAL": r["ENTREGADOS FT"],
             "NO ENTREGADOS FINAL": r["NO ENTREGADOS"],
             "DEMORA FINAL": r["DIAS DE DEMORA"] || r["DEMORA FINAL"],
-            "COMPROMETIDOS": r["COMPROMETIDOS"]
-          };
-        });
+            "COMPROMETIDOS": r["COMPROMETIDOS"],
+            _ym: mk,
+            _cliente: cli,
+            _clasif2: c2Norm,
+            _gcoc: clean(r["GRUPO DE COMPRA OC"]),
+            _centro: clean(r["CENTRO"]),
+            _at: at,
+            _ft: ft,
+            _no: no,
+            _comp: comp,
+            _demora: isNaN(dem) ? 0 : dem,
+            _hasDemora: (!isNaN(dem) && dem > 0)
+          });
+        }
 
-      // 3. Dataset unificado: todas las obras juntas, con 365 y 372 evaluadas con sus datos arriba
-      arribaRawRows = [...otherStandardRows, ...targetArribaRows];
+        // 3. Dataset unificado
+        arribaRawRows = otherStandardRows.concat(targetArribaRows);
+        return arribaRawRows;
+      } finally {
+        isLoading = false;
+        arribaLoadingPromise = null;
+        if (btn && origText && btn.innerHTML.includes("Cargando")) {
+          btn.innerHTML = origText;
+        }
+      }
+    })();
 
-      return arribaRawRows;
-    } finally {
-      isLoading = false;
-      if (btn) btn.innerHTML = origText;
-    }
+    return arribaLoadingPromise;
   }
 
   /* ============================
-     FILTRADO
+     FILTRADO RÁPIDO
   ============================ */
   function getFilteredRows(noMes = false) {
     if (!arribaRawRows) return [];
@@ -293,25 +379,29 @@
     // Filtro CLIENTE / OBRA
     const selClientes = getSelValues("cumpl_clienteSelect");
     if (selClientes.length) {
-      rows = rows.filter(r => selClientes.includes(clean(r["CLIENTE"])));
+      const setCli = new Set(selClientes);
+      rows = rows.filter(r => setCli.has(r._cliente));
     }
 
     // Filtro CLASIFICACIÓN
     const selC2 = getSelValues("cumpl_clasif2Select");
     if (selC2.length) {
-      rows = rows.filter(r => selC2.includes(clean(r["CLASIFICACION 2"])));
+      const setC2 = new Set(selC2);
+      rows = rows.filter(r => setC2.has(r._clasif2));
     }
 
     // Filtro GC OC
     const selGc = getSelValues("cumpl_gcocSelect");
     if (selGc.length) {
-      rows = rows.filter(r => selGc.includes(clean(r["GRUPO DE COMPRA OC"])));
+      const setGc = new Set(selGc);
+      rows = rows.filter(r => setGc.has(r._gcoc));
     }
 
     // Filtro CENTRO
     const selCentros = getSelValues("centroSelect");
     if (selCentros.length) {
-      rows = rows.filter(r => selCentros.includes(clean(r["CENTRO"])));
+      const setCentros = new Set(selCentros);
+      rows = rows.filter(r => setCentros.has(r._centro));
     }
 
     // Filtro MES
@@ -319,7 +409,7 @@
       const selMes = getSelValues("cumpl_mesSelect");
       if (selMes.length) {
         const setMes = new Set(selMes);
-        rows = rows.filter(r => setMes.has(getMonthKeyFromRow(r)));
+        rows = rows.filter(r => setMes.has(r._ym));
       }
     }
 
@@ -331,11 +421,12 @@
   ============================ */
   function calcTotalsArriba(rows) {
     let at = 0, ft = 0, no = 0, total = 0;
-    for (const r of rows) {
-      at += toNumber(r["ENTREGADOS AT FINAL"]);
-      ft += toNumber(r["ENTREGADOS FT FINAL"]);
-      no += toNumber(r["NO ENTREGADOS FINAL"]);
-      total += toNumber(r["COMPROMETIDOS"]);
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      at += (r._at || 0);
+      ft += (r._ft || 0);
+      no += (r._no || 0);
+      total += (r._comp || 0);
     }
     if (!total) total = at + ft + no;
     return { at, ft, no, total };
@@ -345,12 +436,16 @@
     const rowsBase = getFilteredRows(true); // Sin filtro de mes para acumulados
 
     // Filtrar para el acumulado: excluir el mes vigente y tomar los 12 meses anteriores
-    const uniqueMonths = [...new Set(rowsBase.map(getMonthKeyFromRow).filter(Boolean))].sort();
+    const mSet = new Set();
+    for (let i = 0; i < rowsBase.length; i++) {
+      if (rowsBase[i]._ym) mSet.add(rowsBase[i]._ym);
+    }
+    const uniqueMonths = [...mSet].sort();
     if (uniqueMonths.length > 0) {
       uniqueMonths.pop();
     }
     const allowedMonths = new Set(uniqueMonths.slice(-12));
-    const rowsAcumulado = rowsBase.filter(r => allowedMonths.has(getMonthKeyFromRow(r)));
+    const rowsAcumulado = rowsBase.filter(r => allowedMonths.has(r._ym));
 
     const t = calcTotalsArriba(rowsAcumulado);
 
@@ -387,12 +482,12 @@
     let rowsMes = [];
     if (ms.length) {
       const setMes = new Set(ms);
-      rowsMes = rowsBase.filter(r => setMes.has(getMonthKeyFromRow(r)));
+      rowsMes = rowsBase.filter(r => setMes.has(r._ym));
     } else {
-      const allMonths = [...new Set(rowsBase.map(getMonthKeyFromRow).filter(Boolean))].sort();
+      const allMonths = [...mSet].sort();
       const lastMonth = allMonths[allMonths.length - 1];
       if (lastMonth) {
-        rowsMes = rowsBase.filter(r => getMonthKeyFromRow(r) === lastMonth);
+        rowsMes = rowsBase.filter(r => r._ym === lastMonth);
       } else {
         rowsMes = rowsBase;
       }
@@ -432,21 +527,27 @@
     const agg = new Map();
     const monthsSet = new Set();
 
-    for (const r of rows) {
-      const mk = getMonthKeyFromRow(r);
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      const mk = r._ym;
       if (!mk) continue;
       monthsSet.add(mk);
 
-      if (!agg.has(mk)) agg.set(mk, { at: 0, ft: 0, no: 0, comp: 0, demSum: 0, demCnt: 0 });
-      const c = agg.get(mk);
+      let c = agg.get(mk);
+      if (!c) {
+        c = { at: 0, ft: 0, no: 0, comp: 0, demSum: 0, demCnt: 0 };
+        agg.set(mk, c);
+      }
 
-      c.at += toNumber(r["ENTREGADOS AT FINAL"]);
-      c.ft += toNumber(r["ENTREGADOS FT FINAL"]);
-      c.no += toNumber(r["NO ENTREGADOS FINAL"]);
-      c.comp += toNumber(r["COMPROMETIDOS"]);
+      c.at += (r._at || 0);
+      c.ft += (r._ft || 0);
+      c.no += (r._no || 0);
+      c.comp += (r._comp || 0);
 
-      const dem = toNumAny(r["DEMORA FINAL"]);
-      if (!isNaN(dem) && dem > 0) { c.demSum += dem; c.demCnt += 1; }
+      if (r._hasDemora) {
+        c.demSum += r._demora;
+        c.demCnt += 1;
+      }
     }
 
     const hiddenMonths = getHiddenChartMonths();
@@ -1171,29 +1272,38 @@
     const row = document.getElementById("cumpl_toggleRowArriba");
 
     if (!isArribaActive) {
-      if (sw) sw.classList.add("loading");
-      try {
-        await loadArribaData();
-        isArribaActive = true;
-
-        if (btn) {
-          btn.classList.add("btn-active");
-          btn.innerHTML = "↩ Volver a cumplimiento estándar";
-        }
-        if (sw) {
-          sw.classList.add("active");
-        }
-        if (row) {
-          row.classList.add("active");
-        }
-
-        applyArribaAll();
-      } catch (err) {
-        console.error("[Cumplimiento Arriba] Error al activar modo arriba:", err);
-        alert("Error al cargar datos de Medición Arriba: " + err.message);
-      } finally {
-        if (sw) sw.classList.remove("loading");
+      // Feedback visual instantáneo (0ms)
+      if (sw) sw.classList.add("active");
+      if (row) row.classList.add("active");
+      if (btn) {
+        btn.classList.add("btn-active");
+        btn.innerHTML = "↩ Volver a cumplimiento estándar";
       }
+
+      if (!arribaRawRows) {
+        if (sw) sw.classList.add("loading");
+        try {
+          await loadArribaData();
+        } catch (err) {
+          console.error("[Cumplimiento Arriba] Error al cargar modo arriba:", err);
+          if (sw) {
+            sw.classList.remove("active");
+            sw.classList.remove("loading");
+          }
+          if (row) row.classList.remove("active");
+          if (btn) {
+            btn.classList.remove("btn-active");
+            btn.innerHTML = "🏔️ Medir cumplimiento arriba";
+          }
+          alert("Error al cargar datos de Medición Arriba: " + err.message);
+          return;
+        } finally {
+          if (sw) sw.classList.remove("loading");
+        }
+      }
+
+      isArribaActive = true;
+      applyArribaAll();
     } else {
       isArribaActive = false;
 
@@ -1214,15 +1324,42 @@
       const colAcumSub = document.querySelector(".col-acum .cumpl-col-sub");
       if (colAcumSub) colAcumSub.textContent = "Últimos 12 meses";
 
-      const selCliente = document.getElementById("cumpl_clienteSelect");
-      if (selCliente) {
-        selCliente.dispatchEvent(new Event("change"));
+      if (typeof window.reapplyCumplimientoAll === "function") {
+        window.reapplyCumplimientoAll();
+      } else {
+        const selCliente = document.getElementById("cumpl_clienteSelect");
+        if (selCliente) {
+          selCliente.dispatchEvent(new Event("change"));
+        }
       }
     }
   }
 
   window.toggleCumplArribaMode = toggleArribaMode;
   window.isCumplArribaActive = () => isArribaActive;
+  window.applyCumplArribaAll = applyArribaAll;
+
+  /* ============================
+     PRELOAD EN SEGUNDO PLANO
+  ============================ */
+  function scheduleBackgroundPreload() {
+    const trigger = () => {
+      if (arribaRawRows || arribaLoadingPromise) return;
+      loadArribaData(true).catch(e => {
+        console.warn("[Cumplimiento Arriba] Preload silencioso:", e);
+      });
+    };
+
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(() => setTimeout(trigger, 400), { timeout: 3000 });
+    } else {
+      setTimeout(trigger, 1200);
+    }
+  }
+
+  window.addEventListener("cumplimientoDataReady", () => {
+    scheduleBackgroundPreload();
+  });
 
   /* ============================
      INIT & EVENT LISTENERS
@@ -1249,8 +1386,8 @@
         el.addEventListener("change", () => {
           if (isArribaActive) {
             setTimeout(() => {
-              applyArribaAll();
-            }, 30);
+              if (isArribaActive) applyArribaAll();
+            }, 25);
           }
         });
       }
@@ -1262,8 +1399,8 @@
       filterMesesDropdown.addEventListener("change", () => {
         if (isArribaActive) {
           setTimeout(() => {
-            applyArribaAll();
-          }, 35);
+            if (isArribaActive) applyArribaAll();
+          }, 25);
         }
       });
       filterMesesDropdown.addEventListener("click", (e) => {
@@ -1271,8 +1408,8 @@
         if (id === "cumpl_filterMesesSelectAll" || id === "cumpl_filterMesesInvert" || id === "cumpl_filterMesesReset") {
           if (isArribaActive) {
             setTimeout(() => {
-              applyArribaAll();
-            }, 35);
+              if (isArribaActive) applyArribaAll();
+            }, 25);
           }
         }
       });
@@ -1283,8 +1420,8 @@
       btnResetMeses.addEventListener("click", () => {
         if (isArribaActive) {
           setTimeout(() => {
-            applyArribaAll();
-          }, 35);
+            if (isArribaActive) applyArribaAll();
+          }, 25);
         }
       });
     }
@@ -1299,6 +1436,9 @@
         }
       }, true);
     }
+
+    // Iniciar intento de preload en background
+    scheduleBackgroundPreload();
   }
 
   if (document.readyState === "loading") {

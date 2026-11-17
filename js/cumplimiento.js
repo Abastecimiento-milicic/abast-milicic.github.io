@@ -261,6 +261,7 @@
     if (!hasPrev) {
       optAll.selected = true;
     } else {
+      optAll.selected = false;
       [...sel.options].forEach(o => {
         if (prevSet.has(o.value)) o.selected = true;
       });
@@ -277,18 +278,13 @@
   ============================ */
   function enforceAllOption(sel) {
     if (!sel) return;
-    const allOpt = [...sel.options].find(o => o.value === "__ALL__");
-    if (!allOpt) return;
+    const allOpts = [...sel.options].filter(o => o.value === "__ALL__" || o.value === "" || (o.value || '').toLowerCase() === 'todos' || (o.value || '').toLowerCase() === 'todas');
+    const specificSelected = [...sel.selectedOptions].filter(o => !allOpts.includes(o));
 
-    const selected = [...sel.selectedOptions].map(o => o.value);
-    if (selected.includes("__ALL__") && selected.length > 1) {
-      [...sel.options].forEach(o => { o.selected = (o.value === "__ALL__"); });
-      return;
-    }
-    if (!selected.length) {
-      allOpt.selected = true;
-    } else if (!selected.includes("__ALL__")) {
-      allOpt.selected = false;
+    if (specificSelected.length > 0) {
+      allOpts.forEach(o => { o.selected = false; });
+    } else {
+      allOpts.forEach(o => { o.selected = true; });
     }
   }
 
@@ -1482,7 +1478,7 @@
   function getIncompletosRows(rows) {
     return rows.filter(r => {
       const estado = clean(r["ESTADO ITEM"]).toUpperCase();
-      return estado === "RESPONDIDO" || estado === "INCOMPLETO";
+      return estado === "RESPONDIDO" || estado === "INCOMPLETO" || estado.includes("INCOMPLETO");
     });
   }
 
@@ -1668,6 +1664,14 @@
      APPLY ALL CORREGIDO (Sin renderizadores repetitivos que rompen eventos)
   ============================ */
   function applyAll() {
+    // Si Medición Arriba está activa, delegar directamente a su renderizador optimizado para evitar doble renderizado
+    if (typeof window.isCumplArribaActive === "function" && window.isCumplArribaActive()) {
+      if (typeof window.applyCumplArribaAll === "function") {
+        window.applyCumplArribaAll();
+      }
+      return;
+    }
+
     const rows = filteredRowsNoMes();
     const months = buildMesSelect(rows);
 
@@ -1689,6 +1693,8 @@
     buildChartTendencia(rows);
     updateIncompletosCount();
   }
+
+  window.reapplyCumplimientoAll = applyAll;
 
   /* ============================
      EXPOSE DEFERRED INITIALIZATION LIFE CYCLE HOOK
@@ -1840,6 +1846,9 @@
       renderGcoc(baseCliente);
       
       applyAll();
+      try {
+        window.dispatchEvent(new CustomEvent("cumplimientoDataReady", { detail: { headers, data } }));
+      } catch (_) {}
 
       if (uiEventsBound) {
         setHTML("cumpl_msg", "");
@@ -1946,7 +1955,8 @@
           const centro = safeFilePart(selLabel("centroSelect"));
           const mes = safeFilePart(selLabel("cumpl_mesSelect"));
 
-          const filename = `PEDIDOS_INCOMPLETOS_${cliente}_${c2}_${gc}_${centro}_${mes}.csv`;
+          const prefix = (currentSector && currentSector.startsWith("sede")) ? "SEDE_" : "";
+          const filename = `${prefix}PEDIDOS_INCOMPLETOS_${cliente}_${c2}_${gc}_${centro}_${mes}.csv`;
           downloadExcel(filename, incRows, cols, "Incompletos");
         });
 

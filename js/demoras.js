@@ -164,18 +164,13 @@
 
   function enforceAllOption(sel) {
       if (!sel) return;
-      const allOpt = [...sel.options].find(o => o.value === "__ALL__");
-      if (!allOpt) return;
+      const allOpts = [...sel.options].filter(o => o.value === "__ALL__" || o.value === "" || (o.value || '').toLowerCase() === 'todos' || (o.value || '').toLowerCase() === 'todas');
+      const specificSelected = [...sel.selectedOptions].filter(o => !allOpts.includes(o));
 
-      const selected = [...sel.selectedOptions].map(o => o.value);
-      if (selected.includes("__ALL__") && selected.length > 1) {
-          [...sel.options].forEach(o => { o.selected = (o.value === "__ALL__"); });
-          return;
-      }
-      if (!selected.length) {
-          allOpt.selected = true;
-      } else if (!selected.includes("__ALL__")) {
-          allOpt.selected = false;
+      if (specificSelected.length > 0) {
+          allOpts.forEach(o => { o.selected = false; });
+      } else {
+          allOpts.forEach(o => { o.selected = true; });
       }
   }
 

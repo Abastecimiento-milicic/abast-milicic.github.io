@@ -1797,16 +1797,17 @@ body {
 
 .st-ms-control {
   background: #ffffff;
-  border: 1px solid rgba(49, 51, 63, 0.2);
+  border: 1px solid rgba(49, 51, 63, 0.22);
   border-radius: 0.5rem;
   min-height: 38px;
+  max-height: 40px;
   padding: 4px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
   user-select: none;
 }
 
@@ -1815,23 +1816,24 @@ body {
 }
 
 .st-ms-container.is-open .st-ms-control {
-  border-color: var(--col-brand, #0d9488);
-  box-shadow: 0 0 0 1px var(--col-brand, #0d9488);
+  border-color: var(--sector-primary, #0d9488);
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.18);
 }
 
 .st-ms-pills {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 5px;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .st-ms-placeholder {
   color: #64748b;
-  font-size: 0.85rem;
-  font-weight: 400;
+  font-size: 0.84rem;
+  font-weight: 500;
   padding: 2px 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -1841,53 +1843,64 @@ body {
 .st-ms-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background-color: var(--col-brand, #0d9488);
+  gap: 4px;
+  background-color: var(--sector-primary, #0d9488);
   color: #ffffff;
   border-radius: 5px;
-  padding: 2px 7px;
-  font-size: 0.79rem;
-  font-weight: 500;
-  line-height: 1.35;
-  max-width: 100%;
-  transition: background-color 0.15s ease;
-}
-
-.st-ms-pill:hover {
-  background-color: var(--col-brand-dk, #0f766e);
+  padding: 2px 6px;
+  font-size: 0.77rem;
+  font-weight: 600;
+  line-height: 1.3;
+  max-width: 145px;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
 }
 
 .st-ms-pill-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 165px;
 }
 
 .st-ms-pill-remove {
   background: transparent;
   border: none;
   color: #ffffff;
-  font-size: 0.92rem;
-  font-weight: 600;
+  font-size: 0.88rem;
+  font-weight: 700;
   line-height: 1;
-  padding: 0 1px;
+  padding: 0 2px;
   cursor: pointer;
-  opacity: 0.85;
+  opacity: 0.8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: 3px;
 }
 
 .st-ms-pill-remove:hover {
   opacity: 1;
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.st-ms-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .st-ms-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   flex-shrink: 0;
 }
 
@@ -1899,21 +1912,21 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.75;
+  opacity: 0.65;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .st-ms-clear:hover {
   opacity: 1;
-  transform: scale(1.06);
+  transform: scale(1.1);
 }
 
 .st-ms-chevron {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #475569;
-  transition: transform 0.2s ease;
+  color: #64748b;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .st-ms-container.is-open .st-ms-chevron {
@@ -1925,45 +1938,93 @@ body {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 400;
+  z-index: 500;
   background: #ffffff;
-  border: 1px solid rgba(49, 51, 63, 0.16);
+  border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 0.5rem;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.14), 0 4px 10px -4px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
   overflow: hidden;
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.985);
+  transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.15s;
+  pointer-events: none;
+  display: flex;
   flex-direction: column;
 }
 
 .st-ms-container.is-open .st-ms-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.st-ms-topbar {
   display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .st-ms-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
   padding: 6px 8px;
-  border-bottom: 1px solid #f1f5f9;
-  background: #f8fafc;
+}
+
+.st-ms-search-icon {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
 }
 
 .st-ms-search {
   width: 100% !important;
-  padding: 5px 8px !important;
-  font-size: 0.82rem !important;
+  padding: 5px 8px 5px 26px !important;
+  font-size: 0.81rem !important;
   border: 1px solid #cbd5e1 !important;
   border-radius: 5px !important;
   background: #ffffff !important;
-  color: #31333F !important;
+  color: #1e293b !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
 .st-ms-search:focus {
-  border-color: var(--col-brand, #0d9488) !important;
-  transform: none !important;
+  border-color: var(--sector-primary, #0d9488) !important;
+}
+
+.st-ms-quickbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 3px 8px 6px 8px;
+}
+
+.st-ms-qbtn {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  line-height: 1.2;
+}
+
+.st-ms-qbtn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
 .st-ms-options {
-  max-height: 210px;
+  max-height: 220px;
   overflow-y: auto;
   padding: 4px 0;
   scrollbar-width: thin;
@@ -1971,24 +2032,56 @@ body {
 }
 
 .st-ms-option {
-  padding: 6px 12px;
-  font-size: 0.84rem;
-  font-weight: 400;
-  color: #31333F;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #334155;
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  transition: background-color 0.1s ease, color 0.1s ease;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  user-select: none;
 }
 
 .st-ms-option:hover {
-  background-color: #f0fdfa;
-  color: var(--col-brand-dk, #0f766e);
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.st-ms-option.is-selected {
+  background-color: rgba(13, 148, 136, 0.08);
+  color: var(--sector-primary-dk, #0f766e);
+  font-weight: 600;
+}
+
+.st-ms-checkbox {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.12s ease;
+  margin-right: 8px;
+}
+
+.st-ms-option.is-selected .st-ms-checkbox {
+  background: var(--sector-primary, #0d9488);
+  border-color: var(--sector-primary, #0d9488);
+}
+
+.st-ms-opt-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .st-ms-empty {
-  padding: 10px 12px;
+  padding: 12px;
   font-size: 0.8rem;
   color: #94a3b8;
   text-align: center;
@@ -2630,6 +2723,9 @@ body[data-sector="almacen"] {
 /* Botones de descarga en la barra lateral de Análisis MM (unificados con el resto del dashboard) */
 body.page-mm #panel-mm #mm_btnDLMB52Planif,
 body.page-mm #panel-mm #mm_btnDLStoNuloPP,
+body.page-mm #panel-mm #mm_btnDLStockBase223,
+body.page-mm #panel-mm #mm_btnDLStockBase314,
+body.page-mm #panel-mm #mm_btnDLStockBase341,
 body.page-mm #panel-mm #mm_btnDLStockBase374,
 body.page-mm #panel-mm #mm_btnDLStockBase378 {
   width: 100% !important;
@@ -2647,6 +2743,9 @@ body.page-mm #panel-mm #mm_btnDLStockBase378 {
 
 body.page-mm #panel-mm #mm_btnDLMB52Planif:hover,
 body.page-mm #panel-mm #mm_btnDLStoNuloPP:hover,
+body.page-mm #panel-mm #mm_btnDLStockBase223:hover,
+body.page-mm #panel-mm #mm_btnDLStockBase314:hover,
+body.page-mm #panel-mm #mm_btnDLStockBase341:hover,
 body.page-mm #panel-mm #mm_btnDLStockBase374:hover,
 body.page-mm #panel-mm #mm_btnDLStockBase378:hover {
   background: var(--sector-btn-hover) !important;

@@ -571,10 +571,16 @@
 /* ===== OVERRIDE FINAL v2: tamaño estándar y visible ===== */
 .page-mm #btnDLStoNuloPP,
 .page-mm #btnDLBaseMM,
+.page-mm #btnDLStockBase223,
+.page-mm #btnDLStockBase314,
+.page-mm #btnDLStockBase341,
 .page-mm #btnDLStockBase374,
 .page-mm #btnDLStockBase378,
 .page-mm #mm_btnDLStoNuloPP,
 .page-mm #mm_btnDLBaseMM,
+.page-mm #mm_btnDLStockBase223,
+.page-mm #mm_btnDLStockBase314,
+.page-mm #mm_btnDLStockBase341,
 .page-mm #mm_btnDLStockBase374,
 .page-mm #mm_btnDLStockBase378 {
   height: 28px !important;
@@ -603,10 +609,16 @@
 
 .page-mm #btnDLStoNuloPP:hover,
 .page-mm #btnDLBaseMM:hover,
+.page-mm #btnDLStockBase223:hover,
+.page-mm #btnDLStockBase314:hover,
+.page-mm #btnDLStockBase341:hover,
 .page-mm #btnDLStockBase374:hover,
 .page-mm #btnDLStockBase378:hover,
 .page-mm #mm_btnDLStoNuloPP:hover,
 .page-mm #mm_btnDLBaseMM:hover,
+.page-mm #mm_btnDLStockBase223:hover,
+.page-mm #mm_btnDLStockBase314:hover,
+.page-mm #mm_btnDLStockBase341:hover,
 .page-mm #mm_btnDLStockBase374:hover,
 .page-mm #mm_btnDLStockBase378:hover {
   background: rgba(2, 8, 20, .04) !important;

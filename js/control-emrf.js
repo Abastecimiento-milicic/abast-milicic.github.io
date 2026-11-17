@@ -13,7 +13,7 @@
   let currentSort = { col: 'Dias_Atraso', dir: 'desc' };
   let currentPage = 1;
   let pageSize = 50; // default 50 por página para óptimo rendimiento
-  let lastGcSelected = new Set(["C01", "C07"]);
+  let lastGcSelected = new Set(["C01"]);
   let lastOperOcSelected = new Set(["__ALL__"]);
 
   // Formateadores
@@ -247,19 +247,22 @@
       "TIENE FACTURA - FALTA RECEPCIÓN",
       "COMPENSABLE (Saldo $0)"
     ];
-    populateSelect("emrf_estadoSelect", emrfOptions, ["TIENE RECEPCIÓN - FALTA FACTURA"]);
+    populateSelect("emrf_estadoSelect", emrfOptions, [
+      "TIENE RECEPCIÓN - FALTA FACTURA",
+      "TIENE FACTURA - FALTA RECEPCIÓN"
+    ]);
 
     // 3. Grupo de Compras OC
     const gcs = [...new Set(allPositions.map(p => p.Grupo_Compras))]
       .filter(g => g && g !== "SIN GRUPO")
       .sort();
-    const defaultGCs = gcs.filter(g => g === "C01" || g === "C07");
-    populateSelect("emrf_gcSelect", gcs, defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"], true);
-    lastGcSelected = new Set(defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"]);
+    const defaultGCs = gcs.filter(g => g === "C01");
+    populateSelect("emrf_gcSelect", gcs, defaultGCs.length > 0 ? defaultGCs : ["C01"], true);
+    lastGcSelected = new Set(defaultGCs.length > 0 ? defaultGCs : ["C01"]);
 
     // 4. Estado de Vencimiento OC
     const vencOptions = ["VENCIDA", "VIGENTE", "SIN FECHA OC"];
-    populateSelect("emrf_vencSelect", vencOptions, []);
+    populateSelect("emrf_vencSelect", vencOptions, ["VENCIDA"]);
 
     // 5. Operador OC
     const opOCs = [...new Set(allPositions.map(p => p.Operador_OC))]
@@ -493,14 +496,14 @@
       "TIENE RECEPCIÓN - FALTA FACTURA",
       "TIENE FACTURA - FALTA RECEPCIÓN",
       "COMPENSABLE (Saldo $0)"
-    ], ["TIENE RECEPCIÓN - FALTA FACTURA"]);
+    ], ["TIENE RECEPCIÓN - FALTA FACTURA", "TIENE FACTURA - FALTA RECEPCIÓN"]);
 
     const gcs = [...new Set(allPositions.map(p => p.Grupo_Compras))].filter(g => g && g !== "SIN GRUPO").sort();
-    const defaultGCs = gcs.filter(g => g === "C01" || g === "C07");
-    populateSelect("emrf_gcSelect", gcs, defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"], true);
-    lastGcSelected = new Set(defaultGCs.length > 0 ? defaultGCs : ["C01", "C07"]);
+    const defaultGCs = gcs.filter(g => g === "C01");
+    populateSelect("emrf_gcSelect", gcs, defaultGCs.length > 0 ? defaultGCs : ["C01"], true);
+    lastGcSelected = new Set(defaultGCs.length > 0 ? defaultGCs : ["C01"]);
 
-    populateSelect("emrf_vencSelect", ["VENCIDA", "VIGENTE", "SIN FECHA OC"], []);
+    populateSelect("emrf_vencSelect", ["VENCIDA", "VIGENTE", "SIN FECHA OC"], ["VENCIDA"]);
     populateSelect("emrf_operOcSelect", [...new Set(allPositions.map(p => p.Operador_OC))].filter(o => o && o !== "SIN ASIGNAR").sort(), [], true);
     lastOperOcSelected = new Set(["__ALL__"]);
 
@@ -643,7 +646,7 @@
         </ul>
 
         <h4>⚙️ Filtros Iniciales por Defecto</h4>
-        <p>Por defecto se muestran los pedidos con <strong>«TIENE RECEPCIÓN - FALTA FACTURA»</strong> de los Grupos de Compras <strong>C01 y C07</strong> (compras locales de obra). Puedes cambiar cualquier filtro desde el panel superior para analizar el universo completo.</p>
+        <p>Por defecto se muestran los pedidos con <strong>«TIENE RECEPCIÓN - FALTA FACTURA» y «TIENE FACTURA - FALTA RECEPCIÓN»</strong> del Grupo de Compras <strong>C01</strong> en estado <strong>VENCIDA</strong>. Puedes cambiar cualquier filtro desde el panel superior para analizar el universo completo.</p>
       `);
     } else {
       alert("Explicación de la cuenta EM/RF:\nSupervisa la cuenta 2101011001 conciliando MIGO contra MIRO.");

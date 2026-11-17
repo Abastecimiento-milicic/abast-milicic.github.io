@@ -349,6 +349,9 @@
           r._ym = parseYearMonth(r[colFecArr]);
           return r;
         }).filter(r => r._ym && r._ym !== "2025-09" && r._ym >= "2025-10");
+        if (parsedArriba.rows && parsedArriba.rows.length) {
+          window._sharedArribaData = { headers: parsedArriba.headers, rows: parsedArriba.rows };
+        }
       } else {
         arribaRawData = arribaRawData || [];
       }

@@ -14,9 +14,11 @@ jobs:
       # 1. Descarga directo tus archivos del repositorio (incluyendo los CSV nuevos)
       - uses: actions/checkout@v4
 
-      # 2. Comprime solo los archivos web excluyendo la carpeta .git (ahorra 360MB de espacio)
+      # 2. Comprime el JSON grande y arma el zip excluyendo .git, excels crudos y carpetas internas
       - name: Zip artifact for deployment
-        run: zip -r release.zip . -x "*.git*" "node_modules/*" ".github/*"
+        run: |
+          gzip -k -9 data/partidas_emrf.json
+          zip -r release.zip . -x "*.git*" "node_modules/*" ".github/*" "*.xlsx" "scratch/*" "scripts/*" ".agents/*"
 
       # 3. Sube los archivos directo a producción usando el Perfil de Publicación
       - name: 'Deploy to Azure Web App'

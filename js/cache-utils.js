@@ -57,7 +57,7 @@
       { re: /data\/CUMPLIMIENTO_OPTIMIZADO\.csv/i, target: "data/data%20CUMPLIMIENTO/CUMPLIMIENTO_OPTIMIZADO.csv" },
       { re: /data\/Base_Final_365_372\.csv/i, target: "data/data%20CUMPLIMIENTO/Base_Final_365_372.csv" },
       { re: /data\/SERVICIOS(?:%20|\s)OBRA\.csv/i, target: "data/data%20SERVICIOS/SERVICIOS%20OBRA.csv" },
-      { re: /data\/partidas_emrf\.json/i, target: "data/data%20PARTIDAS%20ABIERTAS/partidas_emrf.json" }
+      
     ];
     for (const item of map) {
       if (item.re.test(url)) {

@@ -16,7 +16,7 @@ jobs:
 
       # 2. Comprime solo los archivos web excluyendo la carpeta .git (ahorra 360MB de espacio)
       - name: Zip artifact for deployment
-        run: zip -r release.zip . -x "*.git*" "node_modules/*" ".github/*"
+        run: zip -r release.zip . -x "*.git*" "node_modules/*" ".github/*" "*.xlsx" "scratch/*" "scripts/*" ".agents/*"
 
       # 3. Sube los archivos directo a producción usando el Perfil de Publicación
       - name: 'Deploy to Azure Web App'

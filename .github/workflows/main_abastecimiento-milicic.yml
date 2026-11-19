@@ -14,7 +14,7 @@ jobs:
       # 1. Descarga directo tus archivos del repositorio (incluyendo los CSV nuevos)
       - uses: actions/checkout@v4
 
-      # 2. Comprime solo los archivos web excluyendo la carpeta .git (ahorra 360MB de espacio)
+      # 2. Comprime solo los archivos web excluyendo .git, excels crudos y carpetas internas
       - name: Zip artifact for deployment
         run: zip -r release.zip . -x "*.git*" "node_modules/*" ".github/*" "*.xlsx" "scratch/*" "scripts/*" ".agents/*"
 

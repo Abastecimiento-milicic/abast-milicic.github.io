@@ -4,8 +4,9 @@
  * ==============================================================================
  * Carga data/control_movimientos_mb51.json consolidado a partir de MB51 2025 y MB51 2026.
  * Filtros ubicados en la BARRA LATERAL (Sidebar) con SELECCIÓN MÚLTIPLE simultánea
- * para: Año, Almacén, Clase de Movimiento (CMv), Centro y búsqueda por Usuario.
+ * para: Año, Mes, Almacén, Clase de Movimiento (CMv), Centro y búsqueda por Usuario.
  * Muestra la tabla de usuarios únicos por mes (sin conteos de cantidades ni duplicados).
+ * Exporta el listado completo de movimientos individuales de SAP MB51 según los filtros activos.
  */
 
 (function() {
@@ -77,6 +78,29 @@
       }
     }
     return values;
+  }
+
+  /**
+   * Parsea fecha de Fe.contabilización (YYYY-MM-DD o DD/MM/YYYY) a año y mes
+   */
+  function parseDateParts(feStr) {
+    if (!feStr) return { y: null, m: null };
+    const s = String(feStr).trim().slice(0, 10);
+    if (s.includes('-')) {
+      const p = s.split('-');
+      if (p.length >= 2) {
+        return { y: parseInt(p[0], 10), m: parseInt(p[1], 10) };
+      }
+    } else if (s.includes('/')) {
+      const p = s.split('/');
+      if (p.length >= 3) {
+        if (p[0].length === 4) {
+          return { y: parseInt(p[0], 10), m: parseInt(p[1], 10) };
+        }
+        return { y: parseInt(p[2], 10), m: parseInt(p[1], 10) };
+      }
+    }
+    return { y: null, m: null };
   }
 
   /**
@@ -152,7 +176,20 @@
       });
     }
 
-    // 2. Almacenes (Multi-select)
+    // 2. Meses (Multi-select)
+    const selMes = document.getElementById('ctrlMov_filterMes');
+    if (selMes && selMes.options.length <= 1) {
+      selMes.innerHTML = '<option value="">Todos los Meses</option>';
+      for (let m = 1; m <= 12; m++) {
+        const opt = document.createElement('option');
+        opt.value = String(m);
+        const pad = String(m).padStart(2, '0');
+        opt.textContent = `${pad} - ${MONTH_NAMES[m - 1]}`;
+        selMes.appendChild(opt);
+      }
+    }
+
+    // 3. Almacenes (Multi-select)
     const selAlm = document.getElementById('ctrlMov_filterAlmacen');
     if (selAlm) {
       selAlm.innerHTML = '<option value="">Todos los Almacenes</option>';
@@ -164,7 +201,7 @@
       });
     }
 
-    // 3. Clase de Movimiento - CMv (Multi-select)
+    // 4. Clase de Movimiento - CMv (Multi-select)
     const selCmv = document.getElementById('ctrlMov_filterCmv');
     if (selCmv) {
       selCmv.innerHTML = '<option value="">Todas las Clases (CMv)</option>';
@@ -177,7 +214,7 @@
       });
     }
 
-    // 4. Centros (Multi-select)
+    // 5. Centros (Multi-select)
     const selCnt = document.getElementById('ctrlMov_filterCentro');
     if (selCnt) {
       selCnt.innerHTML = '<option value="">Todos los Centros</option>';
@@ -195,7 +232,6 @@
       metaEl.textContent = `Actualizado: ${rawData.generated_at} | ${Number(rawData.total_source_rows || 0).toLocaleString('es-AR')} movimientos procesados`;
     }
 
-    // Convertir automáticamente los selects en componentes Streamlit MultiSelect
     if (typeof window.syncAllStMultiSelects === 'function') {
       setTimeout(window.syncAllStMultiSelects, 20);
     }
@@ -206,6 +242,7 @@
    */
   function setupEventListeners() {
     const selAnio = document.getElementById('ctrlMov_filterAnio');
+    const selMes = document.getElementById('ctrlMov_filterMes');
     const selAlm = document.getElementById('ctrlMov_filterAlmacen');
     const selCmv = document.getElementById('ctrlMov_filterCmv');
     const selCnt = document.getElementById('ctrlMov_filterCentro');
@@ -215,8 +252,7 @@
     const btnExportSide = document.getElementById('ctrlMov_btnExportSidebar');
     const selPageSize = document.getElementById('ctrlMov_pageSize');
 
-    // Los selects múltiples emiten evento 'change'
-    [selAnio, selAlm, selCmv, selCnt].forEach(el => {
+    [selAnio, selMes, selAlm, selCmv, selCnt].forEach(el => {
       if (el) {
         el.addEventListener('change', () => {
           currentPage = 1;
@@ -237,7 +273,7 @@
     }
 
     if (btnReset) {
-      btnReset.addEventListener('click', window.resetControlMovimientosFilters);
+      btnReset.addEventListener('click', window.resetControlPedidosFilters);
     }
 
     if (btnExportTop) btnExportTop.addEventListener('click', exportToExcel);
@@ -251,7 +287,6 @@
       });
     }
 
-    // Alternar entre Vistas (Cronológica vs Matriz Anual)
     const btnViewChrono = document.getElementById('ctrlMov_viewChrono');
     const btnViewMatrix = document.getElementById('ctrlMov_viewMatrix');
 
@@ -278,7 +313,7 @@
    * Resetea todos los filtros de Control de Movimientos
    */
   window.resetControlMovimientosFilters = function() {
-    ['ctrlMov_filterAnio', 'ctrlMov_filterAlmacen', 'ctrlMov_filterCmv', 'ctrlMov_filterCentro'].forEach(id => {
+    ['ctrlMov_filterAnio', 'ctrlMov_filterMes', 'ctrlMov_filterAlmacen', 'ctrlMov_filterCmv', 'ctrlMov_filterCentro'].forEach(id => {
       const sel = document.getElementById(id);
       if (sel) {
         for (let i = 0; i < sel.options.length; i++) {
@@ -308,35 +343,35 @@
     if (!rawData || !rawData.records) return;
 
     const selAnio = document.getElementById('ctrlMov_filterAnio');
+    const selMes = document.getElementById('ctrlMov_filterMes');
     const selAlm = document.getElementById('ctrlMov_filterAlmacen');
     const selCmv = document.getElementById('ctrlMov_filterCmv');
     const selCnt = document.getElementById('ctrlMov_filterCentro');
     const inputUser = document.getElementById('ctrlMov_filterUser');
 
     const selectedYears = getSelectedValues(selAnio);
+    const selectedMeses = getSelectedValues(selMes);
     const selectedAlms = getSelectedValues(selAlm);
     const selectedCmvs = getSelectedValues(selCmv);
     const selectedCentros = getSelectedValues(selCnt);
     const filterUser = (inputUser?.value || '').trim().toUpperCase();
 
     filteredRecords = rawData.records.filter(r => {
-      // Filtro múltiple de Año
       if (selectedYears.length > 0 && !selectedYears.includes(String(r.y))) {
         return false;
       }
-      // Filtro múltiple de Almacén
+      if (selectedMeses.length > 0 && !selectedMeses.includes(String(r.m))) {
+        return false;
+      }
       if (selectedAlms.length > 0 && !selectedAlms.includes(String(r.alm))) {
         return false;
       }
-      // Filtro múltiple de Clase de Movimiento (CMv)
       if (selectedCmvs.length > 0 && !selectedCmvs.includes(String(r.cmv))) {
         return false;
       }
-      // Filtro múltiple de Centro
       if (selectedCentros.length > 0 && !selectedCentros.includes(String(r.cnt))) {
         return false;
       }
-      // Búsqueda por texto en lista de Usuarios
       if (filterUser) {
         const matches = (r.u || []).some(u => u.toUpperCase().includes(filterUser));
         if (!matches) return false;
@@ -345,14 +380,14 @@
       return true;
     });
 
-    renderActiveFilterChips(selectedYears, selectedAlms, selectedCmvs, selectedCentros, filterUser);
+    renderActiveFilterChips(selectedYears, selectedMeses, selectedAlms, selectedCmvs, selectedCentros, filterUser);
     renderCurrentView();
   }
 
   /**
    * Renderiza chips resumen de filtros activos sobre la tabla
    */
-  function renderActiveFilterChips(years, alms, cmvs, centros, user) {
+  function renderActiveFilterChips(years, meses, alms, cmvs, centros, user) {
     const summaryEl = document.getElementById('ctrlMov_activeFiltersSummary');
     if (!summaryEl) return;
 
@@ -360,6 +395,9 @@
 
     if (years.length > 0) {
       chips.push({ lbl: 'Año', val: years.join(', ') });
+    }
+    if (meses.length > 0) {
+      chips.push({ lbl: 'Mes', val: meses.map(m => MONTH_SHORT[parseInt(m, 10) - 1] || m).join(', ') });
     }
     if (alms.length > 0) {
       chips.push({ lbl: 'Almacén', val: alms.length <= 3 ? alms.join(', ') : `${alms.slice(0, 3).join(', ')} (+${alms.length - 3})` });
@@ -432,6 +470,7 @@
 
   /**
    * Renderiza Vista Cronológica (Mes a mes)
+   * Muestra todos los usuarios del mes tal como fue solicitado
    */
   function renderChronologicalView(container, pagContainer) {
     const totalItems = filteredRecords.length;
@@ -460,6 +499,7 @@
     pageItems.forEach((r, idx) => {
       const mesName = MONTH_NAMES[r.m - 1] || `Mes ${r.m}`;
       const cmvDesc = CMV_DESCRIPTIONS[r.cmv] || `CMv ${r.cmv}`;
+      // Todos los usuarios únicos de ese mes
       const userBadges = (r.u || []).map(u => `<span class="ctrl-user-badge" title="Usuario operador en SAP">${escapeHtml(u)}</span>`).join('');
 
       html += `
@@ -500,6 +540,7 @@
 
   /**
    * Renderiza Vista Matriz Anual (12 columnas de meses)
+   * Sin superposición de texto al desplazar la barra horizontal
    */
   function renderMatrixView(container, pagContainer) {
     const matrixMap = new Map();
@@ -662,16 +703,37 @@
   };
 
   /**
-   * Exporta a Excel los datos con los filtros seleccionados
+   * Exporta a Excel todos los movimientos individuales según los filtros activos.
+   * Descarga la lista completa con las 21 columnas originales de SAP MB51
+   * (Material, Texto, Centro, Almacén, CMv, Documento Material, Fecha, Cantidad, etc.)
    */
   async function exportToExcel() {
-    if (!filteredRecords || filteredRecords.length === 0) {
-      alert('No hay registros filtrados para exportar.');
+    if (typeof ExcelJS === 'undefined') {
+      alert('La biblioteca ExcelJS aún no está cargada. Por favor intente nuevamente en un instante.');
+      return;
+    }
+    if (typeof Papa === 'undefined') {
+      alert('La biblioteca PapaParse aún no está cargada. Por favor recargue la página.');
       return;
     }
 
-    if (typeof ExcelJS === 'undefined') {
-      alert('La biblioteca ExcelJS aún no está cargada. Por favor intente nuevamente en un instante.');
+    const selAnio = document.getElementById('ctrlMov_filterAnio');
+    const selMes = document.getElementById('ctrlMov_filterMes');
+    const selAlm = document.getElementById('ctrlMov_filterAlmacen');
+    const selCmv = document.getElementById('ctrlMov_filterCmv');
+    const selCnt = document.getElementById('ctrlMov_filterCentro');
+    const inputUser = document.getElementById('ctrlMov_filterUser');
+
+    const selectedYears = getSelectedValues(selAnio);
+    const selectedMeses = getSelectedValues(selMes);
+    const selectedAlms = getSelectedValues(selAlm);
+    const selectedCmvs = getSelectedValues(selCmv);
+    const selectedCentros = getSelectedValues(selCnt);
+    const filterUser = (inputUser?.value || '').trim().toUpperCase();
+
+    // Si no se seleccionó almacén, solicitar al usuario que elija al menos uno
+    if (selectedAlms.length === 0) {
+      alert('Para descargar el detalle completo de movimientos de SAP MB51, por favor seleccioná al menos un Almacén en los filtros de la barra lateral (ej: 0223, 0314, etc.).');
       return;
     }
 
@@ -683,137 +745,192 @@
     [btnExportTop, btnExportSide].forEach(b => {
       if (b) {
         b.disabled = true;
-        b.innerHTML = `Generando Excel...`;
+        b.innerHTML = `<svg class="ctrl-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> Procesando movimientos...`;
       }
     });
 
     try {
+      // 1. Cargar los archivos CSV de detalle de cada almacén seleccionado
+      const cacheBuster = window.APP_CACHE_VERSION || Date.now();
+      const fetchPromises = selectedAlms.map(async (alm) => {
+        const cleanName = alm === '(Sin Almacen)' ? 'SIN_ALMACEN' : alm.replace(/\//g, '_').replace(/\\/g, '_');
+        const url = `data/mb51_movimientos/${encodeURIComponent(cleanName)}.csv?v=${cacheBuster}`;
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            console.warn(`[exportToExcel] No se encontró CSV para almacén ${alm} (${resp.status})`);
+            return [];
+          }
+          const csvText = await resp.text();
+          const parsed = Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true
+          });
+          return parsed.data || [];
+        } catch (e) {
+          console.warn(`[exportToExcel] Error al leer almacén ${alm}:`, e);
+          return [];
+        }
+      });
+
+      const loadedArrays = await Promise.all(fetchPromises);
+      const allRows = loadedArrays.flat();
+
+      if (allRows.length === 0) {
+        alert('No se encontraron movimientos disponibles para los almacenes seleccionados.');
+        return;
+      }
+
+      // 2. Filtrar cada fila por Año, Mes, CMv, Centro y Usuario
+      const filteredMovs = allRows.filter(r => {
+        const feStr = r['Fe.contabilización'] || r['Fe.contabilizacion'] || '';
+        const { y, m } = parseDateParts(feStr);
+
+        if (selectedYears.length > 0 && y && !selectedYears.includes(String(y))) {
+          return false;
+        }
+        if (selectedMeses.length > 0 && m && !selectedMeses.includes(String(m))) {
+          return false;
+        }
+        const rowCmv = String(r['Clase de movimiento'] || '').trim();
+        if (selectedCmvs.length > 0 && !selectedCmvs.includes(rowCmv)) {
+          return false;
+        }
+        const rowCnt = String(r['Centro'] || '').trim().toUpperCase();
+        if (selectedCentros.length > 0 && !selectedCentros.includes(rowCnt)) {
+          return false;
+        }
+        if (filterUser) {
+          const rowUser = String(r['Nombre del usuario'] || '').trim().toUpperCase();
+          if (!rowUser.includes(filterUser)) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      if (filteredMovs.length === 0) {
+        alert('No se encontraron movimientos para los filtros seleccionados (Año, Mes, CMv o Usuario).');
+        return;
+      }
+
+      // 3. Generar el archivo Excel con ExcelJS
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'Abastecimiento Milicic';
       workbook.created = new Date();
 
-      // HOJA 1: Detalle Cronológico por Mes
-      const wsDetail = workbook.addWorksheet('Control Movimientos Detalle');
-      wsDetail.addRow(['CONTROL DE MOVIMIENTOS MB51 - USUARIOS ÚNICOS POR MES']);
-      wsDetail.addRow([`Fecha de reporte: ${new Date().toLocaleString('es-AR')} | Total registros: ${filteredRecords.length}`]);
-      wsDetail.addRow([]);
+      const ws = workbook.addWorksheet('Movimientos MB51 Detalle');
 
-      const headerRow = wsDetail.addRow([
-        'Año',
-        'Mes',
-        'Nombre Mes',
+      const headers = [
+        'Material',
+        'Texto breve de material',
         'Centro',
         'Almacén',
-        'Clase de Movimiento (CMv)',
-        'Descripción CMv',
-        'Usuarios que realizaron movimientos (Sin repetir)'
-      ]);
+        'Clase de movimiento',
+        'Documento material',
+        'Posición doc.mat.',
+        'Fe.contabilización',
+        'Ctd.en UM entrada',
+        'Un.medida de entrada',
+        'Orden',
+        'Nombre del usuario',
+        'Impte.mon.local',
+        'Moneda',
+        'Pedido',
+        'Posición',
+        'Centro de coste',
+        'Cliente',
+        'Lote',
+        'Pedido de cliente',
+        'Texto cab.documento'
+      ];
 
+      const headerRow = ws.addRow(headers);
       headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
       headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
       headerRow.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FF1E3A8A' }
+        fgColor: { argb: 'FF1E3A8A' } // Azul corporativo
       };
 
-      filteredRecords.forEach(r => {
-        const mesName = MONTH_NAMES[r.m - 1] || `Mes ${r.m}`;
-        const cmvDesc = CMV_DESCRIPTIONS[r.cmv] || '';
-        const userListStr = (r.u || []).join(', ');
+      filteredMovs.forEach(r => {
+        const ctdNum = parseFloat(String(r['Ctd.en UM entrada'] || '').replace(',', '.'));
+        const impteNum = parseFloat(String(r['Impte.mon.local'] || '').replace(',', '.'));
 
-        wsDetail.addRow([
-          r.y,
-          r.m,
-          mesName,
-          r.cnt,
-          r.alm,
-          r.cmv,
-          cmvDesc,
-          userListStr
+        const row = ws.addRow([
+          r['Material'] || '',
+          r['Texto breve de material'] || '',
+          r['Centro'] || '',
+          r['Almacén'] || '',
+          r['Clase de movimiento'] || '',
+          r['Documento material'] || '',
+          r['Posición doc.mat.'] || '',
+          r['Fe.contabilización'] || '',
+          isNaN(ctdNum) ? (r['Ctd.en UM entrada'] || '') : ctdNum,
+          r['Un.medida de entrada'] || '',
+          r['Orden'] || '',
+          r['Nombre del usuario'] || '',
+          isNaN(impteNum) ? (r['Impte.mon.local'] || '') : impteNum,
+          r['Moneda'] || '',
+          r['Pedido'] || '',
+          r['Posición'] || '',
+          r['Centro de coste'] || '',
+          r['Cliente'] || '',
+          r['Lote'] || '',
+          r['Pedido de cliente'] || '',
+          r['Texto cab.documento'] || ''
         ]);
+
+        row.alignment = { vertical: 'middle' };
       });
 
-      wsDetail.columns = [
-        { width: 10 },
-        { width: 8 },
-        { width: 15 },
-        { width: 12 },
-        { width: 16 },
-        { width: 14 },
-        { width: 35 },
-        { width: 60 }
+      // Anchos y formatos de columnas
+      ws.columns = [
+        { width: 14 }, // Material
+        { width: 35 }, // Texto breve
+        { width: 10 }, // Centro
+        { width: 12 }, // Almacén
+        { width: 12 }, // CMv
+        { width: 18 }, // Doc Mat
+        { width: 14 }, // Pos
+        { width: 15 }, // Fecha
+        { width: 16, numFmt: '#,##0.00' }, // Cantidad
+        { width: 12 }, // UM
+        { width: 14 }, // Orden
+        { width: 18 }, // Usuario
+        { width: 16, numFmt: '$ #,##0.00' }, // Importe
+        { width: 10 }, // Moneda
+        { width: 14 }, // Pedido
+        { width: 10 }, // Pos
+        { width: 16 }, // CeCo
+        { width: 14 }, // Cliente
+        { width: 12 }, // Lote
+        { width: 16 }, // Pedido cliente
+        { width: 25 }  // Texto cab
       ];
 
-      // HOJA 2: Matriz Anual (12 Meses)
-      const wsMatrix = workbook.addWorksheet('Matriz Anual 12 Meses');
-      wsMatrix.addRow(['MATRIZ ANUAL DE MOVIMIENTOS - USUARIOS POR MES']);
-      wsMatrix.addRow([]);
-
-      const matrixHeaders = ['Año', 'Centro', 'Almacén', 'CMv', 'Descripción CMv', ...MONTH_NAMES];
-      const matrixHeaderRow = wsMatrix.addRow(matrixHeaders);
-      matrixHeaderRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-      matrixHeaderRow.alignment = { vertical: 'middle', horizontal: 'center' };
-      matrixHeaderRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FF0284C7' }
+      // Activar autofiltro
+      ws.autoFilter = {
+        from: { row: 1, column: 1 },
+        to: { row: filteredMovs.length + 1, column: headers.length }
       };
-
-      const matrixMap = new Map();
-      filteredRecords.forEach(r => {
-        const key = `${r.y}|${r.cnt}|${r.alm}|${r.cmv}`;
-        if (!matrixMap.has(key)) {
-          matrixMap.set(key, {
-            y: r.y,
-            cnt: r.cnt,
-            alm: r.alm,
-            cmv: r.cmv,
-            months: Array(12).fill(null).map(() => new Set())
-          });
-        }
-        const entry = matrixMap.get(key);
-        const mIdx = r.m - 1;
-        if (mIdx >= 0 && mIdx < 12) {
-          (r.u || []).forEach(u => entry.months[mIdx].add(u));
-        }
-      });
-
-      Array.from(matrixMap.values()).forEach(entry => {
-        const cmvDesc = CMV_DESCRIPTIONS[entry.cmv] || '';
-        const monthCols = entry.months.map(s => Array.from(s).sort().join(', ') || '-');
-        wsMatrix.addRow([
-          entry.y,
-          entry.cnt,
-          entry.alm,
-          entry.cmv,
-          cmvDesc,
-          ...monthCols
-        ]);
-      });
-
-      wsMatrix.columns = [
-        { width: 10 },
-        { width: 12 },
-        { width: 16 },
-        { width: 12 },
-        { width: 30 },
-        ...Array(12).fill({ width: 28 })
-      ];
 
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      a.download = `Control_Movimientos_MB51_${timestamp}.xlsx`;
+      const almLabel = selectedAlms.length <= 2 ? selectedAlms.join('_') : `${selectedAlms[0]}_y_mas`;
+      const yrLabel = selectedYears.length > 0 ? selectedYears.join('_') : '2025_2026';
+      a.download = `Movimientos_MB51_${almLabel}_${yrLabel}.xlsx`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+
     } catch (err) {
-      console.error('[ControlMovimientos] Error al exportar Excel:', err);
+      console.error('[ControlMovimientos] Error al exportar Excel detallado:', err);
       alert('Ocurrió un error al generar el archivo Excel: ' + err.message);
     } finally {
       if (btnExportTop) {

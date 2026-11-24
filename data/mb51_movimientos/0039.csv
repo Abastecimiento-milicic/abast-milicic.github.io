@@ -1,0 +1,3 @@
+Material,Texto breve de material,Centro,Almacén,Clase de movimiento,Documento material,Posición doc.mat.,Fe.contabilización,Ctd.en UM entrada,Un.medida de entrada,Orden,Nombre del usuario,Impte.mon.local,Moneda,Pedido,Posición,Centro de coste,Cliente,Lote,Pedido de cliente,Texto cab.documento
+1003217,FILTRO DE COMBUSTIBLE,MM01,0039,315,4900289744,1,2025-01-02,1,UN,39099,DBENITEZ,0,ARS,,0,,,COMP030323,,AJUSTO X ERROR DE CANTIDA
+1003217,FILTRO DE COMBUSTIBLE,MM01,0039,261,4900289745,1,2025-01-02,-1,UN,39099,DBENITEZ,-184970.76,ARS,,0,,,COMP030323,,Limpieza de almacen

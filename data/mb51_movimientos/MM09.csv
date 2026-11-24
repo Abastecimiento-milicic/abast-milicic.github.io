@@ -1,0 +1,5 @@
+Material,Texto breve de material,Centro,Almacén,Clase de movimiento,Documento material,Posición doc.mat.,Fe.contabilización,Ctd.en UM entrada,Un.medida de entrada,Orden,Nombre del usuario,Impte.mon.local,Moneda,Pedido,Posición,Centro de coste,Cliente,Lote,Pedido de cliente,Texto cab.documento
+1022365,Resistencia de cuña 3XL,MM01,MM09,605,4900452451,1,2026-06-05,2,UN,,AHERRERA,0,ARS,,0,,,LOTEINICIA,,
+1022365,Resistencia de cuña 3XL,MM01,MM09,303,4900452467,1,2026-06-05,-2,UN,,EJUAREZ,0,ARS,,0,,,LOTEINICIA,,INTERCOMPANY MATERIAL MM
+1035976,MONTAJE PCB DE INTERCONEXIÓN XL 24AMP,MM01,MM09,605,4900452451,2,2026-06-05,1,UN,,AHERRERA,0,ARS,,0,,,0000166558,,
+1035976,MONTAJE PCB DE INTERCONEXIÓN XL 24AMP,MM01,MM09,303,4900452467,3,2026-06-05,-1,UN,,EJUAREZ,0,ARS,,0,,,0000166558,,INTERCOMPANY MATERIAL MM

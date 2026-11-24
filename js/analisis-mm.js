@@ -113,6 +113,98 @@
     return result.data;
   }
 
+  /* Lista canónica de obras presentes en EVOLUCION.csv */
+  const DEFAULT_OBRAS_LIST = [
+    "00038 Fase 7 Veladero-MM",
+    "00223 Comp Amb Santa Fe",
+    "00314 CASA Olavarría",
+    "00341 Mov. Suelos San Luis",
+    "00359-TR Obra civil Luján de Cuyo",
+    "00364-FLOWLINE YPF",
+    "00365 RIO TINTO",
+    "00367–Newmont Fase 4A Recrec Dique",
+    "00368-YPF Acueducto TBH",
+    "00369-YPF OLEODUCTO PR-LP PK-451",
+    "00371 Veladero F8A",
+    "00372 UTE 372 GEO POSCO II",
+    "00373–Añelo–Alquiler Zanjadora AESA",
+    "00374 TERMINAL PUNTA COLORADA",
+    "00375 YPF OLEODUCTO PR-LP",
+    "0376 VELADERO FASE 8B /SAN JUAN",
+    "00377-YPF 3° loop",
+    "00378 YPF – Oleoducto Cnel. Pringle",
+    "00379 – VELADERO FASE 8C"
+  ];
+
+  /* ============================
+     MAPEO UNIFICADO: OBRA (EVOLUCIÓN) -> ALMACENES (ANÁLISIS MM)
+     - 0223 -> 0223 Comp santa fe (de evolucion)
+     - 0026 / 0314 -> 00314 casa olavarria
+     - 0035 / 0341 -> 0341 Mov. suelos san luis
+     - 0365 -> 00365 rio tinto
+     - 0372 -> 00372 UTE
+     - 0374 -> 00374 TERMINAL PUNTA COLORADA
+     - 0378 -> 00378 YPF
+     - 0379 -> 00379 VELADERO FASE 8C
+     - Las demás obras de evolución no tienen cliente/almacén en MM y no muestran datos en MM.
+  ============================ */
+  function getAlmacenesForObra(obraName) {
+    if (!obraName) return [];
+    const s = String(obraName).trim();
+    const sNorm = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    // 0223 -> 0223 Comp santa fe
+    if (sNorm.includes("223") || sNorm.includes("santa fe")) return ["223", "0223"];
+
+    // 0026 / 0314 -> 00314 casa olavarria
+    if (sNorm.includes("314") || sNorm.includes("olavarr") || (/\b0*26\b/).test(sNorm)) {
+      return ["26", "0026", "314", "0314"];
+    }
+
+    // 0035 / 0341 -> 0341 Mov. suelos san luis
+    if (sNorm.includes("341") || sNorm.includes("san luis") || (/\b0*35\b/).test(sNorm)) {
+      return ["35", "0035", "341", "0341"];
+    }
+
+    // 0365 -> 00365 rio tinto
+    if (sNorm.includes("365") || sNorm.includes("rio tinto")) return ["365", "0365"];
+
+    // 0372 -> 00372 UTE
+    if (sNorm.includes("372") || sNorm.includes("posco") || (sNorm.includes("ute") && !sNorm.includes("acueducto"))) {
+      return ["372", "0372"];
+    }
+
+    // 0374 -> 00374 TERMINAL PUNTA COLORADA
+    if (sNorm.includes("374") || sNorm.includes("punta colorada")) return ["374", "0374"];
+
+    // 0377 -> 00377-YPF 3° loop
+    if (sNorm.includes("377")) return ["377", "0377"];
+
+    // 0378 -> 00378 YPF
+    if (sNorm.includes("378") || sNorm.includes("pringle")) return ["378", "0378", "378B", "0378B"];
+
+    // 0379 -> 00379 VELADERO FASE 8C
+    if (sNorm.includes("379") || (sNorm.includes("veladero") && sNorm.includes("8c"))) return ["379", "0379"];
+
+    // Fallback numérico directo si se pasa código crudo
+    const m = s.match(/\b0*(\d{2,4})\b/);
+    if (m) {
+      const code = m[1];
+      if (code === "223") return ["223", "0223"];
+      if (code === "314" || code === "26") return ["26", "0026", "314", "0314"];
+      if (code === "341" || code === "35") return ["35", "0035", "341", "0341"];
+      if (code === "365") return ["365", "0365"];
+      if (code === "372") return ["372", "0372"];
+      if (code === "374") return ["374", "0374"];
+      if (code === "377") return ["377", "0377"];
+      if (code === "378") return ["378", "0378", "378B", "0378B"];
+      if (code === "379") return ["379", "0379"];
+    }
+
+    // Obras sin cliente/almacén en Análisis MM: no devuelven almacén
+    return [];
+  }
+
   /* ============================
      FILTERS (Using mm_ unique prefix)
   ============================ */
@@ -138,17 +230,37 @@
     return vals.filter(v => v && v !== "__ALL__");
   }
 
+  window.getSelectedMMClientes = getSelectedClientes;
+
   function filteredRows() {
     const selected = getSelectedClientes();
     if (!selected || !selected.length) return data;
-    const set = new Set(selected);
-    return data.filter(r => set.has(clean(r[COL_CLIENT])));
+
+    const allowedAlms = new Set();
+    for (const item of selected) {
+      const alms = getAlmacenesForObra(item);
+      alms.forEach(a => {
+        allowedAlms.add(String(a).trim());
+        allowedAlms.add(String(a).trim().replace(/^0+/, ''));
+      });
+    }
+
+    // Si las obras seleccionadas no tienen almacén en Análisis MM, no mostrar datos
+    if (allowedAlms.size === 0) {
+      return [];
+    }
+
+    return data.filter(r => {
+      const rawVal = clean(r[COL_CLIENT]);
+      const normVal = rawVal.replace(/^0+/, '');
+      return allowedAlms.has(rawVal) || allowedAlms.has(normVal);
+    });
   }
 
   /* ============================
-     UI: CLIENTES
+     UI: CLIENTES / OBRAS UNIFICADAS
   ============================ */
-  function renderClientes() {
+  function renderClientes(customList) {
     const sel = document.getElementById("mm_clienteSelect") || document.getElementById("clienteSelect");
     if (!sel) return;
 
@@ -161,10 +273,13 @@
     optAll.textContent = "Todos";
     sel.appendChild(optAll);
 
-    const clientes = [...new Set(data.map(r => clean(r[COL_CLIENT])).filter(Boolean))]
-      .sort((a, b) => a.localeCompare(b, "es"));
+    const obras = (customList && customList.length) 
+      ? customList 
+      : ((window.evolucionObras && window.evolucionObras.length) ? window.evolucionObras : DEFAULT_OBRAS_LIST);
 
-    for (const c of clientes) {
+    const sortedObras = [...new Set(obras)].sort((a, b) => a.localeCompare(b, "es"));
+
+    for (const c of sortedObras) {
       const o = document.createElement("option");
       o.value = c;
       o.textContent = c;
@@ -179,6 +294,25 @@
       enforceAllOption(sel);
     }
   }
+
+  window.syncMMObrasList = function(obras) {
+    if (obras && obras.length) {
+      renderClientes(obras);
+    }
+  };
+
+  window.resetMMFilters = function() {
+    const sel = document.getElementById("mm_clienteSelect") || document.getElementById("clienteSelect");
+    if (sel) {
+      for (const opt of sel.options) {
+        opt.selected = (opt.value === "__ALL__" || opt.value === "");
+      }
+    }
+    applyAll();
+    if (typeof window.syncEvolucionFilter === "function") {
+      window.syncEvolucionFilter([]);
+    }
+  };
 
   /* ============================
      CALCS
@@ -477,17 +611,19 @@
           return;
         }
         
+        const targetAlms = new Set();
+        selectedClientes.forEach(sc => {
+          getAlmacenesForObra(sc).forEach(a => {
+            targetAlms.add(String(a).trim());
+            targetAlms.add(String(a).trim().replace(/^0+/, ''));
+          });
+        });
+
         const filteredRowsArray = m.filter((row, idx) => {
           if (idx === 0) return false;
           const val = clean(row[colIdx]);
-          
-          return selectedClientes.some(sc => {
-            if (sc === val) return true;
-            if (!isNaN(sc) && !isNaN(val) && val !== "") {
-              return Number(sc) === Number(val);
-            }
-            return false;
-          });
+          const normVal = val.replace(/^0+/, '');
+          return targetAlms.has(val) || targetAlms.has(normVal);
         });
         
         const label = selectedClientes.length > 2 ? "FILTRADO" : selectedClientes.join("_");
@@ -726,8 +862,18 @@
       return;
     }
 
-    // 2. Normalizar cada almacén seleccionado quitando ceros iniciales (0223 -> 223, 0026 -> 26, 0314 -> 314, etc.)
-    const normSel = [...new Set(rawSel.map(normalizeAlmacenKey).filter(Boolean))];
+    // 2. Extraer almacenes de las obras seleccionadas
+    const targetAlms = [];
+    for (const item of rawSel) {
+      const alms = getAlmacenesForObra(item);
+      targetAlms.push(...alms);
+    }
+    const normSel = [...new Set(targetAlms.map(normalizeAlmacenKey).filter(Boolean))];
+
+    if (!normSel.length) {
+      showError("La obra seleccionada no posee archivo de stock MB52 asociado.");
+      return;
+    }
 
     // Obtener los archivos individuales destino únicos
     const targetConfigs = [];
@@ -926,6 +1072,10 @@
           sel.addEventListener("change", (e) => {
             enforceAllOption(e.target);
             applyAll();
+            const selected = getSelectedClientes();
+            if (typeof window.syncEvolucionFilter === "function") {
+              window.syncEvolucionFilter(selected);
+            }
           });
         }
     }

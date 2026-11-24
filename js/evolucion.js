@@ -95,18 +95,19 @@
         const rest = stackCols.filter(h => !ordered.includes(h));
         stackCols = [...ordered, ...rest];
 
-        const obraSel = document.getElementById("mm_obraSelect");
+        const obraSel = document.getElementById("mm_obraSelect") || document.getElementById("obraSelect");
         const obras = [...new Set(evolData.map(d => d[colObra]).filter(Boolean))]
           .sort((a, b) => a.localeCompare(b, "es"));
 
+        window.evolucionObras = obras;
+
+        // Populate local selector if exists
         if (obraSel) {
-          if (!obraSel.querySelector("option[value='__ALL__']")) {
-            const optAll = document.createElement("option");
-            optAll.value = "__ALL__";
-            optAll.textContent = "Todos";
-            obraSel.appendChild(optAll);
-          }
-          obraSel.querySelectorAll("option:not([value='__ALL__'])").forEach(o => o.remove());
+          obraSel.innerHTML = "";
+          const optAll = document.createElement("option");
+          optAll.value = "__ALL__";
+          optAll.textContent = "Todas";
+          obraSel.appendChild(optAll);
           obras.forEach(o => {
             const opt = document.createElement("option");
             opt.value = o;
@@ -115,15 +116,32 @@
           });
         }
 
+        // Notify and sync with Analisis MM filter
+        if (typeof window.syncMMObrasList === "function") {
+          window.syncMMObrasList(obras);
+        }
+
         function toNum(v) {
           const x = cleanText(v).replace("%", "").replace(/\./g, "").replace(",", ".");
           const n = Number(x);
           return Number.isFinite(n) ? n : 0;
         }
 
-        function render() {
-          const obrasSel = getSelValues("mm_obraSelect");
-          const rows = obrasSel.length ? evolData.filter(d => obrasSel.includes(d[colObra])) : evolData;
+        function render(forcedObras) {
+          let obrasSel = forcedObras;
+          if (obrasSel === undefined) {
+            if (typeof window.getSelectedMMClientes === "function") {
+              obrasSel = window.getSelectedMMClientes();
+            } else if (obraSel) {
+              obrasSel = getSelValues(obraSel.id);
+            } else {
+              obrasSel = [];
+            }
+          }
+
+          const rows = (obrasSel && obrasSel.length) 
+            ? evolData.filter(d => obrasSel.includes(d[colObra])) 
+            : evolData;
 
           const map = {};
           rows.forEach(d => {
@@ -209,9 +227,9 @@
             data: months.map(m => avgPct(m))
           };
 
-          const el = document.getElementById("mm_chartEvolucion");
+          const el = document.getElementById("mm_chartEvolucion") || document.getElementById("chartEvolucion");
           if (!el) return;
-          const chart = echarts.init(el);
+          const chart = echarts.getInstanceByDom(el) || echarts.init(el);
 
           chart.setOption({
             tooltip: {
@@ -246,15 +264,49 @@
           window.addEventListener("resize", () => chart.resize());
         }
 
+        // Expose function to sync Evolución from the unified sidebar filter
+        window.syncEvolucionFilter = function(selectedObras) {
+          if (obraSel) {
+            if (!selectedObras || !selectedObras.length) {
+              obraSel.value = "__ALL__";
+            } else if (selectedObras.length === 1) {
+              obraSel.value = selectedObras[0];
+            } else {
+              obraSel.value = "__ALL__";
+            }
+          }
+          render(selectedObras);
+        };
+
         if (obraSel) {
           obraSel.addEventListener("change", (e) => {
             enforceAllOption(e.target);
-            render();
+            const val = e.target.value;
+            const chosen = (val === "__ALL__" || !val) ? [] : [val];
+            if (typeof window.syncMMClienteFilter === "function") {
+              window.syncMMClienteFilter(chosen);
+            } else {
+              render(chosen);
+            }
           });
         }
+
         render();
       })
       .catch(err => console.error(err));
   };
+
+  // Auto-init on standalone pages if present
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.getElementById("chartEvolucion")) {
+        window.initEvolucion();
+      }
+    });
+  } else {
+    if (document.getElementById("chartEvolucion")) {
+      window.initEvolucion();
+    }
+  }
 
 })();

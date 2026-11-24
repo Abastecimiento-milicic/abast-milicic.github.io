@@ -84,11 +84,11 @@ def apply_excel_table_styling(ws):
         'Punto de pedido', 'Stock alm.máx.', 'Libre utilización'
     }
     center_cols = {
-        'Centro', 'Almacén', 'Lote', 'E', 'Planificado', 'Caract.planif.nec.',
+        'Centro', 'Almacén', 'Lote', 'E', 'Documento comercial', 'Planificado', 'Caract.planif.nec.',
         'Unidad medida base', 'Moneda', 'Tipo material', 'Archivo_Origen'
     }
     code_cols = {
-        'Material', 'Centro', 'Almacén', 'Lote', 'Archivo_Origen'
+        'Material', 'Centro', 'Almacén', 'Lote', 'Documento comercial', 'Archivo_Origen'
     }
 
     # 1. Encabezados
@@ -329,6 +329,21 @@ def load_auxiliary_data(base_csv_path, data_dir=None):
 
     return desc_map, lote_map, tipo_map, rubro_map
 
+def clean_doc_comercial(val_doc):
+    """Limpia y formatea el valor de Documento comercial como texto sin decimales ni notación científica."""
+    if pd.isna(val_doc):
+        return ''
+    if isinstance(val_doc, (int, float)):
+        try:
+            return str(int(round(float(val_doc))))
+        except Exception:
+            return str(val_doc).strip()
+    s = str(val_doc).strip()
+    s = re.sub(r'\.0$', '', s)
+    if s.lower() in ('nan', 'none', '-', '', '0'):
+        return ''
+    return s
+
 def run_combination(base_dir=None):
     if base_dir is None:
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -398,8 +413,13 @@ def run_combination(base_dir=None):
     all_files = glob.glob(mb52_pattern) + glob.glob(os.path.join(mb52_dir, "*.xls*"))
     all_files = sorted(list(set(all_files)))
 
-    # Filtrar para no reprocesar archivos de la carpeta Combinados
-    raw_files = [f for f in all_files if 'combinado' not in os.path.basename(f).lower() and not f.startswith(out_dir)]
+    # Filtrar para no reprocesar archivos de la carpeta Combinados ni temporales (~$...)
+    raw_files = [
+        f for f in all_files 
+        if 'combinado' not in os.path.basename(f).lower() 
+        and not f.startswith(out_dir)
+        and not os.path.basename(f).startswith('~$')
+    ]
 
     if not raw_files:
         print(f"[AVISO] No se encontraron archivos de MB52 para procesar en {mb52_dir}")
@@ -439,6 +459,8 @@ def run_combination(base_dir=None):
                 col_rename[col] = 'Unidad medida base'
             elif 'tipo' in c_lower and 'mat' in c_lower:
                 col_rename[col] = 'Tipo material'
+            elif ('documento' in c_lower and 'comercial' in c_lower) or ('doc' in c_lower and 'comerc' in c_lower):
+                col_rename[col] = 'Documento comercial'
         if col_rename:
             df_mb.rename(columns=col_rename, inplace=True)
 
@@ -574,6 +596,14 @@ def run_combination(base_dir=None):
                         stock_esp = val_esp.upper()
                         break
 
+            # Extraer Documento comercial
+            doc_comercial = ''
+            for c_doc in ['Documento comercial', 'Documento Comercial', 'DOCUMENTO COMERCIAL', 'Doc. comercial', 'Doc comercial']:
+                if c_doc in r and pd.notna(r[c_doc]):
+                    doc_comercial = clean_doc_comercial(r[c_doc])
+                    if doc_comercial:
+                        break
+
             # Armar registro enriquecido
             rec = {
                 'Material': str(mat_clean),
@@ -583,6 +613,7 @@ def run_combination(base_dir=None):
                 'Almacén': norm_alm(r.get('Almacén', '')) or str(r.get('Almacén', '') or '').strip(),
                 'Lote': lote_val or '',
                 'E': stock_esp,
+                'Documento comercial': doc_comercial,
                 'Planificado': planif,
                 'Caract.planif.nec.': caract,
                 'Estado MM': estado_mm,

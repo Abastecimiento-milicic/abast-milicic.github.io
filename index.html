@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/tiempos-entrega.css?v=20261124_123205" />
   <link rel="stylesheet" href="css/control-emrf.css?v=20261124_123205" />
   <link rel="stylesheet" href="css/tablero.css?v=20261124_123205" />
+  <link rel="stylesheet" href="css/control-movimientos.css?v=20261124_145300" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -1998,6 +1999,117 @@
 
     <!-- PANEL: CONTROL DE PEDIDOS -->
     <section id="panel-control-pedidos" class="tab-panel" style="display: none; padding: 20px 28px; max-width: 1550px; margin: 0 auto;">
+      <!-- BARRA LATERAL (STREAMLIT SIDEBAR) PARA CONTROL DE PEDIDOS -->
+      <aside class="st-sidebar">
+        <div class="st-sidebar-toprow">
+          <div class="st-sector-switcher">
+            <select class="st-sector-select" onchange="window.switchSector(this.value)" aria-label="Seleccionar sector">
+              <option value="abastecimiento">🏗️ OBRAS</option>
+              <option value="sede">🏢 SEDE</option><option value="compras">🛒 COMPRAS</option><option value="almacen">🏭 ALMACEN</option>
+            </select>
+          </div>
+          <button type="button" class="st-collapse-btn" onclick="window.toggleStSidebar()" title="Ocultar barra lateral">«</button>
+        </div>
+
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span>Filtros de Control</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button id="ctrlMov_btnClearFilters" class="sidebar-reset-btn" onclick="window.resetControlPedidosFilters()" title="Restablecer filtros">🔄 Restablecer</button>
+          </div>
+        </div>
+
+        <div class="st-filters-stack">
+          <!-- SECCIÓN FILTROS CONTROL MOVIMIENTOS -->
+          <div id="ctrlMov_sidebarContent" style="display: none;">
+            <div class="filter">
+              <label>Año:</label>
+              <select id="ctrlMov_filterAnio" multiple size="4" class="multi-select">
+                <option value="">Todos los Años</option>
+              </select>
+              <div class="hint">Selección múltiple permitida</div>
+            </div>
+
+            <div class="filter" style="margin-top: 10px;">
+              <label>Almacén:</label>
+              <select id="ctrlMov_filterAlmacen" multiple size="8" class="multi-select">
+                <option value="">Todos los Almacenes</option>
+              </select>
+              <div class="hint">Podés seleccionar múltiples almacenes</div>
+            </div>
+
+            <div class="filter" style="margin-top: 10px;">
+              <label>Clase Movimiento (CMv):</label>
+              <select id="ctrlMov_filterCmv" multiple size="8" class="multi-select">
+                <option value="">Todas las Clases (CMv)</option>
+              </select>
+              <div class="hint">Podés seleccionar múltiples clases</div>
+            </div>
+
+            <div class="filter" style="margin-top: 10px;">
+              <label>Centro:</label>
+              <select id="ctrlMov_filterCentro" multiple size="4" class="multi-select">
+                <option value="">Todos los Centros</option>
+              </select>
+            </div>
+
+            <div class="filter" style="margin-top: 10px;">
+              <label>Buscar por Usuario:</label>
+              <input type="text" id="ctrlMov_filterUser" placeholder="Ej: RPEREZ, NAVARRO..." style="width: 100%; height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; background: #ffffff;">
+            </div>
+
+            <hr class="st-divider" />
+
+            <button id="ctrlMov_btnExportSidebar" class="btn" type="button" style="width: 100%; background: #1e3a8a; color: #ffffff; font-weight: 700; margin-bottom: 6px;">
+              ⬇ Descargar Excel (.xlsx)
+            </button>
+          </div>
+
+          <!-- SECCIÓN FILTROS SELLO VL (OBRA / CLIENTE) -->
+          <div id="ctrlSello_sidebarContent">
+            <div class="filter">
+              <label for="ctrlSello_obraSelect">OBRA / CLIENTE:</label>
+              <select id="ctrlSello_obraSelect" class="st-select" onchange="window.selectCtrlPedObra(this.value)" style="width: 100%; height: 38px; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; padding: 0 8px; font-size: 0.82rem; font-weight: 600; color: #1e293b;">
+                <option value="__TOP5__">Top 5 Obras</option>
+                <option value="__ALL__">Todas las Obras</option>
+                <optgroup label="Obra puntual (Top %)">
+                  <option value="00378" selected>00378 YPF – Oleoducto Cnel. Pringle (33,28% - 413 ped.)</option>
+                  <option value="00377">00377-YPF 3° loop (19,65% - 630 ped.)</option>
+                  <option value="00368">00368-YPF Acueducto TBH (13,95% - 148 ped.)</option>
+                  <option value="0376">0376 VELADERO FASE 8B /SAN JUAN (9,49% - 297 ped.)</option>
+                  <option value="00314">00314 CASA Olavarría (8,49% - 219 ped.)</option>
+                  <option value="00375">00375 YPF OLEODUCTO PR-LP (4,93% - 63 ped.)</option>
+                  <option value="00365">00365 RIO TINTO (4,36% - 58 ped.)</option>
+                  <option value="00341">00341 Mov. Suelos San Luis (3,64% - 84 ped.)</option>
+                  <option value="00379">00379 – VELADERO FASE 8C (1,81% - 15 ped.)</option>
+                  <option value="00223">00223 Comp Amb Santa Fe (1,11% - 10 ped.)</option>
+                  <option value="00374">00374 TERMINAL PUNTA COLORADA (0,54% - 34 ped.)</option>
+                  <option value="00372">00372 UTE 372 GEO POSCO II (0,48% - 5 ped.)</option>
+                </optgroup>
+              </select>
+              <div class="hint" style="margin-top: 6px;">Seleccioná una obra o cliente para analizar la evolución temporal e inconsistencias Sello &lt; VL.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- SUB-PESTAÑAS DE CONTROL DE PEDIDOS -->
+      <div class="ctrl-ped-subtabs-nav">
+        <button id="btnSubtabSelloVL" class="ctrl-ped-subtab-btn active" onclick="window.switchCtrlPedSubtab('sello-vl')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          ALM VS VL
+        </button>
+        <button id="btnSubtabMovimientos" class="ctrl-ped-subtab-btn" onclick="window.switchCtrlPedSubtab('movimientos')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          CONTROL DE MOV
+        </button>
+      </div>
+
+      <!-- SUB-PANEL 1: ALMACENAMIENTO SELLO < CONTABILIZACIÓN VL (Existente) -->
+      <div id="subpanel-sello-vl">
+
       
       <!-- ENCABEZADO Y ACCIONES -->
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
@@ -2206,7 +2318,77 @@
 
       </div>
 
-    </section>
+    
+      </div>
+
+      <!-- SUB-PANEL 2: CONTROL MOVIMIENTOS (MB51) -->
+      <div id="subpanel-movimientos" style="display: none;">
+        <!-- ENCABEZADO Y ACCIONES -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+              <div style="width: 32px; height: 32px; border-radius: 8px; background: #e0f2fe; color: #0369a1; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">Control de Movimientos: Usuarios por Mes (SAP MB51)</h2>
+            </div>
+            <p id="ctrlMov_metaGenerated" style="font-size: 0.82rem; color: #64748b; margin: 0;">
+              Consolidado de movimientos de materiales (MB51 2025 y 2026). Nombres únicos de usuarios que registraron movimientos en cada mes.
+            </p>
+          </div>
+
+          <div>
+            <button id="ctrlMov_btnExport" class="ctrl-mov-btn ctrl-mov-btn-primary" style="height: 38px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Descargar Excel (.xlsx)
+            </button>
+          </div>
+        </div>
+
+        <!-- CHIPS DE FILTROS ACTIVOS -->
+        <div id="ctrlMov_activeFiltersSummary"></div>
+
+        <!-- SELECTOR DE VISTA Y PAGINACIÓN -->
+        <div class="ctrl-mov-view-switcher">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #475569;">Modo de Visualización:</span>
+            <div class="ctrl-mov-pills">
+              <button id="ctrlMov_viewChrono" class="ctrl-mov-pill-btn active">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                Vista Cronológica (Mes a Mes)
+              </button>
+              <button id="ctrlMov_viewMatrix" class="ctrl-mov-pill-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                Vista Matriz Anual (12 Meses)
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="ctrlMov_pageSize" style="font-size: 0.78rem; font-weight: 700; color: #64748b;">Filas por página:</label>
+            <select id="ctrlMov_pageSize" style="height: 32px; padding: 0 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.8rem; background: #ffffff;">
+              <option value="25">25</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="__ALL__">Todas</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- CONTENIDO Y TABLA -->
+        <div id="ctrlMov_content" style="position: relative; min-height: 250px;">
+          <!-- LOADER -->
+          <div id="ctrlMov_loader" style="display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.8); z-index: 10; align-items: center; justify-content: center; flex-direction: column; gap: 10px; border-radius: 10px;">
+            <svg class="ctrl-spinner" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+            <div style="font-size: 0.88rem; font-weight: 700; color: #0284c7;">Cargando movimientos MB51...</div>
+          </div>
+
+          <div id="ctrlMov_tableContainer"></div>
+          <div id="ctrlMov_pagination"></div>
+        </div>
+
+      </div>
+</section>
 
   </main>
 
@@ -2224,6 +2406,7 @@
   <script src="js/servicios.js?v=20261124_123205"></script>
   <script src="js/tiempos-entrega.js?v=20261124_123205"></script>
   <script src="js/control-emrf.js?v=20261124_123205"></script>
+  <script src="js/control-movimientos.js?v=20261124_145300"></script>
 
   <script>
     window.currentAppSector = 'abastecimiento';
@@ -2458,6 +2641,10 @@
     if (sel && sel.value !== code) {
       sel.value = code;
     }
+    const selSidebar = document.getElementById('ctrlSello_obraSelect');
+    if (selSidebar && selSidebar.value !== code) {
+      selSidebar.value = code;
+    }
 
     window.updateCtrlPedChart(code);
 
@@ -2646,7 +2833,7 @@
       else if (tabName === 'servicios') body.classList.add('page-cumplimiento', 'has-st-sidebar');
       else if (tabName === 'tiempos') body.classList.add('page-cumplimiento', 'has-st-sidebar');
       else if (tabName === 'emrf') body.classList.add('page-emrf', 'has-st-sidebar');
-      else if (tabName === 'control-pedidos') body.classList.add('page-cumplimiento');
+      else if (tabName === 'control-pedidos') body.classList.add('page-cumplimiento', 'has-st-sidebar');
       if (wasCollapsed) body.classList.add('sidebar-collapsed');
 
       // Sincronizar fecha de actualización en la barra lateral
@@ -2696,8 +2883,15 @@
             window.initEMRF();
           }
         } else if (tabName === 'control-pedidos') {
-          if (typeof window.initControlPedidos === 'function') {
-            window.initControlPedidos();
+          const btnMov = document.getElementById('btnSubtabMovimientos');
+          if (btnMov && btnMov.classList.contains('active')) {
+            if (typeof window.initControlMovimientos === 'function') {
+              window.initControlMovimientos();
+            }
+          } else {
+            if (typeof window.initControlPedidos === 'function') {
+              window.initControlPedidos();
+            }
           }
         }
       }, 50);

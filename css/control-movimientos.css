@@ -1,0 +1,392 @@
+/* ==============================================================================
+   CONTROL DE MOVIMIENTOS MB51 - ESTILOS
+   ============================================================================== */
+
+/* Barra de sub-pestañas en Control de Pedidos */
+.ctrl-ped-subtabs-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 22px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.ctrl-ped-subtab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 9px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.90rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  text-align: center;
+}
+
+.ctrl-ped-subtab-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.ctrl-ped-subtab-btn.active {
+  background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 3px 8px rgba(2, 132, 199, 0.28);
+}
+
+.ctrl-ped-subtab-btn svg {
+  flex-shrink: 0;
+}
+
+/* Card de Filtros de Control de Movimientos */
+.ctrl-mov-filter-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.ctrl-mov-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.ctrl-mov-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ctrl-mov-field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ctrl-mov-field select,
+.ctrl-mov-field input {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 7px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 0.85rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.ctrl-mov-field select:focus,
+.ctrl-mov-field input:focus {
+  border-color: #0284c7;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
+.ctrl-mov-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ctrl-mov-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ctrl-mov-btn-primary {
+  background: #1e3a8a;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 4px rgba(30, 58, 138, 0.22);
+}
+
+.ctrl-mov-btn-primary:hover {
+  background: #172554;
+}
+
+.ctrl-mov-btn-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.ctrl-mov-btn-secondary:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+/* KPIs de Movimientos */
+.ctrl-mov-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.ctrl-mov-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ctrl-mov-kpi-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.ctrl-mov-kpi-val {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.ctrl-mov-kpi-lbl {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 3px;
+}
+
+/* Badges de Usuario */
+.ctrl-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin: 2px 3px 2px 0;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: all 0.12s ease;
+}
+
+.ctrl-user-badge:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.ctrl-user-badge-single {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.ctrl-user-badge-single:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.ctrl-users-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Selector de vista (Tabla vs Matriz) */
+.ctrl-mov-view-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ctrl-mov-pills {
+  display: inline-flex;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+.ctrl-mov-pill-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ctrl-mov-pill-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Tabla de Movimientos */
+.ctrl-mov-table-wrapper {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.ctrl-mov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+  font-family: inherit;
+}
+
+.ctrl-mov-table thead th {
+  background: #1e3a8a;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 2px solid #0f172a;
+  white-space: nowrap;
+  font-size: 0.77rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ctrl-mov-table tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  color: #334155;
+}
+
+.ctrl-mov-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.ctrl-mov-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+.ctrl-mov-badge-month {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.ctrl-mov-badge-cmv {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.76rem;
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.ctrl-mov-badge-alm {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.76rem;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+
+/* Matriz Anual */
+.ctrl-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.ctrl-matrix-table thead th {
+  background: #1e3a8a;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 6px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.ctrl-matrix-table thead th:first-child,
+.ctrl-matrix-table thead th:nth-child(2),
+.ctrl-matrix-table thead th:nth-child(3) {
+  text-align: left;
+  padding-left: 12px;
+}
+
+.ctrl-matrix-table tbody td {
+  padding: 8px 6px;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #f1f5f9;
+  vertical-align: top;
+  font-size: 0.78rem;
+}
+
+.ctrl-matrix-cell-empty {
+  color: #cbd5e1;
+  text-align: center;
+  font-weight: 500;
+}
+
+.ctrl-mov-matrix-table th {
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ctrl-mov-matrix-table td {
+  border-right: 1px solid #f1f5f9;
+}
